@@ -1,0 +1,39 @@
+{
+  "name": "espression",
+  "version": "0.0.1",
+  "description": "Small and customizable EcmaScript expression parser and static eval, with support for jsonPath.",
+  "author": "Adrian Panella <ianchi74@outlook.com>",
+  "license": "MIT",
+  "main": "dist/espression.cjs.js",
+  "module": "dist/espression.esm.js",
+  "browser": "dist/espression.umd.js",
+  "typings": "typings/espression.d.ts",
+  "private": false,
+  "dependencies": {
+    "tslib": "^1.8.1"
+  },
+  "devDependencies": {
+    "esprima": "^4.0.0",
+    "jsep": "^0.3.3",
+    "rimraf": "^2.6.2",
+    "ts-loader": "^3.2.0",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.9.1",
+    "tslint-config-standard": "^7.0.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc -m commonjs --outDir dist",
+    "postbuild": "tsc --declaration --declarationDir dist/types && webpack",
+    "dev": "tsc -w -m commonjs --outDir dist",
+    "test": "node test/test.js",
+    "pretest": "tsc -m commonjs --outDir dist",
+    "lint": "tslint -p . "
+  },
+  "files": [
+    "dist"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "es5",
+        "module":"es2015",
+        "lib": ["es2015", "es2016", "es2017", "dom"],
+        "strict": false,
+        "sourceMap": true,
+
+        "outDir": "dist/es",
+        "typeRoots": [
+          "node_modules/@types"
+        ],
+        "importHelpers": true,
+        "noEmitHelpers": true
+    },
+     "files": [
+       "src/main.ts"
+     ]
+}
