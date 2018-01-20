@@ -4,10 +4,13 @@
   "description": "Small and customizable EcmaScript expression parser and static eval, with support for jsonPath.",
   "author": "Adrian Panella <ianchi74@outlook.com>",
   "license": "MIT",
-  "main": "dist/espression.cjs.js",
-  "module": "dist/espression.esm.js",
-  "browser": "dist/espression.umd.js",
-  "typings": "typings/espression.d.ts",
+  "repository": "https://github.com/ianchi/ESpression.git",
+
+  "main": "dist/bundle/espression.umd.js",
+  "module": "dist/esm5/main.js",
+  "es2015": "dist/esm2015/main.js",
+  "browser": "dist/bundle/espression.umd.min.js",
+
   "private": false,
   "dependencies": {
     "tslib": "^1.8.1"
@@ -26,14 +29,21 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc -m commonjs --outDir dist",
+    "build": "tsc -t es2015 --outDir dist/es2015",
     "postbuild": "tsc --declaration --declarationDir dist/types && webpack",
     "dev": "tsc -w -m commonjs --outDir dist",
     "test": "node test/test.js",
     "pretest": "tsc -m commonjs --outDir dist",
-    "lint": "tslint -p . "
+    "lint": "tslint -p . ",
+    "prepublish": "npm run lint && npm run test && npm run build",
+    "publish": "npm publish --tag beta"
   },
-  "files": [
-    "dist"
+  "keywords": [
+    "parser",
+    "expression",
+    "static-eval",
+    "eval",
+    "jsonpath",
+    "ast"
   ]
 }

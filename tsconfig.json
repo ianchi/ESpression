@@ -7,7 +7,7 @@
         "strict": false,
         "sourceMap": true,
 
-        "outDir": "dist/es",
+        "outDir": "dist/esm5",
         "typeRoots": [
           "node_modules/@types"
         ],

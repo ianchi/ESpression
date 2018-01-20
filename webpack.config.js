@@ -4,11 +4,11 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-         'espression': __dirname + "/src/main.ts",
-         'espression.min': __dirname + "/src/main.ts",
+         'espression.umd': __dirname + "/src/main.ts",
+         'espression.umd.min': __dirname + "/src/main.ts",
     },
     output: {
-        path:  __dirname + "/dist",
+        path:  __dirname + "/dist/bundle",
         filename: "[name].js",
         libraryTarget: "umd",
         library: "espression",
