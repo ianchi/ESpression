@@ -24,13 +24,13 @@ export class IdentifierRule extends BaseRule {
   pre(ctx: ParserContext): IPreResult {
 
     const c = this.config;
-    let ch: string, identifier: string;
+    let identifier: string;
 
     if (!ctx.teIdSt()) return { node: null };
     identifier = ctx.gbCh();
 
     while (!ctx.eof()) {
-      ch = ctx.gtCh();
+      ctx.gtCh();
       if (!ctx.teIdPt()) break;
       identifier += ctx.gbCh();
     }

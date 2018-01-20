@@ -2,9 +2,6 @@ import { IPreResult, INode } from '../../parser.interface';
 import { BaseRule, Parser } from '../../parser';
 import { ParserContext } from '../../context';
 
-// Error strings
-const UNTERMINATED_ERROR = 'Unterminated Regular Expression';
-
 export type configObjectRule = {
   key: { rules?: BaseRule[][], level?: number },
   value: { rules?: BaseRule[][], level?: number }
@@ -21,10 +18,9 @@ export class ObjectRule extends BaseRule {
     if (config.value.rules) this.valueParser = new Parser(config.value.rules);
   }
   pre(ctx: ParserContext): IPreResult {
-    const start = ctx.pos;
     const c = this.config;
 
-    let key: INode, value: INode, ch: string, properties: INode[] = [];
+    let key: INode, value: INode, properties: INode[] = [];
 
     // object literal must start with '{'
     if (!ctx.tyCh('{')) return null;

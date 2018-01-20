@@ -1,6 +1,6 @@
 import { BaseRule, Parser } from '../parser';
 import { confBinaryRule, BinaryOperatorRule } from '../rules/operator/binary';
-import { confMultipleRule, MultiOperatorRule } from '../rules/operator/multiple';
+import { MultiOperatorRule } from '../rules/operator/multiple';
 import { es5Rules } from './es5';
 import { IdentifierRule } from '../rules/token/identifier';
 import { GroupingOperatorRule } from '../rules/operator/grouping';

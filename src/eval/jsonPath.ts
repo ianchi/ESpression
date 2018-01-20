@@ -1,4 +1,3 @@
-import { INode } from '../parser.interface';
 
 export class JsonPath {
   values = [];
