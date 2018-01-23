@@ -1,6 +1,7 @@
 import { IPreResult } from '../../parser.interface';
 import { BaseRule } from '../../parser';
 import { ParserContext } from '../../context';
+import { LITERAL_EXP } from '../../presets/es5conf';
 
 export type configStringRule = { LT: boolean, hex: boolean, raw: boolean };
 export class StringRule extends BaseRule {
@@ -65,7 +66,7 @@ export class StringRule extends BaseRule {
 
     return {
       node: {
-        type: 'Literal',
+        type: LITERAL_EXP,
         value: str,
         raw: c.raw ? ctx.e.substring(start, ctx.pos) : quote + str + quote
       }

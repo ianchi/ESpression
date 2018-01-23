@@ -1,6 +1,7 @@
 import { IPreResult } from '../../parser.interface';
 import { BaseRule } from '../../parser';
 import { ParserContext } from '../../context';
+import { LITERAL_EXP } from '../../presets/es5conf';
 
 export type configNumberRule = { radix: number; prefix?: RegExp; int?: boolean; noexp?: boolean; };
 export class NumberRule extends BaseRule {
@@ -72,7 +73,7 @@ export class NumberRule extends BaseRule {
 
     return {
       node: {
-        type: 'Literal',
+        type: LITERAL_EXP,
         value: c.int ? parseInt(num, c.radix) : parseFloat(num),
         raw: prefix + num
       }

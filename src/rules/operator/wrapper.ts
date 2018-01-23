@@ -1,6 +1,7 @@
 import { INode } from '../../parser.interface';
 import { BaseRule } from '../../parser';
 import { ParserContext } from '../../context';
+import { LITERAL_EXP } from '../../presets/es5conf';
 
 export type confWrapperRule = { type: string, wrap: string };
 export class WrapperRule extends BaseRule {
@@ -16,7 +17,7 @@ export class WrapperRule extends BaseRule {
 
     node[c.wrap] = bubbledNode;
 
-    if (bubbledNode && bubbledNode.type === 'Literal' && typeof bubbledNode.value === 'string') node['directive'] = bubbledNode.raw.substring(1, bubbledNode.raw.length - 1);
+    if (bubbledNode && bubbledNode.type === LITERAL_EXP && typeof bubbledNode.value === 'string') node['directive'] = bubbledNode.raw.substring(1, bubbledNode.raw.length - 1);
 
     return bubbledNode ? node : null;
   }

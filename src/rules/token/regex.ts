@@ -1,6 +1,7 @@
 import { IPreResult } from '../../parser.interface';
 import { BaseRule } from '../../parser';
 import { ParserContext } from '../../context';
+import { LITERAL_EXP } from '../../presets/es5conf';
 
 // Error strings
 const UNTERMINATED_ERROR = 'Unterminated Regular Expression';
@@ -50,7 +51,7 @@ export class RegexRule extends BaseRule {
 
     return {
       node: {
-        type: 'Literal',
+        type: LITERAL_EXP,
         value: value,
         raw: ctx.e.substring(start, ctx.pos),
         regex: {

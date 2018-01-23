@@ -8,34 +8,50 @@ import { NumberRule } from '../rules/token/number';
 import { StringRule } from '../rules/token/string';
 import { LiteralRule } from '../rules/token/literal';
 import { UnaryOperatorRule } from '../rules/operator/unary';
+import { UNARY_EXP } from './es5conf';
+
+export const
+  JPCHILD_EXP = 'JPChildExpression',
+  JPDESC_EXP = 'JPDescendantExpression',
+  JPUNION_EXP = 'JPUnionExpression',
+  JPFILTER_EXP = 'JPFilterExpression',
+  JPSLICE_EXP = 'JPSliceExpression',
+  JPWILDCARD_EXP = 'JPWildcard',
+  JPEXP_EXP = 'JPExpression';
+
+const JPWILDCARD_TYPE = { type: JPWILDCARD_EXP, start: '*', literals: { '*': true } },
+  EXPRESSION = 'expression',
+  EXPRESSIONS = EXPRESSION + 's',
+  PROPERTY = 'property',
+  OBJECT = 'object';
 
 function jsPathMemberConf(memberRule: BaseRule[][], computedRule: BaseRule[][]): confBinaryRule {
   return {
     '.': {
-      type: 'JPChildExpression',
+      type: JPCHILD_EXP,
       extra: { computed: false },
       noop: true,
-      left: 'object', right: 'property',
+      left: OBJECT, right: PROPERTY,
       rules: memberRule
     },
     '[': {
-      type: 'JPChildExpression',
-      left: 'object', right: 'property',
+      type: JPCHILD_EXP,
+      left: OBJECT, right: PROPERTY,
       extra: { computed: true },
       close: ']',
       noop: true,
       rules: computedRule
     },
     '..': {
-      type: 'JPDescendantExpression',
+      type: JPDESC_EXP,
       extra: { computed: false },
       noop: true,
-      left: 'object', right: 'property',
+      left: OBJECT, right: PROPERTY,
       rules: memberRule
     },
     '..[': {
-      type: 'JPDescendantExpression',
-      left: 'object', right: 'property',
+      type: JPDESC_EXP,
+      left: OBJECT, right: PROPERTY,
       extra: { computed: true },
       close: ']',
       noop: true,
@@ -45,41 +61,42 @@ function jsPathMemberConf(memberRule: BaseRule[][], computedRule: BaseRule[][]):
 }
 
 function jsComputedRules(): BaseRule[][] {
-  const UNARY_EXP = { type: 'UnaryExpression' };
+  const UNARY_TYPE = { type: UNARY_EXP };
 
   return [
     [
       new MultiOperatorRule({
-        type: 'JPUnionExpression',
-        prop: 'expressions', separator: ','
+        type: JPUNION_EXP,
+        prop: EXPRESSIONS, separator: ','
       })],
     [
       new GroupingOperatorRule({
-        type: 'JPExpression',
-        prop: 'expression',
+        type: JPEXP_EXP,
+        prop: EXPRESSION,
         open: '(', close: ')', rules: es5Rules()
       }),
       new GroupingOperatorRule({
-        type: 'JPFilterExpression',
-        prop: 'expression',
+        type: JPFILTER_EXP,
+        prop: EXPRESSION,
         open: '?(', close: ')', rules: es5Rules()
       })],
     [
       new MultiOperatorRule({
-        type: 'JPSliceExpression',
-        prop: 'expressions', separator: ':',
+        type: JPSLICE_EXP,
+        prop: EXPRESSIONS, separator: ':',
         empty: null, maxSep: 2
       })],
     [
       new UnaryOperatorRule({
         pre: true, op: {
-          '-': UNARY_EXP,
-          '+': UNARY_EXP
-        }})],
+          '-': UNARY_TYPE,
+          '+': UNARY_TYPE
+        }
+      })],
     [
       new NumberRule({ radix: 10, int: true, noexp: true }),
       new StringRule(),
-      new LiteralRule({ type: 'JPWildcard', start: '*', literals: { '*': true } })
+      new LiteralRule(JPWILDCARD_TYPE)
     ]
 
   ];
@@ -91,7 +108,7 @@ export function jsonPathRules(): BaseRule[][] {
   return [
     [new BinaryOperatorRule(jsPathMemberConf([[
       new IdentifierRule({ thisStr: null, literals: {} }),
-      new LiteralRule({ type: 'JPWildcard', start: '*', literals: { '*': true } })]],
+      new LiteralRule(JPWILDCARD_TYPE)]],
       jsComputedRules()))],
     [new LiteralRule({ type: 'JPRoot', prop: 'name', literals: null })]
   ];

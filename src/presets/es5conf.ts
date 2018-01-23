@@ -6,39 +6,60 @@ import { BaseRule } from '../parser';
 
 // shared binary operators configurations
 
-const BINARY_EXP = { type: 'BinaryExpression' },
-  LOGICAL_EXP = { type: 'LogicalExpression' },
-  ASSIGN_EXP = { type: 'AssignmetExpression', ltypes: ['MemberExpression', 'Identifier'] };
+export const
+  BINARY_EXP = 'BinaryExpression',
+  LOGICAL_EXP = 'LogicalExpression',
+  ASSIGN_EXP = 'AssignmentExpression',
+  LITERAL_EXP = 'Literal',
+  IDENTIFIER_EXP = 'Identifier',
+  THIS_EXP = 'ThisExpression',
+  ARRAY_EXP = 'ArrayExpression',
+  OBJECT_EXP = 'ObjectExpression',
+  MEMBER_EXP = 'MemberExpression',
+  CALL_EXP = 'CallExpression',
+  CONDITIONAL_EXP = 'ConditionalExpression',
+  SEQUENCE_EXP = 'SequenceExpression',
+  UPDATE_EXP = 'UpdateExpression',
+  UNARY_EXP = 'UnaryExpression',
+  NEW_EXP = 'NewExpression';
+
+const BINARY_TYPE = { type: BINARY_EXP },
+  BINARY_TYPE_SP = { type: BINARY_EXP, space: true },
+  LOGICAL_TYPE = { type: LOGICAL_EXP },
+  ASSIGN_TYPE = { type: ASSIGN_EXP, ltypes: [IDENTIFIER_EXP, MEMBER_EXP] },
+  UNARY_TYPE = { type: UNARY_EXP },
+  UNARY_TYPE_SP = { type: UNARY_EXP, space: true },
+  UPDATE_TYPE = { type: UPDATE_EXP, types: [IDENTIFIER_EXP, MEMBER_EXP] };
 
 export const es5BiOpConfs: confBinaryRule[] = [
-  { '||': LOGICAL_EXP },
-  { '&&': LOGICAL_EXP },
-  { '|': BINARY_EXP },
-  { '^': BINARY_EXP },
-  { '&': BINARY_EXP },
+  { '||': LOGICAL_TYPE },
+  { '&&': LOGICAL_TYPE },
+  { '|': BINARY_TYPE },
+  { '^': BINARY_TYPE },
+  { '&': BINARY_TYPE },
   {
-    '==': BINARY_EXP,
-    '!=': BINARY_EXP,
-    '===': BINARY_EXP,
-    '!==': BINARY_EXP
+    '==': BINARY_TYPE,
+    '!=': BINARY_TYPE,
+    '===': BINARY_TYPE,
+    '!==': BINARY_TYPE
   }, {
-    '<': BINARY_EXP,
-    '>': BINARY_EXP,
-    '<=': BINARY_EXP,
-    '>=': BINARY_EXP,
-    'instanceof': { type: 'BinaryExpression', space: true },
-    'in': { type: 'BinaryExpression', space: true }
+    '<': BINARY_TYPE,
+    '>': BINARY_TYPE,
+    '<=': BINARY_TYPE,
+    '>=': BINARY_TYPE,
+    'instanceof': BINARY_TYPE_SP,
+    'in': BINARY_TYPE_SP
   }, {
-    '<<': BINARY_EXP,
-    '>>': BINARY_EXP,
-    '>>>': BINARY_EXP
+    '<<': BINARY_TYPE,
+    '>>': BINARY_TYPE,
+    '>>>': BINARY_TYPE
   }, {
-    '+': BINARY_EXP,
-    '-': BINARY_EXP
+    '+': BINARY_TYPE,
+    '-': BINARY_TYPE
   }, {
-    '*': BINARY_EXP,
-    '/': BINARY_EXP,
-    '%': BINARY_EXP
+    '*': BINARY_TYPE,
+    '/': BINARY_TYPE,
+    '%': BINARY_TYPE
   }];
 
 export const es5AssignOpConf = {
@@ -58,25 +79,26 @@ export const es5AssignOpConf = {
   '&=': ASSIGN_TYPE,
   '^=': ASSIGN_TYPE
 };
+
 // member conf needs configuration of '.' operator
 export function es5MemberConf(memberRule: BaseRule[][]): confBinaryRule {
   return {
     '.': {
-      type: 'MemberExpression',
+      type: MEMBER_EXP,
       extra: { computed: false },
       noop: true,
       left: 'object', right: 'property',
       rules: memberRule
     },
     '(': {
-      type: 'CallExpression',
+      type: CALL_EXP,
       left: 'callee', right: 'arguments',
       multi: ',', close: ')', empty: true,
       level: 2,
       noop: true
     },
     '[': {
-      type: 'MemberExpression',
+      type: MEMBER_EXP,
       left: 'object', right: 'property',
       extra: { computed: true },
       close: ']',
@@ -88,47 +110,45 @@ export function es5MemberConf(memberRule: BaseRule[][]): confBinaryRule {
 
 // shared unary operatos configurations
 
-const UNARY_EXP = 'UnaryExpression';
-
 export const es5PreUnaryOp = [
   {
-    '-': { type: UNARY_EXP },
-    '+': { type: UNARY_EXP },
-    '!': { type: UNARY_EXP },
-    '~': { type: UNARY_EXP }
+    '-': UNARY_TYPE,
+    '+': UNARY_TYPE,
+    '!': UNARY_TYPE,
+    '~': UNARY_TYPE
   }, {
-    'typeof': { type: UNARY_EXP, space: true },
-    'void': { type: UNARY_EXP, space: true },
-    'delete': { type: UNARY_EXP, space: true }
+    'typeof': UNARY_TYPE_SP,
+    'void': UNARY_TYPE_SP,
+    'delete': UNARY_TYPE_SP
   }, {
-    '--': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] },
-    '++': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] }
+    '--': UPDATE_TYPE,
+    '++': UPDATE_TYPE
   }];
 
 export const es5PostUnaryOpConf: confUnaryRule = {
   pre: false,
   op: {
-    '--': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] },
-    '++': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] }
+    '--': UPDATE_TYPE,
+    '++': UPDATE_TYPE
   }
 };
 
 // multiple operator configurations
 
 export const es5CommaOpConf: confMultipleRule = {
-  type: 'SequenceExpression',
+  type: SEQUENCE_EXP,
   prop: 'expressions', separator: ','
 };
 
 // ternary operator configurations
 
 export const es5ConditionalConf: confTernaryRule = {
-  type: 'ConditionalExpression',
+  type: CONDITIONAL_EXP,
   firstOp: '?', secondOp: ':',
   left: 'test', middle: 'consequent', right: 'alternate'
 };
 
 // basic rules
-export const es5ArrayConf = { type: 'ArrayExpression', level: 2 };
+export const es5ArrayConf = { type: ARRAY_EXP, level: 2 };
 
 export const es5GroupingConf = { open: '(', close: ')', level: 1 };

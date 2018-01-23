@@ -1,6 +1,7 @@
 import { IPreResult, INode } from '../../parser.interface';
 import { BaseRule, Parser } from '../../parser';
 import { ParserContext } from '../../context';
+import { OBJECT_EXP } from '../../presets/es5conf';
 
 export type configObjectRule = {
   key: { rules?: BaseRule[][], level?: number },
@@ -58,7 +59,7 @@ export class ObjectRule extends BaseRule {
 
     return {
       node: {
-        type: 'ObjectExpression',
+        type: OBJECT_EXP,
         properties: properties
       }
     };

@@ -3,11 +3,12 @@ import { INode } from '../parser.interface';
 import { JsonPath } from './jsonPath';
 import { es5EvalRules } from './es5';
 import { StaticEval } from './eval';
-import { jsonPathFactory } from '../presets/jsonPath';
+import { jsonPathFactory, JPUNION_EXP, JPEXP_EXP, JPFILTER_EXP, JPSLICE_EXP, JPWILDCARD_EXP } from '../presets/jsonPath';
+import { LITERAL_EXP } from '../presets/es5conf';
 
 function evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
 
-  const props = node.property.type === 'JPUnionExpression' ? node.property.expressions : [node.property];
+  const props = node.property.type === JPUNION_EXP ? node.property.expressions : [node.property];
   const context = { ...this.context };
 
   return props.reduce((acum: JsonPath, n) => {
@@ -15,7 +16,7 @@ function evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
     let member: string;
     switch (n.type) {
 
-      case 'JPExpression':
+      case JPEXP_EXP:
         obj.forEach((val, path, depth) => {
           if (typeof val === 'object') {
             context['@'] = val;
@@ -25,7 +26,7 @@ function evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
         }, descendant ? null : 0);
         break;
 
-      case 'JPFilterExpression':
+      case JPFILTER_EXP:
         obj.forEach((val, path, depth) => {
           if (!depth) return; // filter applies on children
           context['@'] = val;
@@ -33,12 +34,12 @@ function evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
         }, descendant ? null : 1);
         break;
 
-      case 'JPSliceExpression':
+      case JPSLICE_EXP:
         let idx = n.expressions.map(i => i && this._eval(i));
         ret = obj.slice(idx[0], idx[1], idx[2], descendant);
         break;
 
-      case 'JPWildcard':
+      case JPWILDCARD_EXP:
         obj.forEach((val, path, depth) => {
           if (!depth) return; // applies on children
           ret.push(val, path);
@@ -46,7 +47,7 @@ function evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
         break;
 
       default:
-        member = n.type === 'Literal' ? n.value.toString() : n.name;
+        member = n.type === LITERAL_EXP ? n.value.toString() : n.name;
 
         obj.forEach((val, path, depth) => {
           if (typeof val === 'object' && member in val) {

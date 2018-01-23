@@ -1,6 +1,7 @@
 import { IPreResult } from '../../parser.interface';
 import { BaseRule } from '../../parser';
 import { ParserContext } from '../../context';
+import { LITERAL_EXP, THIS_EXP, IDENTIFIER_EXP } from '../../presets/es5conf';
 
 export type confIdentifierRule = { literals?: { [literal: string]: any }, thisStr?: string };
 
@@ -38,17 +39,17 @@ export class IdentifierRule extends BaseRule {
     if (c.literals.hasOwnProperty(identifier)) {
       return {
         node: {
-          type: 'Literal',
+          type: LITERAL_EXP,
           value: c.literals[identifier],
           raw: identifier
         }
       };
     } else if (identifier === c.thisStr) {
-      return { node: { type: 'ThisExpression' } };
+      return { node: { type: THIS_EXP } };
     } else {
       return {
         node: {
-          type: 'Identifier',
+          type: IDENTIFIER_EXP,
           name: identifier
         }
       };
