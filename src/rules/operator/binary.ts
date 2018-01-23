@@ -46,7 +46,7 @@ export class BinaryOperatorRule extends BaseRule {
       op = this.gbOp(ctx),
       c = this.config[op];
 
-    if (!op) return bubbledNode;
+    if (!op || !bubbledNode) return bubbledNode;
 
     do {
       do {
