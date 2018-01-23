@@ -73,6 +73,7 @@ export class BinaryOperatorRule extends BaseRule {
       node[c.left] = bubbledNode;
       node[c.right] = c.multi ? multi : right;
 
+      // tslint:disable-next-line:whitespace
       if (c.extra) node = <INode>{ ...node, ...c.extra };
 
       // tslint:disable-next-line:no-conditional-assignment
