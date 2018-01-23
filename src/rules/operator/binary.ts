@@ -10,6 +10,7 @@ export type confBinaryRule = {
     left?: string, right?: string, close?: string,
     noop?: boolean, extra?: object,
 
+    ltypes?: string[],
     multi?: string, empty?: boolean,
     level?: number, parser?: Parser, rules?: BaseRule[][]
   }
@@ -50,6 +51,8 @@ export class BinaryOperatorRule extends BaseRule {
     do {
       do {
 
+        if (c.ltypes && c.ltypes.indexOf(bubbledNode.type) < 0) ctx.err('Invalid left-hand side');
+
         if (c.parser) right = c.parser.parse(ctx);
         else if (c.level) right = ctx.handler([c.level, 0]);
         else if (c.rasoc) right = ctx.recurse();
@@ -70,7 +73,7 @@ export class BinaryOperatorRule extends BaseRule {
       node[c.left] = bubbledNode;
       node[c.right] = c.multi ? multi : right;
 
-      if (c.extra) node = <INode> { ...node, ...c.extra };
+      if (c.extra) node = <INode>{ ...node, ...c.extra };
 
       // tslint:disable-next-line:no-conditional-assignment
       if (!c.rasoc && (op = this.gbOp(ctx))) {

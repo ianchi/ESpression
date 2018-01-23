@@ -1,5 +1,5 @@
 import { Parser, BaseRule } from '../parser';
-import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf, es5CommaOpConf, es5PostUnaryOpConf } from './es5conf';
+import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf, es5CommaOpConf, es5PostUnaryOpConf, es5AssignOpConf } from './es5conf';
 import { confMultipleRule, MultiOperatorRule } from '../rules/operator/multiple';
 import { TernaryOperatorRule } from '../rules/operator/ternary';
 import { BinaryOperatorRule } from '../rules/operator/binary';
@@ -51,6 +51,7 @@ export function es5Rules(): BaseRule[][] {
       new MultiOperatorRule(esprimaStatementConf),
       new WrapperRule({ type: 'ExpressionStatement', wrap: 'expression' })],
     [new MultiOperatorRule(es5CommaOpConf)],
+    [new BinaryOperatorRule(es5AssignOpConf)],
     [new TernaryOperatorRule(es5ConditionalConf)],
     es5BiOpConfs.map(conf => new BinaryOperatorRule(conf)),
     [

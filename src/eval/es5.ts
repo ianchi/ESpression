@@ -36,6 +36,31 @@ const unaryPreOpCB = {
   'void': a => void a // tslint:disable-line
 };
 
+const assignOpCB = {
+  '=': (a, m, b) => a[m] = b,
+  '+=': (a, m, b) => a[m] += b,
+  '-=': (a, m, b) => a[m] -= b,
+  '*=': (a, m, b) => a[m] *= b,
+  '/=': (a, m, b) => a[m] /= b,
+  '%=': (a, m, b) => a[m] %= b,
+  '<<=': (a, m, b) => a[m] <<= b,
+  '>>=': (a, m, b) => a[m] >>= b,
+  '>>>=': (a, m, b) => a[m] >>>= b,
+  '|=': (a, m, b) => a[m] |= b,
+  '&=': (a, m, b) => a[m] &= b,
+  '^=': (a, m, b) => a[m] ^= b
+};
+
+const preUpdateOpCB = {
+  '++': (a, m) => ++a[m],
+  '--': (a, m) => --a[m]
+};
+
+const postUpdateOpCB = {
+  '++': (a, m) => a[m]++,
+  '--': (a, m) => a[m]--
+};
+
 export const es5EvalRules = {
 
   // Tokens
@@ -99,10 +124,36 @@ export const es5EvalRules = {
     if (!(node.operator in binaryOpCB)) throw new Error('Unsuported binary expression ' + node.operator);
     return binaryOpCB[node.operator](this._eval(node.left), this._eval(node.right));
   },
+  
+  AssignmentExpression: function (node: INode) {
+  if (!(node.operator in assignOpCB)) throw new Error('Unsuported assignment expression ' + node.operator);
+  const left = lvalue(node.left);
+ 
+    return assignOpCB[node.operator](left.o, left.m, this._eval(node.right));
+  },
+  
+  UpdateExpression: function (node: INode) {
+    const cb = node.prefix ? preUpdateOpCB : postUpdateOpCB;
+    if (!(node.operator in cb)) throw new Error('Unsuported update expression ' + node.operator);
+    const left = lvalue(node.left);
+ 
+    return cb[node.operator](left.o, left.m, this._eval(node.argument))
+    
 
   UnaryExpression: function (node: INode) {
-    if (!(node.operator in unaryPreOpCB)) throw new Error('Unsuported unnary expression ' + node.operator);
+    if (!(node.operator in unaryPreOpCB)) {
+      if(node.operator === 'delete') {
+        const obj = lvalue(node.argument);
+        delete obj.o[obj.m];
+      } else throw new Error('Unsuported unnary expression ' + node.operator);
+    }
     return unaryPreOpCB[node.operator](this._eval(node.argument));
+  },
+  
+  NewExpression: function (node: INode) {
+  
+  return new (Function.prototype.bind.apply(this._eval(node.calee), node.arguments.map(e=> this._eval(e))));
+  
   },
 
   ExpressionStatement: function (node: INode) { return this._eval(node.expression); },
@@ -111,9 +162,33 @@ export const es5EvalRules = {
     return node.body.reduce((res, n) =>
       this._eval(n)
       , undefined);
+  },
+  
+  Compound: function (node: INode) {
+    return node.body.reduce((res, n) =>
+      this._eval(n)
+      , undefined);
   }
 
 };
+
+function lvalue(node : INode) {
+let obj, member;
+  switch(node.type) {
+    case 'Identifier':
+      obj = this.context;
+      member = this.name;
+      break;
+    case 'MemberExpression':
+      obj = this._eval(node.object);
+      member = node.computed ? this._eval(node.property) : node.property.name;
+      break;
+    default:
+      throw new Error('Invalid left side expression');
+      }
+      
+      return {o: obj, m: member}
+      }
 
 export function es5EvalFactory(): StaticEval {
   return new StaticEval(es5EvalRules);

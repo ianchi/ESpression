@@ -5,7 +5,7 @@ import { ParserContext } from '../../context';
 export type confUnaryRule = {
   pre?: boolean,
   op: {
-    [operator: string]: { type: string, space?: boolean }
+    [operator: string]: { type: string, space?: boolean, types?: string[] }
   }
 };
 
@@ -50,12 +50,15 @@ export class UnaryOperatorRule extends BaseRule {
       if (!op) return node;
 
       pre = {
-        type: this.config[op].type,
+        type: this.config.op[op].type,
         operator: op,
         prefix: false
       };
     }
     pre.argument = node;
+
+    const types = this.config.op[pre.operator].types;
+    if (types && types.indexOf(node.type) < 0) ctx.err('Invalid argument type');
 
     return pre;
   }

@@ -7,7 +7,8 @@ import { BaseRule } from '../parser';
 // shared binary operators configurations
 
 const BINARY_EXP = { type: 'BinaryExpression' },
-  LOGICAL_EXP = { type: 'LogicalExpression' };
+  LOGICAL_EXP = { type: 'LogicalExpression' },
+  ASSIGN_EXP = { type: 'AssignmetExpression', ltypes: ['MemberExpression', 'Identifier'] };
 
 export const es5BiOpConfs: confBinaryRule[] = [
   { '||': LOGICAL_EXP },
@@ -40,6 +41,23 @@ export const es5BiOpConfs: confBinaryRule[] = [
     '%': BINARY_EXP
   }];
 
+export const es5AssignOpConf = {
+  '=': ASSIGN_TYPE,
+
+  '+=': ASSIGN_TYPE,
+  '-=': ASSIGN_TYPE,
+  '*=': ASSIGN_TYPE,
+  '/=': ASSIGN_TYPE,
+  '%=': ASSIGN_TYPE,
+
+  '<<=': ASSIGN_TYPE,
+  '>>=': ASSIGN_TYPE,
+  '>>>=': ASSIGN_TYPE,
+
+  '|=': ASSIGN_TYPE,
+  '&=': ASSIGN_TYPE,
+  '^=': ASSIGN_TYPE
+};
 // member conf needs configuration of '.' operator
 export function es5MemberConf(memberRule: BaseRule[][]): confBinaryRule {
   return {
@@ -83,15 +101,15 @@ export const es5PreUnaryOp = [
     'void': { type: UNARY_EXP, space: true },
     'delete': { type: UNARY_EXP, space: true }
   }, {
-    '--': { type: UNARY_EXP },
-    '++': { type: UNARY_EXP }
+    '--': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] },
+    '++': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] }
   }];
 
 export const es5PostUnaryOpConf: confUnaryRule = {
   pre: false,
   op: {
-    '--': { type: UNARY_EXP },
-    '++': { type: UNARY_EXP }
+    '--': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] },
+    '++': { type: 'UpdateExpression', types: ['MemberExpression', 'Identifier'] }
   }
 };
 
