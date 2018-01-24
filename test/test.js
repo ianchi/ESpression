@@ -7,7 +7,7 @@ const espressionEsprima = require('../dist/presets/es5').es5ParserFactory();
 
 const evaluate = require('../dist/eval/es5').es5EvalFactory();
 
-const jsonPath = require('../dist/eval/jsonPathRules').jsonPathEvalFactory();
+const jsonPath = require('../dist/presets/jsonPath').jsonPathParserFactory();
 
 function compare(expr, parser1, parser2) {
   let n1, n2, fail1, fail2;
@@ -68,6 +68,23 @@ function compEsprima(exprs) {
   return ok === exprs.length;
 }
 
+function testJsonPath(exprs) {
+  let ok = 0;
+  console.log('Testing jsonPath')
+  exprs.forEach(element => {
+    try {
+      jsonPath.parse(element);
+      ok++;
+    } catch (e) {
+      console.log("Failed on :", element);
+      console.log(e.message);
+    }
+  });
+  console.log('Passed: ' + ok + '/' + exprs.length);
+  return ok === exprs.length;
+
+}
+
 
 var test1 = require('./parser/common');
 
@@ -100,7 +117,7 @@ const obj = {
 compJsep(test1.concat(test3));
 compEsprima(test1.concat(test2));
 
-jsonPath.jsonPath(obj,"$.phoneNumbers");
+testJsonPath(require('./parser/jsonPath'));
 
 benchmark();
 
