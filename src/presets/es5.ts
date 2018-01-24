@@ -1,5 +1,5 @@
 import { Parser, BaseRule } from '../parser';
-import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf, es5CommaOpConf, es5PostUnaryOpConf, es5AssignOpConf } from './es5conf';
+import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf, es5CommaOpConf, es5PostUnaryOpConf, es5AssignOpConf, identStartConf, identPartConf, es5IdentifierConf } from './es5conf';
 import { confMultipleRule, MultiOperatorRule } from '../rules/operator/multiple';
 import { TernaryOperatorRule } from '../rules/operator/ternary';
 import { BinaryOperatorRule } from '../rules/operator/binary';
@@ -8,7 +8,7 @@ import { GroupingOperatorRule } from '../rules/operator/grouping';
 import { WrapperRule } from '../rules/operator/wrapper';
 import { StringRule } from '../rules/token/string';
 import { NumberRule } from '../rules/token/number';
-import { IdentifierRule } from '../rules/token/identifier';
+import { IdentifierRule, confIdentifierChars } from '../rules/token/identifier';
 import { ArrayRule } from '../rules/token/array';
 import { RegexRule } from '../rules/token/regex';
 import { ObjectRule } from '../rules/token/object';
@@ -20,7 +20,7 @@ const esprimaStatementConf: confMultipleRule = {
   empty: { type: 'EmptyStatement' }
 };
 
-export function es5Rules(): BaseRule[][] {
+export function es5Rules(identifier: confIdentifierChars = { st: identStartConf, pt: identPartConf }): BaseRule[][] {
 
   // basic tokens used also in parsing objet literal's properties
   let tokenRules: BaseRule[] = [
@@ -38,7 +38,7 @@ export function es5Rules(): BaseRule[][] {
 
   // object needs subset of tokens for parsing properties.
   tokenRules = tokenRules.concat([
-    new IdentifierRule(),
+    new IdentifierRule(es5IdentifierConf(identifier)),
     new ArrayRule(es5ArrayConf),
     new RegexRule(),
     new ObjectRule({

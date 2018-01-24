@@ -1,12 +1,21 @@
 import { INode, IPreResult } from './parser.interface';
 import { ParserContext, IParser } from './context';
+import { confIdentifierChars } from './rules/token/identifier';
 
 export class Parser implements IParser {
 
   ops: { [type: string]: { maxLen: number, ops: { [op: string]: boolean } } } = {};
 
-  constructor(public rules: BaseRule[][]) { // , public conf: { sp: ICharClass, lt: ICharClass }
+  config: any = {
+    identifier: <confIdentifierChars> {
+      st: { re: /[$_A-Za-z]/ },
+      pt: { re: /[$_0-9A-Za-z]/ }
+    }
+  };
+  constructor(public rules: BaseRule[][], config?: object) {
     if (!rules || !rules.length) throw new Error('Must provide rules');
+
+    this.config = { ...this.config, ...config };
 
     for (let type of rules) {
       for (let rule of type) {

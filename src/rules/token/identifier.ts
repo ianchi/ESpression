@@ -1,9 +1,17 @@
 import { IPreResult } from '../../parser.interface';
-import { BaseRule } from '../../parser';
+import { BaseRule, Parser } from '../../parser';
 import { ParserContext } from '../../context';
 import { LITERAL_EXP, THIS_EXP, IDENTIFIER_EXP } from '../../presets/es5conf';
 
-export type confIdentifierRule = { literals?: { [literal: string]: any }, thisStr?: string };
+export type confIdentifierChars = {
+  st?: { re?: RegExp, re2?: RegExp },
+  pt?: { re?: RegExp, re2?: RegExp }
+};
+export type confIdentifierRule = {
+  literals?: { [literal: string]: any },
+  thisStr?: string,
+  identifier?: confIdentifierChars
+};
 
 // Gobbles only identifiers
 // e.g.: `foo`, `_value`, `$x1`
@@ -11,17 +19,19 @@ export type confIdentifierRule = { literals?: { [literal: string]: any }, thisSt
 // (e.g. `true`, `false`, `null`) or `this`
 export class IdentifierRule extends BaseRule {
 
-  constructor(public config: confIdentifierRule = {
-    literals: {
-      'true': true,
-      'false': false,
-      'null': null
-    },
-    thisStr: 'this'
-  }) {
+  constructor(public config: confIdentifierRule) {
     super();
   }
 
+  register(parser: Parser) {
+
+    const c = this.config.identifier,
+      g = parser.config.identifier;
+    if (c) {
+      if (c.st) g.st = { ...g.st, ...c.st };
+      if (c.pt) g.pt = { ...g.pt, ...c.pt };
+    }
+  }
   pre(ctx: ParserContext): IPreResult {
 
     const c = this.config;

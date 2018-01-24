@@ -1,5 +1,5 @@
 import { Parser, BaseRule } from '../parser';
-import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf } from './es5conf';
+import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf, es5IdentifierConf } from './es5conf';
 import { confMultipleRule, MultiOperatorRule } from '../rules/operator/multiple';
 import { TernaryOperatorRule } from '../rules/operator/ternary';
 import { BinaryOperatorRule } from '../rules/operator/binary';
@@ -31,12 +31,12 @@ export function jsepRules(): BaseRule[][] {
     jsepBiOpRules.map(conf => new BinaryOperatorRule(conf)),
     [
       new UnaryOperatorRule({ pre: true, op: es5PreUnaryOp[0] }),
-      new BinaryOperatorRule(es5MemberConf([[new IdentifierRule()]])),
+      new BinaryOperatorRule(es5MemberConf([[new IdentifierRule(es5IdentifierConf())]])),
       new GroupingOperatorRule(es5GroupingConf)],
     [ // last level must be base tokens
       new StringRule({ LT: false, hex: false, raw: false }),
       new NumberRule(),
-      new IdentifierRule(),
+      new IdentifierRule(es5IdentifierConf()),
       new ArrayRule(es5ArrayConf)
     ]
   ];

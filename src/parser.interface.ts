@@ -10,6 +10,6 @@ export interface INode {
 }
 
 export interface ICharClass {
-  ch: string;
-  re?: RegExp;
+  re: RegExp;
+  re2?: RegExp;
 }

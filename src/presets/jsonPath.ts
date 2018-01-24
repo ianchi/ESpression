@@ -3,12 +3,12 @@ import { confBinaryRule, BinaryOperatorRule } from '../rules/operator/binary';
 import { MultiOperatorRule } from '../rules/operator/multiple';
 import { es5Rules } from './es5';
 import { IdentifierRule } from '../rules/token/identifier';
-import { GroupingOperatorRule, confGroupingRule } from '../rules/operator/grouping';
+import { GroupingOperatorRule } from '../rules/operator/grouping';
 import { NumberRule } from '../rules/token/number';
 import { StringRule } from '../rules/token/string';
 import { LiteralRule } from '../rules/token/literal';
 import { UnaryOperatorRule } from '../rules/operator/unary';
-import { UNARY_EXP } from './es5conf';
+import { UNARY_EXP, identPartConf, identStartConf } from './es5conf';
 
 export const
   JPCHILD_EXP = 'JPChildExpression',
@@ -62,6 +62,10 @@ function jsPathMemberConf(memberRule: BaseRule[][], computedRule: BaseRule[][]):
 
 function jsComputedRules(): BaseRule[][] {
   const UNARY_TYPE = { type: UNARY_EXP };
+  const subrules = es5Rules({
+    pt: identPartConf,
+    st: { ...identStartConf, re: /[@$_A-Za-z]/ }  // adds '@' as valid identifier start
+  });
 
   return [
     [
@@ -73,12 +77,12 @@ function jsComputedRules(): BaseRule[][] {
       new GroupingOperatorRule({
         type: JPEXP_EXP,
         prop: EXPRESSION,
-        open: '(', close: ')', rules: es5Rules()
+        open: '(', close: ')', rules: subrules
       }),
       new GroupingOperatorRule({
         type: JPFILTER_EXP,
         prop: EXPRESSION,
-        open: '?(', close: ')', rules: es5Rules()
+        open: '?(', close: ')', rules: subrules
       })],
     [
       new MultiOperatorRule({
@@ -128,5 +132,6 @@ export function es5PathParserFactory(): Parser {
 
 }
 export function jsonPathParserFactory(): Parser {
+
   return new Parser(jsonPathRules());
 }
