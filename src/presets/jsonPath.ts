@@ -3,7 +3,7 @@ import { confBinaryRule, BinaryOperatorRule } from '../rules/operator/binary';
 import { MultiOperatorRule } from '../rules/operator/multiple';
 import { es5Rules } from './es5';
 import { IdentifierRule } from '../rules/token/identifier';
-import { GroupingOperatorRule } from '../rules/operator/grouping';
+import { GroupingOperatorRule, confGroupingRule } from '../rules/operator/grouping';
 import { NumberRule } from '../rules/token/number';
 import { StringRule } from '../rules/token/string';
 import { LiteralRule } from '../rules/token/literal';
@@ -115,6 +115,18 @@ export function jsonPathRules(): BaseRule[][] {
 
 }
 
-export function jsonPathFactory(): Parser {
+export function es5PathParserFactory(): Parser {
+
+  const esPathRules = es5Rules();
+
+  // add the '<$..path>' notation as jsonPath operand, with priority just before tokens
+
+  esPathRules[esPathRules.length - 2].push(
+    new GroupingOperatorRule({ open: '<', close: '>', rules: jsonPathRules() })
+  );
+  return new Parser(esPathRules);
+
+}
+export function jsonPathParserFactory(): Parser {
   return new Parser(jsonPathRules());
 }

@@ -3,7 +3,10 @@ import { INode } from '../parser.interface';
 import { JsonPath } from './jsonPath';
 import { es5EvalRules } from './es5';
 import { StaticEval } from './eval';
-import { jsonPathFactory, JPUNION_EXP, JPEXP_EXP, JPFILTER_EXP, JPSLICE_EXP, JPWILDCARD_EXP } from '../presets/jsonPath';
+import {
+  JPUNION_EXP, JPEXP_EXP, JPFILTER_EXP, JPSLICE_EXP, JPWILDCARD_EXP,
+  jsonPathParserFactory, es5PathParserFactory
+} from '../presets/jsonPath';
 import { LITERAL_EXP } from '../presets/es5conf';
 
 function evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
@@ -75,13 +78,20 @@ export const jsonPathEvalRules = {
 
 };
 
-export function jsonPathEvalFactory() {
-  const staticEval = new StaticEval({ ...es5EvalRules, ...jsonPathEvalRules });
-  const parser = jsonPathFactory();
+export function jsonPathEvalFactory(): StaticEval {
+  return new StaticEval({ ...es5EvalRules, ...jsonPathEvalRules });
+}
+
+export function jsonPathFactory() {
+  const staticEval = jsonPathEvalFactory();
+  const jpParser = jsonPathParserFactory();
+  const espParser = es5PathParserFactory();
+
   return {
     eval: (ast, ctx) => staticEval.eval(ast, ctx),
-    parse: expr => parser.parse(expr),
-    evaluate: (expr, ctx) => staticEval.eval(parser.parse(expr), ctx),
-    jsonPath: (obj, expr) => staticEval.eval(parser.parse(expr), { $: obj })
+    parse: expr => espParser.parse(expr),
+    evaluate: (expr, ctx) => staticEval.eval(espParser.parse(expr), ctx),
+
+    jsonPath: (obj, expr) => staticEval.eval(jpParser.parse(expr), { $: obj })
   };
 }
