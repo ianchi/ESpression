@@ -25,6 +25,8 @@ export class GroupingOperatorRule extends BaseRule {
     const c = this.config;
     let node: INode;
 
+    ctx.gbSp();
+
     if (ctx.gtOp('group') !== c.open) return { node: null };
     ctx.gb(c.open.length);
 
