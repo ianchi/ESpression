@@ -37,7 +37,7 @@ Each preset expose two alternatives of use,
 
 ### ES5 AST
 ```
-import { es5ParserFactory } from 'espression/presets';
+import { es5ParserFactory } from 'espression';
 
 const parser = es5ParserFactory();
 
@@ -50,13 +50,13 @@ All ES5 expressions are supported, except for function expressions (as it would 
 
 ### jsep AST
 ```
-import { jsepParserFactory } from 'espression/presets';
+import { jsepParserFactory } from 'espression';
 
 const parser = jsepParserFactory();
 
 let ast = parser.parse('a + b * c');
 ```
-Returns a jsep compatible AST (with compound statements). Keeps same limitations for expressions (i.e. no RegExp literals, no object literals)
+Returns a jsep compatible AST (with compound statements). Keeps same limitations for expressions (i.e. no RegExp literals, no object literals, no assignment)
 
 ## License
 
