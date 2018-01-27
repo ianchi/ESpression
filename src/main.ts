@@ -1,3 +1,5 @@
+import './parser.interface.ts';
+
 export { StaticEval } from './eval/eval';
 export { Parser } from './parser';
 

@@ -1,8 +1,7 @@
 import { INode } from '../parser.interface';
 import { StaticEval } from './eval';
 import {
-  IDENTIFIER_EXP, LITERAL_EXP, MEMBER_EXP, LOGICAL_EXP, BINARY_EXP, ASSIGN_EXP, UPDATE_EXP,
-  UNARY_EXP, THIS_EXP, ARRAY_EXP, OBJECT_EXP, CALL_EXP, CONDITIONAL_EXP, SEQUENCE_EXP, NEW_EXP
+  IDENTIFIER_EXP, LITERAL_EXP, MEMBER_EXP, LOGICAL_EXP, BINARY_EXP, ASSIGN_EXP, UPDATE_EXP, UNARY_EXP
 } from '../presets/es5conf';
 
 const
@@ -69,17 +68,17 @@ const
 export const es5EvalRules = {
 
   // Tokens
-  [LITERAL_EXP]: n => n.value,
+  Literal: n => n.value,
 
-  [IDENTIFIER_EXP]: function (node: INode) { return this.context[node.name]; },
+  Identifier: function (node: INode) { return this.context[node.name]; },
 
-  [THIS_EXP]: function (node: INode) { return this.context; },
+  ThisExpression: function (node: INode) { return this.context; },
 
-  [ARRAY_EXP]: function (node: INode) {
+  ArrayExpression: function (node: INode) {
     return node.elements.map(e => this._eval(e));
   },
 
-  [OBJECT_EXP]: function (node: INode) {
+  ObjectExpression: function (node: INode) {
     return node.properties.reduce((res, n) => {
       let key: string;
       if (n.key.type === IDENTIFIER_EXP) key = n.key.name;
@@ -94,12 +93,12 @@ export const es5EvalRules = {
 
   // Operators
 
-  [MEMBER_EXP]: function (node: INode) {
+  MemberExpression: function (node: INode) {
     const obj = this._eval(node.object);
     return obj[node.computed ? this._eval(node.property) : node.property.name];
   },
 
-  [CALL_EXP]: function (node: INode) {
+  CallExpression: function (node: INode) {
     let callee: Function;
     let caller = undefined;
 
@@ -112,32 +111,32 @@ export const es5EvalRules = {
     return callee.apply(caller, node.arguments.map(e => this._eval(e)));
   },
 
-  [CONDITIONAL_EXP]: function (node: INode) {
+  ConditionalExpression: function (node: INode) {
     return this._eval(node.test) ? this._eval(node.consequent) : this._eval(node.alternate);
   },
 
-  [SEQUENCE_EXP]: function (node: INode) {
+  SequenceExpression: function (node: INode) {
     return node.expressions.reduce((r, n) => this._eval(n), undefined);
   },
 
-  [LOGICAL_EXP]: function (node: INode) {
+  LogicalExpression: function (node: INode) {
     if (!(node.operator in binaryOpCB)) throw unsuportedError(LOGICAL_EXP, node.operator);
     return binaryOpCB[node.operator](this._eval(node.left), this._eval(node.right));
   },
 
-  [BINARY_EXP]: function (node: INode) {
+  BinaryExpression: function (node: INode) {
     if (!(node.operator in binaryOpCB)) throw unsuportedError(BINARY_EXP, node.operator);
     return binaryOpCB[node.operator](this._eval(node.left), this._eval(node.right));
   },
 
-  [ASSIGN_EXP]: function (node: INode) {
+  AssignmentExpression: function (node: INode) {
     if (!(node.operator in assignOpCB)) throw unsuportedError(ASSIGN_EXP, node.operator);
     const left = lvalue(node.left);
 
     return assignOpCB[node.operator](left.o, left.m, this._eval(node.right));
   },
 
-  [UPDATE_EXP]: function (node: INode) {
+  UpdateExpression: function (node: INode) {
     const cb = node.prefix ? preUpdateOpCB : postUpdateOpCB;
     if (!(node.operator in cb)) throw unsuportedError(UPDATE_EXP, node.operator);
     const left = lvalue(node.left);
@@ -145,7 +144,7 @@ export const es5EvalRules = {
     return cb[node.operator](left.o, left.m, this._eval(node.argument));
   },
 
-  [UNARY_EXP]: function (node: INode) {
+  UnaryExpression: function (node: INode) {
     if (!(node.operator in unaryPreOpCB)) {
       if (node.operator === 'delete') {
         const obj = lvalue(node.argument);
@@ -155,7 +154,7 @@ export const es5EvalRules = {
     return unaryPreOpCB[node.operator](this._eval(node.argument));
   },
 
-  [NEW_EXP]: function (node: INode) {
+  NewExpression: function (node: INode) {
     // tslint:disable-next-line:new-parens
     return new (Function.prototype.bind.apply(
       this._eval(node.calee),
