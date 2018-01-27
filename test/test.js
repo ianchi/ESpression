@@ -2,12 +2,13 @@ const assert = require('assert');
 const jsep = require('jsep');
 const esprima = require('esprima');
 
-const espressionJsep = require('../dist/presets/jsep').jsepParserFactory();
-const espressionEsprima = require('../dist/presets/es5').es5ParserFactory();
+const espression = require('../')
+const espressionJsep = espression.jsepParserFactory();
+const espressionEsprima = espression.es5ParserFactory();
 
-const evaluate = require('../dist/eval/es5').es5EvalFactory();
+const evaluate = espression.es5EvalFactory();
 
-const jsonPath = require('../dist/presets/jsonPath').jsonPathParserFactory();
+const jsonPath = espression.jsonPathParserFactory();
 
 function compare(expr, parser1, parser2) {
   let n1, n2, fail1, fail2;
@@ -114,46 +115,11 @@ const obj = {
   ]
 };
 
-compJsep(test1.concat(test3));
-compEsprima(test1.concat(test2));
+let code = true;
 
-testJsonPath(require('./parser/jsonPath'));
+code = code && compJsep(test1.concat(test3));
+code = code && compEsprima(test1.concat(test2));
 
-benchmark();
+code = code && testJsonPath(require('./parser/jsonPath'));
 
-function benchmark() {
-  let init = Date.now(), len;
-  for (let i = 0; i < 250; i++)
-    for (let str of test1) {
-      try {
-        jsep.parse(str);
-      } catch (e) { }
-    }
-  len = Date.now() - init;
-
-  console.log('JSEP: ' + 250 * test1.length + ' in ' + len + 'ms');
-
-  init = Date.now();
-  for (let i = 0; i < 250; i++)
-    for (let str of test1) {
-      try {
-        espressionEsprima.parse(str);
-      } catch (e) { }
-    }
-
-  len = Date.now() - init;
-
-  console.log('ESpression: ' + 250 * test1.length + ' in ' + len + 'ms');
-
-
-  init = Date.now();
-  for (let i = 0; i < 250; i++)
-    for (let str of test1) {
-      try {
-        esprima.parse(str);
-      } catch (e) { }
-    }
-  len = Date.now() - init;
-
-  console.log('ESPRIMA: ' + 250 * test1.length + ' in ' + len + 'ms');
-}
+process.exit(code ? 0 : 1);
