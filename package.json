@@ -5,10 +5,12 @@
   "author": "Adrian Panella <ianchi74@outlook.com>",
   "license": "MIT",
   "repository": "https://github.com/ianchi/ESpression.git",
-  "main": "dist/bundle/espression.umd.js",
-  "module": "dist/esm5/main.js",
-  "es2015": "dist/esm2015/main.js",
-  "browser": "dist/bundle/espression.umd.min.js",
+
+  "main": "dist/bundle/espression.cjs.js",
+  "browser": "dist/bundle/espression.umd.js",
+  "module": "dist/esm5/espression.js",
+  "types": "dist/src/main.d.ts",
+
   "private": false,
   "dependencies": {
     "tslib": "^1.8.1"
@@ -17,24 +19,24 @@
     "esprima": "^4.0.0",
     "jsep": "^0.3.3",
     "rimraf": "^2.6.2",
-    "ts-loader": "^3.2.0",
+    "rollup": "^0.55.0",
+    "rollup-plugin-node-resolve": "^3.0.2",
+    "rollup-plugin-typescript2": "^0.10.0",
+    "rollup-plugin-uglify": "^3.0.0",
     "ts-node": "^4.1.0",
     "tslint": "^5.9.1",
     "tslint-config-standard": "^7.0.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.6.2",
-    "webpack": "^3.10.0"
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc -t es2015 --outDir dist/es2015",
-    "postbuild": "tsc --declaration --declarationDir dist/types && webpack",
-    "dev": "tsc -w -m commonjs --outDir dist",
+    "build": "rollup -c",
+    "dev": "rollup -w",
     "test": "node test/test.js",
-    "pretest": "tsc -m commonjs --outDir dist",
     "lint": "tslint -p . ",
-    "prepublish": "npm run lint && npm run test && npm run build",
-    "publish": "npm publish --tag beta"
+    "prepatch-release": "npm run lint && npm run build && npm run test",
+    "patch-release": "npm version patch && npm publish && git push origin --follow-tags"
   },
   "keywords": [
     "parser",
