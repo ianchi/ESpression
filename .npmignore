@@ -2,3 +2,4 @@
 !dist/**/*
 !package.json
 !*.md
+!rules/**/*

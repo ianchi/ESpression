@@ -1,0 +1,7 @@
+{
+  "name": "espression/rules",
+  "main": "../dist/bundle/espression.cjs.js",
+  "browser": "../dist/bundle/espression.umd.js",
+  "module": "../dist/esm5/espression.js",
+  "types": "../dist/src/rules"
+}
