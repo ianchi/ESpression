@@ -12,6 +12,7 @@ ESpression can be used with different purposes:
 + as a parser to generate an AST
 + to do static evaluation of an expression's AST
 + to evaluate [jsonPath expressions](http://goessner.net/articles/JsonPath/index.html#e2), as a special case of the above
++ to do *reactive* evaluation of expressions involving observable operands. 
 
 The easiest way to use it is through one of the presets, but it can also be completely configured to parse with custom rules. 
 
@@ -110,6 +111,33 @@ To have a working parser, you need to instantiate one with a configured set of r
 
 ## Static Eval
 A configurable static eval is included to evaluate parsed expressions.
+
+## Reactive Eval
+
+Reactive expressions can be evaluated using `reactiveEvalFactory`. The evaluation returns an observable which emits the result each time any operand emits a result.
+
+If any operand is or returns an observable, the expression will be evaluated with the values it emmits instead of the observable object itself.
+Static operands are evaluated only once, when creating the resulting observable, any later changes won't be seen.
+If an lvalue is required (any update/assing operation) it canno't be an observable. This operations are only statically evaluated.
+
+```
+import { es5PathParserFactory, reactiveEvalFactory } from 'espression';
+import { of } from 'rxjs';
+
+
+const parser = es5PathParserFactory();
+const rxEval = reactiveEvalFactory();
+
+const context = {
+  a: rxjs.of(1,2,3, rxjs.asyncScheduler),
+  b: 0,
+  c: rxjs.of(10, 20, 30, 40,rxjs.asyncScheduler).pipe(rxop.share()) };
+
+rxEval.eval(parser.parse('d=c*1000; a + ++b * c + d '), context)
+  .subscribe(d =>
+    console.log(d)
+  );
+```
 
 
 ## Bundling

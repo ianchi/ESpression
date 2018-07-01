@@ -4,7 +4,7 @@ import {
   IDENTIFIER_EXP, LITERAL_EXP, MEMBER_EXP, LOGICAL_EXP, BINARY_EXP, ASSIGN_EXP, UPDATE_EXP, UNARY_EXP
 } from '../presets/es5conf';
 
-const
+export const
   binaryOpCB = {
     '||': (a, b) => a || b,
     '&&': (a, b) => a && b,
@@ -139,9 +139,9 @@ export const es5EvalRules = {
   UpdateExpression: function (node: INode) {
     const cb = node.prefix ? preUpdateOpCB : postUpdateOpCB;
     if (!(node.operator in cb)) throw unsuportedError(UPDATE_EXP, node.operator);
-    const left = lvalue(node.left);
+    const left = lvalue(node.argument);
 
-    return cb[node.operator](left.o, left.m, this._eval(node.argument));
+    return cb[node.operator](left.o, left.m);
   },
 
   UnaryExpression: function (node: INode) {
@@ -177,11 +177,11 @@ export const es5EvalRules = {
 
 };
 
-function unsuportedError(type: string, operator: string): Error {
+export function unsuportedError(type: string, operator: string): Error {
   return new Error('Unsuported ' + type + ': ' + operator);
 }
 
-function lvalue(node: INode) {
+export function lvalue(node: INode) {
   let obj, member;
   switch (node.type) {
     case IDENTIFIER_EXP:

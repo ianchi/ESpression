@@ -13,6 +13,9 @@
   "dependencies": {
     "tslib": "^1.8.1"
   },
+  "peerDependencies": {
+    "rxjs": "^6.2.1"
+  },
   "devDependencies": {
     "esprima": "^4.0.0",
     "jsep": "^0.3.3",
@@ -43,6 +46,10 @@
     "static-eval",
     "eval",
     "jsonpath",
-    "ast"
+    "ast",
+    "reactive eval",
+    "rx-eval",
+    "reactive"
+
   ]
 }

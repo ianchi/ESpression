@@ -44,7 +44,7 @@ export default [
 
   {
     input: MAIN_FILE,
-    external: 'tslib',
+    external: ['tslib', 'rxjs', 'rxjs/operators'],
     output: [
       { file: pkg.main, format: 'cjs', sourcemap: true },
       { file: pkg.module, format: 'es', sourcemap: true }
