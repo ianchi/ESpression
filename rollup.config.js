@@ -50,5 +50,15 @@ export default [
       { file: pkg.module, format: 'es', sourcemap: true }
     ],
     plugins: [typescript()]
+  },
+
+  {
+    input: MAIN_FILE,
+    external: ['rxjs', 'rxjs/operators'],
+    output: { file: pkg.es2015, format: 'es', sourcemap: true },
+    plugins: [typescript({
+      tsconfigOverride: {
+        compilerOptions: { target: "es2015" }
+      }})]
   }
 ];

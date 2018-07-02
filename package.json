@@ -8,6 +8,7 @@
   "main": "dist/bundle/espression.cjs.js",
   "browser": "dist/bundle/espression.umd.js",
   "module": "dist/esm5/espression.js",
+  "es2015": "dist/esm2015/espression.js",
   "types": "dist/src/main.d.ts",
   "private": false,
   "dependencies": {
