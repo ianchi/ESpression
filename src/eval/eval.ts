@@ -17,36 +17,26 @@ export type evalFn = (expression: INode) => any;
  */
 export abstract class StaticEval {
 
-  /** Context for the current evaluation */
-  protected context = {};
-
   /**
-   * Evaluates an expression in a provided context
+   * Evaluates an expression in an optionally provided context
    * @param expression AST to evaluate
    * @param context Optional custom contex object. Defaults to empty context `{}`
    */
   eval(expression: INode, context?: object) {
-    // save context in case we are in nested evals
-    const oldContext = this.context;
-    this.context = context || {};
 
-    const result = this._eval(expression);
-
-    // restore context
-    this.context = oldContext;
-
-    return result;
+    return this._eval(expression, context || {});
   }
 
   /**
-   * Makes a *subevaluation* in the current context
-   * @param expression AST to evaluate
+   * Calls the corresponding eval function, with a mandatory context
+   * Implementation of expression evaluation functions should call this version for evaluating subexpressions
+   * as it enforces passing arround the context.
+   * @param expression
+   * @param context
    */
-  protected _eval(expression: INode) {
-
+  protected _eval(expression: INode, context: object) {
     if (!(expression.type in this)) throw new Error('Unsupported expression type: ' + expression.type);
-
-    return this[expression.type](expression);
+    return this[expression.type](expression, context);
 
   }
 
@@ -57,10 +47,10 @@ export abstract class StaticEval {
    * @param operatorCB Callback function to *execute* the actual expression
    * @param operands Operands to sub eval and use to call the callback
    */
-  protected _resolve(operatorCB: (...operands) => any, ...operands: INode[]) {
+  protected _resolve(context: object, operatorCB: (...operands) => any, ...operands: INode[]) {
 
-    let results = operands.map(node => this._eval(node));
+    let results = operands.map(node => this._eval(node, context));
 
-    return operatorCB.apply(undefined, results);
+    return operatorCB(...results);
   }
 }

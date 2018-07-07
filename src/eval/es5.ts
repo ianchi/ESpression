@@ -81,22 +81,22 @@ export class ES5StaticEval extends StaticEval {
   }
 
   /** Rule to evaluate `IdentifierExpression` */
-  protected Identifier(node: INode) {
-    return this.context[node.name];
+  protected Identifier(node: INode, context: object) {
+    return context[node.name];
   }
 
   /** Rule to evaluate `IdentifierExpression` */
-  protected ThisExpression(_node: INode) {
-    return this.context;
+  protected ThisExpression(_node: INode, context: object) {
+    return context;
   }
 
   /** Rule to evaluate `ArrayExpression` */
-  protected ArrayExpression(node: INode) {
-    return this._resolve((...values) => values, ...node.elements);
+  protected ArrayExpression(node: INode, context: object) {
+    return this._resolve(context,(...values) => values, ...node.elements);
   }
 
   /** Rule to evaluate `ObjectExpression` */
-  protected ObjectExpression(node: INode) {
+  protected ObjectExpression(node: INode, context: object) {
     const keys = [], nodes = node.properties.map(
       n => {
         let key: string;
@@ -110,109 +110,109 @@ export class ES5StaticEval extends StaticEval {
       });
 
     // add callback as first argument
-    return this._resolve((...values) => values.reduce((ret, val, i) => (ret[keys[i]] = val, ret), {}), ...nodes);
+    return this._resolve(context,(...values) => values.reduce((ret, val, i) => (ret[keys[i]] = val, ret), {}), ...nodes);
   }
 
   /** Rule to evaluate `MemberExpression` */
-  protected MemberExpression(node: INode) {
+  protected MemberExpression(node: INode, context: object) {
     return node.computed ?
-      this._resolve((obj, prop) => obj[prop], node.object, node.property) :
-      this._resolve((obj) => obj[node.property.name], node.object);
+      this._resolve(context,(obj, prop) => obj[prop], node.object, node.property) :
+      this._resolve(context,(obj) => obj[node.property.name], node.object);
   }
 
   /** Rule to evaluate `CallExpression` */
-  protected CallExpression(node: INode) {
-    const funcDef = this._fcall(node);
+  protected CallExpression(node: INode, context: object) {
+    const funcDef = this._fcall(node, context);
 
     return funcDef.func.apply(funcDef.obj, funcDef.args);
   }
 
   /** Rule to evaluate `ConditionalExpression` */
-  protected ConditionalExpression(node: INode) {
-    return this._resolve((t, c, a) => t ? c : a, node.test, node.consequent, node.alternate);
+  protected ConditionalExpression(node: INode, context: object) {
+    return this._resolve(context,(t, c, a) => t ? c : a, node.test, node.consequent, node.alternate);
   }
 
   /** Rule to evaluate `CommaExpression` */
-  protected SequenceExpression(node: INode) {
-    return this._resolve((...values) => values.pop(), ...node.expressions);
+  protected SequenceExpression(node: INode, context: object) {
+    return this._resolve(context,(...values) => values.pop(), ...node.expressions);
   }
 
   /** Rule to evaluate `LogicalExpression` */
-  protected LogicalExpression(node: INode) {
-    return this.BinaryExpression(node);
+  protected LogicalExpression(node: INode, context: object) {
+    return this.BinaryExpression(node, context);
   }
 
   /** Rule to evaluate `BinaryExpression` */
-  protected BinaryExpression(node: INode) {
-    if (!(node.operator in assignOpCB)) throw unsuportedError(BINARY_EXP, node.operator);
+  protected BinaryExpression(node: INode, context: object) {
+    if (!(node.operator in binaryOpCB)) throw unsuportedError(BINARY_EXP, node.operator);
 
-    return this._resolve(binaryOpCB[node.operator], node.left, node.right);
+    return this._resolve(context,binaryOpCB[node.operator], node.left, node.right);
   }
 
   /** Rule to evaluate `AssignmentExpression` */
-  protected AssignmentExpression(node: INode) {
+  protected AssignmentExpression(node: INode, context: object) {
     if (!(node.operator in assignOpCB)) throw unsuportedError(ASSIGN_EXP, node.operator);
-    const left = this._lvalue(node.left);
+    const left = this._lvalue(node.left, context);
 
-    return assignOpCB[node.operator](left.o, left.m, this._eval(node.right));
+    return assignOpCB[node.operator](left.o, left.m, this._eval(node.right, context));
   }
 
   /** Rule to evaluate `UpdateExpression` */
-  protected UpdateExpression(node: INode) {
+  protected UpdateExpression(node: INode, context: object) {
     const cb = node.prefix ? preUpdateOpCB : postUpdateOpCB;
     if (!(node.operator in cb)) throw unsuportedError(UPDATE_EXP, node.operator);
-    const left = this._lvalue(node.argument);
+    const left = this._lvalue(node.argument, context);
 
     return cb[node.operator](left.o, left.m);
   }
 
   /** Rule to evaluate `UnaryExpression` */
-  protected UnaryExpression(node: INode) {
+  protected UnaryExpression(node: INode, context: object) {
     if (!(node.operator in unaryPreOpCB)) {
       if (node.operator === 'delete') {
-        const obj = this._lvalue(node.argument);
+        const obj = this._lvalue(node.argument, context);
         return delete obj.o[obj.m];
       } else throw unsuportedError(UNARY_EXP, node.operator);
     }
 
-    return this._resolve(unaryPreOpCB[node.operator], node.argument);
+    return this._resolve(context,unaryPreOpCB[node.operator], node.argument);
   }
 
   /** Rule to evaluate `NewExpression` */
-  protected NewExpression(node: INode) {
+  protected NewExpression(node: INode, context: object) {
     // tslint:disable-next-line:new-parens
-    return this._resolve((calee, ...args) => new (Function.prototype.bind.apply(calee, args)),
+    return this._resolve(context,(calee, ...args) => new (Function.prototype.bind.apply(calee, args)),
       node.calee, ...node.arguments);
   }
 
   /** Rule to evaluate `ExpressionStatement` */
-  protected ExpressionStatement(node: INode) {
-    return this._eval(node.expression);
+  protected ExpressionStatement(node: INode, context: object) {
+    return this._eval(node.expression, context);
   }
 
   /** Rule to evaluate `Program` */
-  protected Program(node: INode) {
-    return this._resolve((...values) => values.pop(), ...node.body);
+  protected Program(node: INode, context: object) {
+    return this._resolve(context,(...values) => values.pop(), ...node.body);
   }
 
   /** Rule to evaluate JSEP's `CompoundExpression` */
-  protected Compound(node: INode) {
-    return this.Program(node);
+  protected Compound(node: INode, context: object) {
+    return this.Program(node, context);
   }
 
   /**
    * Returns a left side value wrapped to be used for assignment
    */
-  protected _lvalue(node: INode): { o, m } {
+  protected _lvalue(node: INode, context: object): { o, m } {
     let obj, member;
     switch (node.type) {
       case IDENTIFIER_EXP:
-        obj = this.context;
+        obj = context;
         member = node.name;
         break;
       case MEMBER_EXP:
-        obj = this._eval(node.object);
-        member = node.computed ? this._eval(node.property) : node.property.name;
+        obj = this._eval(node.object, context);
+        member = node.computed ? this._eval(node.property, context) : node.property.name;
         break;
       default:
         throw new Error('Invalid left side expression');
@@ -221,17 +221,16 @@ export class ES5StaticEval extends StaticEval {
     return { o: obj, m: member };
   }
 
-  protected _fcall(node: INode) {
+  protected _fcall(node: INode, context: object) {
     let result;
     // capture context in closure for use in callback
     // Getting it from 'this' is not reliable for async evaluation as it may have changed in later evals
-    const context = this.context;
 
     if (node.callee.type === MEMBER_EXP) {
       result = node.computed ?
-        this._resolve((obj, prop, ...args) => ({ obj, func: obj[prop], args }), node.callee.object, node.callee.property, ...node.arguments) :
-        this._resolve((obj, ...args) => ({ obj, func: obj[node.callee.property.name], args }), node.callee.object, ...node.arguments);
-    } else result = this._resolve((func, ...args) => ({ obj: context, func, args }), node.callee, ...node.arguments);
+        this._resolve(context,(obj, prop, ...args) => ({ obj, func: obj[prop], args }), node.callee.object, node.callee.property, ...node.arguments) :
+        this._resolve(context,(obj, ...args) => ({ obj, func: obj[node.callee.property.name], args }), node.callee.object, ...node.arguments);
+    } else result = this._resolve(context,(func, ...args) => ({ obj: context, func, args }), node.callee, ...node.arguments);
 
     return result;
 

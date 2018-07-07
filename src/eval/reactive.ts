@@ -17,9 +17,9 @@ import { map, switchMap } from 'rxjs/operators';
 export class ReactiveEval extends ES5StaticEval {
 
   /** Rule to evaluate `CallExpression` */
-  protected CallExpression(node: INode) {
+  protected CallExpression(node: INode, context: object) {
 
-    const funcDef: {obj, func, args} | Observable<{obj, func, args}> = this._fcall(node);
+    const funcDef: {obj, func, args} | Observable<{obj, func, args}> = this._fcall(node, context);
 
     if (!isObservable(funcDef)) return funcDef.func.apply(funcDef.obj, funcDef.args);
 
@@ -33,26 +33,26 @@ export class ReactiveEval extends ES5StaticEval {
 
   }
 
-  protected _resolve(operatorCB, ...operands: INode[]) {
+  protected _resolve(context: object, operatorCB, ...operands: INode[]) {
 
     let isObs = [], hasObs = false,
       results = operands.map(
         (node, i) => {
-          const res = this._eval(node);
+          const res = this._eval(node, context);
           // tslint:disable-next-line:no-conditional-assignment
           if (isObs[i] = isObservable(res)) hasObs = true;
 
           return res;
         });
 
-    if (!hasObs) return operatorCB.apply(this, results);
+    if (!hasObs) return operatorCB(...results);
 
     return combineLatest(results.map((node, i) => isObs[i] ? node : of(node))).pipe(
-      map(res => operatorCB.apply(this, res)));
+      map(res => operatorCB(...res)));
   }
 
-  protected _lvalue(node: INode): { o, m } {
-    const result = super._lvalue(node);
+  protected _lvalue(node: INode, context: object): { o, m } {
+    const result = super._lvalue(node, context);
     if (isObservable(result.o) || isObservable(result.m) || isObservable(result.o[result.m])) throw new Error('Left side expression cannot be reactive.');
 
     return result;

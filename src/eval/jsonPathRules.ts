@@ -11,22 +11,22 @@ import { LITERAL_EXP } from '../presets/es5conf';
 
 export class JsonPathStaticEval extends ES5StaticEval {
 
-  protected JPRoot(node: INode) {
-    return new JsonPath(this.context[node.name]);
+  protected JPRoot(node: INode, context: object) {
+    return new JsonPath(context[node.name]);
   }
 
-  protected JPChildExpression(node: INode) {
-    return this.evalMember(this._eval(node.object), node, false);
+  protected JPChildExpression(node: INode, context: object) {
+    return this.evalMember(this._eval(node.object, context), node, false, context);
   }
 
-  protected JPDescendantExpression(node: INode) {
-    return this.evalMember(this._eval(node.object), node, true);
+  protected JPDescendantExpression(node: INode, context: object) {
+    return this.evalMember(this._eval(node.object, context), node, true, context);
   }
 
-  protected evalMember(obj: JsonPath, node: INode, descendant: boolean): JsonPath {
+  protected evalMember(obj: JsonPath, node: INode, descendant: boolean, context: object): JsonPath {
 
     const props = node.property.type === JPUNION_EXP ? node.property.expressions : [node.property];
-    const context = Object.create(this.context);
+    const childContext = Object.create(context);
 
     return props.reduce((acum: JsonPath, n) => {
       let ret = new JsonPath(obj);
@@ -36,8 +36,8 @@ export class JsonPathStaticEval extends ES5StaticEval {
         case JPEXP_EXP:
           obj.forEach((val, path, _depth) => {
             if (typeof val === 'object') {
-              context['@'] = val;
-              member = this.eval(n.expression, context);
+              childContext['@'] = val;
+              member = this._eval(n.expression, childContext);
               if (member in val) ret.push(val[member], path.concat(member));
             }
           }, descendant ? null : 0);
@@ -46,13 +46,13 @@ export class JsonPathStaticEval extends ES5StaticEval {
         case JPFILTER_EXP:
           obj.forEach((val, path, depth) => {
             if (!depth) return; // filter applies on children
-            context['@'] = val;
-            if (this.eval(n.expression, context)) ret.push(val, path);
+            childContext['@'] = val;
+            if (this._eval(n.expression, childContext)) ret.push(val, path);
           }, descendant ? null : 1);
           break;
 
         case JPSLICE_EXP:
-          let idx = n.expressions.map(i => i && this._eval(i));
+          let idx = n.expressions.map(i => i && this._eval(i, childContext));
           ret = obj.slice(idx[0], idx[1], idx[2], descendant);
           break;
 
