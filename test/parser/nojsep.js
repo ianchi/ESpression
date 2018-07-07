@@ -53,6 +53,30 @@ module.exports = [
   "1++", // should fail
   "1--",
   "++1",
-  "--1"
+  "--1",
+
+  // new
+  "new Date",
+  "new Date()",
+  "new Date(Date.now())",
+  "new (a+b)(c)",
+  "new a.b(c)",
+  "new a + b",
+  "new a ? b : c",
+  "new",
+
+  // template literals
+
+  "`string`",
+  "`string ${expr}`",
+  "`string ${a+b} string2`",
+  "`${func(d)}`",
+  "`${3,4,5}string`",
+  "`string ${++expr1}${expr2} string ${expr3}`",
+  "`string ${a;b;c}`", //should fail
+  "`line1\nline2`",
+  "`line1\\nline2`",
+  "`line1\\\nline1cont`",
+  "`text\\${expr}`"
 
 ];
