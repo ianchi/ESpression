@@ -14,8 +14,6 @@ import {
 /** Callback functions to actually perform an operation */
 export const
   binaryOpCB = {
-    '||': (a, b) => a || b,
-    '&&': (a, b) => a && b,
     '|': (a, b) => a | b,
     '^': (a, b) => a ^ b,
     '&': (a, b) => a & b,
@@ -92,7 +90,7 @@ export class ES5StaticEval extends StaticEval {
 
   /** Rule to evaluate `ArrayExpression` */
   protected ArrayExpression(node: INode, context: object) {
-    return this._resolve(context,(...values) => values, ...node.elements);
+    return this._resolve(context, (...values) => values, ...node.elements);
   }
 
   /** Rule to evaluate `ObjectExpression` */
@@ -110,14 +108,14 @@ export class ES5StaticEval extends StaticEval {
       });
 
     // add callback as first argument
-    return this._resolve(context,(...values) => values.reduce((ret, val, i) => (ret[keys[i]] = val, ret), {}), ...nodes);
+    return this._resolve(context, (...values) => values.reduce((ret, val, i) => (ret[keys[i]] = val, ret), {}), ...nodes);
   }
 
   /** Rule to evaluate `MemberExpression` */
   protected MemberExpression(node: INode, context: object) {
     return node.computed ?
-      this._resolve(context,(obj, prop) => obj[prop], node.object, node.property) :
-      this._resolve(context,(obj) => obj[node.property.name], node.object);
+      this._resolve(context, (obj, prop) => obj[prop], node.object, node.property) :
+      this._resolve(context, (obj) => obj[node.property.name], node.object);
   }
 
   /** Rule to evaluate `CallExpression` */
@@ -135,7 +133,7 @@ export class ES5StaticEval extends StaticEval {
 
   /** Rule to evaluate `CommaExpression` */
   protected SequenceExpression(node: INode, context: object) {
-    return this._resolve(context,(...values) => values.pop(), ...node.expressions);
+    return this._resolve(context, (...values) => values.pop(), ...node.expressions);
   }
 
   /** Rule to evaluate `LogicalExpression` */
@@ -155,7 +153,7 @@ export class ES5StaticEval extends StaticEval {
   protected BinaryExpression(node: INode, context: object) {
     if (!(node.operator in binaryOpCB)) throw unsuportedError(BINARY_EXP, node.operator);
 
-    return this._resolve(context,binaryOpCB[node.operator], node.left, node.right);
+    return this._resolve(context, binaryOpCB[node.operator], node.left, node.right);
   }
 
   /** Rule to evaluate `AssignmentExpression` */
@@ -184,14 +182,14 @@ export class ES5StaticEval extends StaticEval {
       } else throw unsuportedError(UNARY_EXP, node.operator);
     }
 
-    return this._resolve(context,unaryPreOpCB[node.operator], node.argument);
+    return this._resolve(context, unaryPreOpCB[node.operator], node.argument);
   }
 
   /** Rule to evaluate `NewExpression` */
   protected NewExpression(node: INode, context: object) {
-    // tslint:disable-next-line:new-parens
-    return this._resolve(context,(calee, ...args) => new (Function.prototype.bind.apply(calee, args)),
-      node.calee, ...node.arguments);
+
+    return this._resolve(context, (callee, ...args) =>
+      new callee(...args), node.callee, ...node.arguments);
   }
 
   /** Rule to evaluate `ExpressionStatement` */
@@ -201,7 +199,7 @@ export class ES5StaticEval extends StaticEval {
 
   /** Rule to evaluate `Program` */
   protected Program(node: INode, context: object) {
-    return this._resolve(context,(...values) => values.pop(), ...node.body);
+    return this._resolve(context, (...values) => values.pop(), ...node.body);
   }
 
   /** Rule to evaluate JSEP's `CompoundExpression` */
@@ -237,9 +235,9 @@ export class ES5StaticEval extends StaticEval {
 
     if (node.callee.type === MEMBER_EXP) {
       result = node.computed ?
-        this._resolve(context,(obj, prop, ...args) => ({ obj, func: obj[prop], args }), node.callee.object, node.callee.property, ...node.arguments) :
-        this._resolve(context,(obj, ...args) => ({ obj, func: obj[node.callee.property.name], args }), node.callee.object, ...node.arguments);
-    } else result = this._resolve(context,(func, ...args) => ({ obj: context, func, args }), node.callee, ...node.arguments);
+        this._resolve(context, (obj, prop, ...args) => ({ obj, func: obj[prop], args }), node.callee.object, node.callee.property, ...node.arguments) :
+        this._resolve(context, (obj, ...args) => ({ obj, func: obj[node.callee.property.name], args }), node.callee.object, ...node.arguments);
+    } else result = this._resolve(context, (func, ...args) => ({ obj: context, func, args }), node.callee, ...node.arguments);
 
     return result;
 
