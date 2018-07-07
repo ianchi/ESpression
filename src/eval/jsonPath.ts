@@ -28,7 +28,7 @@ export class JsonPath {
       _start = toInt(start),
       _end = toInt(end);
 
-    this.forEach((val, path, depth) => {
+    this.forEach((val, path, _depth) => {
       if (!Array.isArray(val)) return;
 
       let first: number = _start === 0 ? 0 :

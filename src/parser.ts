@@ -33,7 +33,7 @@ export class Parser implements IParser {
   }
 
   parse(expr: string | ParserContext): INode {
-    let ctx: ParserContext, origParser: IParser;
+    let ctx: ParserContext, origParser: IParser = null;
     if (typeof expr === 'string') {
       ctx = new ParserContext(expr, this);
     } else {
@@ -94,15 +94,13 @@ export class Parser implements IParser {
 export class BaseRule {
   config = {};
 
-  // tslint:disable-next-line:no-empty
-  register(parser: Parser) {
+  register(_parser: Parser) {} // tslint:disable-line:no-empty
 
-  }
-
-  pre(ctx: ParserContext): IPreResult {
+  pre(_ctx: ParserContext): IPreResult {
     return { node: null };
   }
-  post(ctx: ParserContext, preNode: INode, bubbledNode: INode) {
+
+  post(_ctx: ParserContext, _preNode: INode, bubbledNode: INode) {
     return bubbledNode;
   }
 }

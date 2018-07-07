@@ -13,7 +13,7 @@ export class TernaryOperatorRule extends BaseRule {
     super();
   }
 
-  post(ctx: ParserContext, preNode: INode, bubbledNode: INode): INode {
+  post(ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode {
     const c = this.config;
 
     ctx.gbSp();

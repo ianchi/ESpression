@@ -10,7 +10,7 @@ export class WrapperRule extends BaseRule {
     super();
   }
 
-  post(ctx: ParserContext, preNode: INode, bubbledNode: INode): INode {
+  post(_ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode {
     const c = this.config;
 
     const node = { type: c.type };

@@ -40,7 +40,7 @@ export class BinaryOperatorRule extends BaseRule {
     }
   }
 
-  post(ctx: ParserContext, preNode: INode, bubbledNode: INode): INode {
+  post(ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode {
 
     let right: INode, multi: INode[] = [], node: INode, nxt = false,
       op = this.gbOp(ctx),

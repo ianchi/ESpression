@@ -18,7 +18,7 @@ export class MultiOperatorRule extends BaseRule {
     config.extra = config.extra || {};
   }
 
-  post(ctx: ParserContext, preNode: INode, bubbledNode: INode): INode {
+  post(ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode {
     const c = this.config;
     let nodes = [], ch, sep = 0;
 
