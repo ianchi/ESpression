@@ -129,7 +129,8 @@ export class ES5StaticEval extends StaticEval {
 
   /** Rule to evaluate `ConditionalExpression` */
   protected ConditionalExpression(node: INode, context: object) {
-    return this._resolve(context,(t, c, a) => t ? c : a, node.test, node.consequent, node.alternate);
+    // can't resolve all operands together as it needs short circuit evaluation
+    return this._eval(node.test, context) ? this._eval(node.consequent, context) : this._eval(node.alternate, context);
   }
 
   /** Rule to evaluate `CommaExpression` */
@@ -139,7 +140,15 @@ export class ES5StaticEval extends StaticEval {
 
   /** Rule to evaluate `LogicalExpression` */
   protected LogicalExpression(node: INode, context: object) {
-    return this.BinaryExpression(node, context);
+    // can't resolve all operands together as it needs short circuit evaluation
+    switch (node.operator) {
+      case '||':
+        return this._eval(node.left, context) || this._eval(node.right, context);
+      case '&&':
+        return this._eval(node.left, context) && this._eval(node.right, context);
+      default:
+        throw unsuportedError(BINARY_EXP, node.operator);
+    }
   }
 
   /** Rule to evaluate `BinaryExpression` */
