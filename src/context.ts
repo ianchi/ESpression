@@ -39,7 +39,9 @@ export class ParserContext {
   }
 
   err(msg?: string) {
-    throw new Error((msg || 'Unexpected char') + ' ' + this.gtCh() + ' at position ' + this.i);
+    const e = new Error((msg || 'Unexpected char') + ' ' + this.gtCh() + ' at position ' + this.i);
+    e['expression'] = this.e;
+    throw e;
   }
 
   teIdSt(): boolean {

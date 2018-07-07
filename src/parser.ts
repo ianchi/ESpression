@@ -40,22 +40,27 @@ export class Parser implements IParser {
   }
 
   parse(expr: string | ParserContext): INode {
-    let ctx: ParserContext, origParser: IParser = null;
-    if (typeof expr === 'string') {
-      ctx = new ParserContext(expr, this);
-    } else {
-      origParser = expr.parser;
-      expr.parser = this;
-      ctx = expr;
-    }
+    let ctx: ParserContext, origParser: IParser = null, node: INode;
+    try {
+      if (typeof expr === 'string') {
+        ctx = new ParserContext(expr, this);
+      } else {
+        origParser = expr.parser;
+        expr.parser = this;
+        ctx = expr;
+      }
 
-    const node = this.runRules(ctx, [0, 0]);
+      node = this.runRules(ctx, [0, 0]);
 
-    if (origParser) {
-      ctx.parser = origParser;
-    } else {
-      ctx.gbSp();
-      if (!ctx.eof()) ctx.err();
+      if (origParser) {
+        ctx.parser = origParser;
+      } else {
+        ctx.gbSp();
+        if (!ctx.eof()) ctx.err();
+      }
+    } catch (e) {
+      if (!e.expression) e.expression = ctx.e;
+      throw e;
     }
     return node;
   }
@@ -101,7 +106,7 @@ export class Parser implements IParser {
 export class BaseRule {
   config = {};
 
-  register(_parser: Parser) {} // tslint:disable-line:no-empty
+  register(_parser: Parser) { } // tslint:disable-line:no-empty
 
   pre(_ctx: ParserContext): IPreResult {
     return { node: null };
