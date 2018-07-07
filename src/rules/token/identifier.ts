@@ -8,7 +8,7 @@
 import { IPreResult } from '../../parser.interface';
 import { BaseRule, Parser } from '../../parser';
 import { ParserContext } from '../../context';
-import { LITERAL_EXP, THIS_EXP, IDENTIFIER_EXP } from '../../presets/es5conf';
+import { LITERAL_EXP, THIS_EXP, IDENTIFIER_EXP, NEW_EXP, CALL_EXP } from '../../presets/es5conf';
 
 export type confIdentifierChars = {
   st?: { re?: RegExp, re2?: RegExp },
@@ -17,7 +17,8 @@ export type confIdentifierChars = {
 export type confIdentifierRule = {
   literals?: { [literal: string]: any },
   thisStr?: string,
-  identifier?: confIdentifierChars
+  identifier?: confIdentifierChars,
+  new?: { rules?: BaseRule[][], level?: number }
 };
 
 // Gobbles only identifiers
@@ -26,8 +27,11 @@ export type confIdentifierRule = {
 // (e.g. `true`, `false`, `null`) or `this`
 export class IdentifierRule extends BaseRule {
 
+  newParser: Parser;
   constructor(public config: confIdentifierRule) {
     super();
+
+    if (config.new && config.new.rules) this.newParser = new Parser(config.new.rules);
   }
 
   register(parser: Parser) {
@@ -63,6 +67,18 @@ export class IdentifierRule extends BaseRule {
       };
     } else if (identifier === c.thisStr) {
       return { node: { type: THIS_EXP } };
+    } else if (c.new && identifier === 'new') {
+
+      ctx.gbSp();
+      const operand = this.newParser ? this.newParser.parse(ctx) : ctx.handler([c.new.level, 0]);
+
+      return {
+        node: {
+          type: NEW_EXP,
+          callee: operand.type === CALL_EXP ? operand.callee : operand,
+          arguments: operand.type === CALL_EXP ? operand.arguments : []
+        }
+      };
     } else {
       return {
         node: {
