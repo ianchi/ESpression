@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2018 Adrian Panella <ianchi74@outlook.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 import { BaseRule, Parser } from '../parser';
 import { confBinaryRule, BinaryOperatorRule } from '../rules/operator/binary';
 import { MultiOperatorRule } from '../rules/operator/multiple';

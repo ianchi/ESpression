@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2018 Adrian Panella <ianchi74@outlook.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 import { INode, IPreResult } from './parser.interface';
 import { ParserContext, IParser } from './context';
 import { confIdentifierChars } from './rules/token/identifier';

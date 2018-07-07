@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2018 Adrian Panella <ianchi74@outlook.com>
+ *
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 import { Parser, BaseRule } from '../parser';
 import { es5ConditionalConf, es5BiOpConfs, es5PreUnaryOp, es5MemberConf, es5GroupingConf, es5ArrayConf, es5IdentifierConf } from './es5conf';
 import { confMultipleRule, MultiOperatorRule } from '../rules/operator/multiple';
