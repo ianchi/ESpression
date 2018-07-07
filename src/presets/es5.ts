@@ -29,10 +29,8 @@ const esprimaStatementConf: confMultipleRule = {
 
 export function es5Rules(identifier: confIdentifierChars = { st: identStartConf, pt: identPartConf }): BaseRule[][] {
 
-  // basic tokens used also in parsing objet literal's properties
-  let tokenRules: BaseRule[] = [
-    new StringRule({ LT: true, hex: true, raw: true }),
-
+  // basic tokens used also in parsing object literal's properties
+  let numberRules: BaseRule[] = [
     new NumberRule({ radix: 16, prefix: /^0x/i }),
     new NumberRule({ radix: 8, prefix: /^0o/i }),
     new NumberRule({ radix: 2, prefix: /^0b/i }),
@@ -44,19 +42,25 @@ export function es5Rules(identifier: confIdentifierChars = { st: identStartConf,
   const PropertyRule = new IdentifierRule({ thisStr: null, literals: {} });
 
   // object needs subset of tokens for parsing properties.
-  tokenRules = tokenRules.concat([
-    new IdentifierRule(es5IdentifierConf(identifier)),
+  const tokenRules = numberRules.concat([
+    new StringRule({ LT: true, hex: true, raw: true, templateRule: { level: 1 } }),
+    new IdentifierRule(es5IdentifierConf(identifier, { level: 5 })),
     new ArrayRule(es5ArrayConf),
     new RegexRule(),
     new ObjectRule({
-      key: { rules: [tokenRules.concat(PropertyRule)] },
+      key: {
+        rules: [numberRules.concat(
+          new StringRule({ LT: true, hex: true, raw: true, templateRule: null }),
+          PropertyRule)]
+      },
       value: { level: 2 }
     })]);
 
   return [
-    [// statement level
-      new MultiOperatorRule(esprimaStatementConf),
+    // statement level
+    [ new MultiOperatorRule(esprimaStatementConf),
       new WrapperRule({ type: 'ExpressionStatement', wrap: 'expression' })],
+    // expression levels
     [new MultiOperatorRule(es5CommaOpConf)],
     [new BinaryOperatorRule(es5AssignOpConf)],
     [new TernaryOperatorRule(es5ConditionalConf)],

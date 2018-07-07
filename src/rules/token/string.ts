@@ -6,30 +6,67 @@
  */
 
 import { IPreResult } from '../../parser.interface';
-import { BaseRule } from '../../parser';
+import { BaseRule, Parser } from '../../parser';
 import { ParserContext } from '../../context';
-import { LITERAL_EXP } from '../../presets/es5conf';
+import { LITERAL_EXP, TEMPLATE_EXP, TEMPLATE_ELE } from '../../presets/es5conf';
 
-export type configStringRule = { LT: boolean, hex: boolean, raw: boolean };
+export type configStringRule = {
+  LT: boolean, hex: boolean, raw: boolean,
+  templateRule?: { rules?: BaseRule[][], level?: number }
+};
 export class StringRule extends BaseRule {
+
+  exprRules: Parser;
 
   constructor(public config: configStringRule = { LT: true, hex: true, raw: true }) {
     super();
+
+    if (config.templateRule && config.templateRule.rules) this.exprRules = new Parser(config.templateRule.rules);
   }
 
   pre(ctx: ParserContext): IPreResult {
     const c = this.config;
-    let str = '', quote: string, closed = false, ch: string, start = ctx.pos;
+    let str = '', quote: string, closed = false, ch: string, start = ctx.pos, isTemplate = false;
+    const expressions = [], quasis = [];
 
     ch = ctx.gtCh();
-    if (ch !== '"' && ch !== "'") return { node: null };
+    if (ch === '`' && c.templateRule) {
+      isTemplate = true;
+      c.LT = true;
+      start++;
+    } else if (ch !== '"' && ch !== "'") return { node: null };
     quote = ctx.gbCh();
 
     while (!ctx.eof()) {
       ch = ctx.gbCh();
       if (ch === quote) {
         closed = true;
+        if (isTemplate) {
+          quasis.push({
+            type: TEMPLATE_ELE,
+            value: {
+              cooked: str,
+              raw: ctx.e.substring(start, ctx.pos - 1)
+            },
+            tail: true
+          });
+        }
         break;
+      } else if (isTemplate && ch === '$' && ctx.tyCh('{')) {
+        quasis.push({
+          type: TEMPLATE_ELE,
+          value: {
+            cooked: str,
+            raw: ctx.e.substring(start, ctx.pos - 2)
+          },
+          tail: false
+        });
+        str = '';
+        expressions.push(this.exprRules ? this.exprRules.parse(ctx) : ctx.handler([c.templateRule.level, 0]));
+        ctx.gbSp();
+        if (!ctx.tyCh('}')) ctx.err('Unclosed "}" after ');
+        start = ctx.pos;
+
       } else if (ch === '\\') {
 
         if (c.LT && ctx.teLT()) {
@@ -61,7 +98,9 @@ export class StringRule extends BaseRule {
           }
         }
       } else if (c.LT && ctx.teLT(-1)) {
-        ctx.err('Invalid line terminator in string');
+        if (!isTemplate) ctx.err('Invalid line terminator in string');
+        if (ch === '\r') ctx.tyCh('\n');
+        str += '\n';
       } else {
         str += ch;
       }
@@ -71,12 +110,20 @@ export class StringRule extends BaseRule {
       ctx.err('Unclosed quote after ');
     }
 
-    return {
-      node: {
-        type: LITERAL_EXP,
-        value: str,
-        raw: c.raw ? ctx.e.substring(start, ctx.pos) : quote + str + quote
-      }
-    };
+    return isTemplate ?
+      {
+        node: {
+          type: TEMPLATE_EXP,
+          quasis: quasis,
+          expressions: expressions
+        }
+      } :
+      {
+        node: {
+          type: LITERAL_EXP,
+          value: str,
+          raw: c.raw ? ctx.e.substring(start, ctx.pos) : quote + str + quote
+        }
+      };
   }
 }

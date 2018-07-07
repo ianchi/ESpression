@@ -20,6 +20,8 @@ export const
   LOGICAL_EXP = 'LogicalExpression',
   ASSIGN_EXP = 'AssignmentExpression',
   LITERAL_EXP = 'Literal',
+  TEMPLATE_EXP = 'TemplateLiteral',
+  TEMPLATE_ELE = 'TemplateElement',
   IDENTIFIER_EXP = 'Identifier',
   THIS_EXP = 'ThisExpression',
   ARRAY_EXP = 'ArrayExpression',
