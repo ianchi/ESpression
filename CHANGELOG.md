@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/ianchi/ESpression/compare/v0.2.1...v0.3.0) (2018-07-08)
+
+
+### Bug Fixes
+
+* change 'context' from property to parameter ([6bb7549](https://github.com/ianchi/ESpression/commit/6bb7549))
+* conditional/logical expressions must evaluate in shortcircuit ([75e5381](https://github.com/ianchi/ESpression/commit/75e5381))
+
+
+### Features
+
+* add support for NewExpressions ([4397496](https://github.com/ianchi/ESpression/commit/4397496))
+* add support for template literals ([6b9390d](https://github.com/ianchi/ESpression/commit/6b9390d))
+* eval: use class inheritance for custom rules ([accd0b0](https://github.com/ianchi/ESpression/commit/accd0b0))
+* **parser:** give original string when throwing ([6b6cb78](https://github.com/ianchi/ESpression/commit/6b6cb78))
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/ianchi/ESpression/compare/v0.2.0...v0.2.1) (2018-07-02)
 
