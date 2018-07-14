@@ -15,6 +15,12 @@ import { map, switchMap } from 'rxjs/operators';
  * It returns an Observable which emmits a new result when any dependet member emmits a new value
  */
 export class ReactiveEval extends ES5StaticEval {
+  lvalue(node: INode, context: object): { o, m } {
+    const result = super.lvalue(node, context);
+    if (isObservable(result.o) || isObservable(result.m) || isObservable(result.o[result.m])) throw new Error('Left side expression cannot be reactive.');
+
+    return result;
+  }
 
   /** Rule to evaluate `CallExpression` */
   protected CallExpression(node: INode, context: object) {
@@ -49,13 +55,6 @@ export class ReactiveEval extends ES5StaticEval {
 
     return combineLatest(results.map((node, i) => isObs[i] ? node : of(node))).pipe(
       map(res => operatorCB(...res)));
-  }
-
-  protected _lvalue(node: INode, context: object): { o, m } {
-    const result = super._lvalue(node, context);
-    if (isObservable(result.o) || isObservable(result.m) || isObservable(result.o[result.m])) throw new Error('Left side expression cannot be reactive.');
-
-    return result;
   }
 
 }

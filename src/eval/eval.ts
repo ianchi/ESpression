@@ -27,6 +27,7 @@ export abstract class StaticEval {
     return this._eval(expression, context || {});
   }
 
+  abstract lvalue(node: INode, context: object): { o, m };
   /**
    * Calls the corresponding eval function, with a mandatory context
    * Implementation of expression evaluation functions should call this version for evaluating subexpressions

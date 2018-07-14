@@ -73,6 +73,24 @@ export const
 
 export class ES5StaticEval extends StaticEval {
 
+  lvalue(node: INode, context: object): { o, m } {
+    let obj, member;
+    switch (node.type) {
+      case IDENTIFIER_EXP:
+        obj = context;
+        member = node.name;
+        break;
+      case MEMBER_EXP:
+        obj = this._eval(node.object, context);
+        member = node.computed ? this._eval(node.property, context) : node.property.name;
+        break;
+      default:
+        throw new Error('Invalid left side expression');
+    }
+
+    return { o: obj, m: member };
+  }
+
   /** Rule to evaluate `LiteralExpression` */
   protected Literal(n) {
     return n.value;
@@ -159,7 +177,7 @@ export class ES5StaticEval extends StaticEval {
   /** Rule to evaluate `AssignmentExpression` */
   protected AssignmentExpression(node: INode, context: object) {
     if (!(node.operator in assignOpCB)) throw unsuportedError(ASSIGN_EXP, node.operator);
-    const left = this._lvalue(node.left, context);
+    const left = this.lvalue(node.left, context);
 
     return assignOpCB[node.operator](left.o, left.m, this._eval(node.right, context));
   }
@@ -168,7 +186,7 @@ export class ES5StaticEval extends StaticEval {
   protected UpdateExpression(node: INode, context: object) {
     const cb = node.prefix ? preUpdateOpCB : postUpdateOpCB;
     if (!(node.operator in cb)) throw unsuportedError(UPDATE_EXP, node.operator);
-    const left = this._lvalue(node.argument, context);
+    const left = this.lvalue(node.argument, context);
 
     return cb[node.operator](left.o, left.m);
   }
@@ -177,7 +195,7 @@ export class ES5StaticEval extends StaticEval {
   protected UnaryExpression(node: INode, context: object) {
     if (!(node.operator in unaryPreOpCB)) {
       if (node.operator === 'delete') {
-        const obj = this._lvalue(node.argument, context);
+        const obj = this.lvalue(node.argument, context);
         return delete obj.o[obj.m];
       } else throw unsuportedError(UNARY_EXP, node.operator);
     }
@@ -210,23 +228,6 @@ export class ES5StaticEval extends StaticEval {
   /**
    * Returns a left side value wrapped to be used for assignment
    */
-  protected _lvalue(node: INode, context: object): { o, m } {
-    let obj, member;
-    switch (node.type) {
-      case IDENTIFIER_EXP:
-        obj = context;
-        member = node.name;
-        break;
-      case MEMBER_EXP:
-        obj = this._eval(node.object, context);
-        member = node.computed ? this._eval(node.property, context) : node.property.name;
-        break;
-      default:
-        throw new Error('Invalid left side expression');
-    }
-
-    return { o: obj, m: member };
-  }
 
   protected _fcall(node: INode, context: object) {
     let result;
