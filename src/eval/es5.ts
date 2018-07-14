@@ -101,7 +101,7 @@ export class ES5StaticEval extends StaticEval {
     return context[node.name];
   }
 
-  /** Rule to evaluate `IdentifierExpression` */
+  /** Rule to evaluate `ThisExpression` */
   protected ThisExpression(_node: INode, context: object) {
     return context;
   }
