@@ -30,7 +30,7 @@ export function RxObject(base: object) {
       if (isArray) {
 
         if (typeof target[prop] === 'function') {
-          if (mutatingMethods.includes(<any> prop)) {
+          if (mutatingMethods.indexOf(<any> prop) >= 0) {
             return function (...args) {
               const ret = target[prop](...args);
               mainSubject.next(target);
@@ -61,7 +61,7 @@ export function RxObject(base: object) {
     set: (target, prop, value, _obj) => {
 
       target[prop] = value;
-      if (propSubjects[<any> prop]) propSubjects[<any> prop].next(value);
+      if (propSubjects[<any>prop]) propSubjects[<any>prop].next(value);
       mainSubject.next(target);
 
       return true;
