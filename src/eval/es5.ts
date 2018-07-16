@@ -24,7 +24,7 @@ export const
     '<': (a, b) => a < b,
     '>': (a, b) => a > b,
     '<=': (a, b) => a <= b,
-    '>=': (a, b) => a || b,
+    '>=': (a, b) => a >= b,
     'instanceof': (a, b) => a instanceof b,
     'in': (a, b) => a in b,
     '<<': (a, b) => a << b,
