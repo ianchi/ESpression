@@ -154,6 +154,13 @@ export class ES5StaticEval extends StaticEval {
     return this._resolve(context, (...values) => values.pop(), ...node.expressions);
   }
 
+  /** Rule to evaluate `TemplateLiteral` */
+  protected TemplateLiteral(node: INode, context: object) {
+    return this._resolve(context, (...values) => values.reduce(
+      (r, e, i) => r += e + node.quasis[i + 1].value.cooked, node.quasis[0].value.cooked)
+      , ...node.expressions);
+  }
+
   /** Rule to evaluate `LogicalExpression` */
   protected LogicalExpression(node: INode, context: object) {
     // can't resolve all operands together as it needs short circuit evaluation
