@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { Observable, combineLatest, of, isObservable } from '../../../lede/luci-ng/luci2-ui-core/src/node_modules/rxjs';
+import { Observable, combineLatest, of, isObservable } from 'rxjs';
 import { map } from 'rxjs/operators';
 /**
  * Same as `combineLatest`, but the input array can have mixed scalar and Observables.
