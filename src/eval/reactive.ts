@@ -32,21 +32,21 @@ export class ReactiveEval extends ES5StaticEval {
     if (isReactive(obj)) {
       if (isObservable(member)) return member.pipe(switchMap(prop => obj[GET_OBSERVABLE](prop)));
 
-      if (isReactive(obj[member])) return obj[member];
+      if (isReactive(obj[member])) return obj && obj[member];
 
       return obj[GET_OBSERVABLE](member);
     } else if (isObservable(obj)) {
 
       if (isObservable<any>(member)) {
-        return combineLatest([obj, member]).pipe(map(([o, m]) => o[m]));
+        return combineLatest([obj, member]).pipe(map(([o, m]) => o && o[m]));
       } else {
-        return obj.pipe(map(o => o[member]));
+        return obj.pipe(map(o => o && o[member]));
       }
     }
 
-    if (isObservable<any>(member)) return member.pipe(map(prop => obj[prop]));
+    if (isObservable<any>(member)) return member.pipe(map(prop => obj && obj[prop]));
 
-    return obj[member];
+    return obj && obj[member];
   }
 
   /** Rule to evaluate `CallExpression` */
@@ -58,10 +58,14 @@ export class ReactiveEval extends ES5StaticEval {
 
     return funcDef.pipe(switchMap(
       (def) => {
-        const result = def.func.apply(def.obj, def.args);
+        try {
+          const result = def.func.apply(def.obj, def.args);
 
-        if (isObservable(result)) return result;
-        return of(result);
+          return isObservable(result) ? result : of(result);
+        } catch (e) {
+          console.warn('Eval error', e);
+          return of(undefined);
+        }
       }));
 
   }
@@ -88,7 +92,14 @@ export class ReactiveEval extends ES5StaticEval {
 
     return combineLatest(results.map((node, i) =>
       isObs[i] === 1 ? node : isObs[i] === 2 ? node[AS_OBSERVABLE]() : of(node))).pipe(
-        map(res => operatorCB(...res)));
+        map(res => {
+          try {
+            return operatorCB(...res);
+          } catch (e) {
+            console.warn('Eval error', e);
+            return undefined;
+          }
+        }));
   }
 
 }
