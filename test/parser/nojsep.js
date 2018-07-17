@@ -77,6 +77,13 @@ module.exports = [
   "`line1\nline2`",
   "`line1\\nline2`",
   "`line1\\\nline1cont`",
-  "`text\\${expr}`"
+  "`text\\${expr}`",
+
+  // Object literals
+
+  "a = {a:1}",
+  "a = {a: 1+2, '.b': 'text', c: 25 }",
+  "a = {}",
+  "a = {  }"
 
 ];
