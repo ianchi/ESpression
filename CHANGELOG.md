@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/ianchi/ESpression/compare/v0.3.0...v0.4.0) (2018-07-19)
+
+
+### Bug Fixes
+
+* add missing TemplateLiteral evaluation ([6e4a7c0](https://github.com/ianchi/ESpression/commit/6e4a7c0))
+* add various missing exports ([54d41e5](https://github.com/ianchi/ESpression/commit/54d41e5))
+* comments error ([3802171](https://github.com/ianchi/ESpression/commit/3802171))
+* correct import path ([9387809](https://github.com/ianchi/ESpression/commit/9387809))
+* error in eval of '>=' ([4794bdf](https://github.com/ianchi/ESpression/commit/4794bdf))
+* reactive eval of RxObject ([210d2cd](https://github.com/ianchi/ESpression/commit/210d2cd))
+* reactive eval, don't throw on errors ([5152976](https://github.com/ianchi/ESpression/commit/5152976))
+
+
+### Features
+
+* add 'lvalue' evaluation function ([6e8d49c](https://github.com/ianchi/ESpression/commit/6e8d49c))
+* add combineMixed rxjs operator ([a64f610](https://github.com/ianchi/ESpression/commit/a64f610))
+* add RxObject, reactive object proxy wrapper ([5dc8c47](https://github.com/ianchi/ESpression/commit/5dc8c47))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/ianchi/ESpression/compare/v0.2.1...v0.3.0) (2018-07-08)
 

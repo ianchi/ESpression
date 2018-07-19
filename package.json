@@ -1,6 +1,6 @@
 {
   "name": "espression",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Small and customizable EcmaScript expression parser and static eval, with support for jsonPath.",
   "author": "Adrian Panella <ianchi74@outlook.com>",
   "license": "MIT",
@@ -18,20 +18,20 @@
     "rxjs": "^6.2.1"
   },
   "devDependencies": {
-    "esprima": "^4.0.0",
-    "jsep": "^0.3.3",
+    "esprima": "~4.0.0",
+    "jsep": "~0.3.3",
     "rimraf": "^2.6.2",
     "rollup": "^0.55.0",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-typescript2": "^0.10.0",
     "rollup-plugin-uglify": "^3.0.0",
+    "rxjs": "^6.2.1",
     "standard-version": "^4.3.0",
     "ts-node": "^4.1.0",
     "tslint": "^5.9.1",
     "tslint-config-standard": "^7.0.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.6.2",
-    "rxjs": "^6.2.0"
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "prebuild": "rimraf dist",
