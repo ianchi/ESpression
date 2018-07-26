@@ -20,7 +20,7 @@ export class ArrayRule extends BaseRule {
 
   pre(ctx: ParserContext): IPreResult {
 
-    let right: INode, multi: INode[] = [], i = 0, comma;
+    let right: INode | null, multi: Array<INode | null> = [], i = 0, comma;
 
     if (!ctx.tyCh('[')) return { node: null };
 
@@ -28,7 +28,7 @@ export class ArrayRule extends BaseRule {
 
     do {
       if (c.parser) right = c.parser.parse(ctx);
-      else right = ctx.handler([c.level, 0]);
+      else right = ctx.handler([c.level || 0, 0]);
 
       ctx.gbSp();
       // tslint:disable-next-line:no-conditional-assignment

@@ -6,6 +6,7 @@
  */
 
 import { BehaviorSubject } from 'rxjs';
+import { keyedObject } from './eval';
 
 export const
   AS_OBSERVABLE = Symbol('asObservable'),
@@ -20,18 +21,16 @@ export function RxObject(base: object) {
   const propSubjects: { [prop: string]: BehaviorSubject<any> } = {};
   const mainSubject = new BehaviorSubject<any>(base);
 
-  if (typeof base !== 'object') throw new Error('Base must be an object');
-
   const isArray = Array.isArray(base);
 
   const proxy = new Proxy(base, {
-    get: (target, prop) => {
+    get: (target: keyedObject, prop: any) => {
 
       if (isArray) {
 
         if (typeof target[prop] === 'function') {
-          if (mutatingMethods.indexOf(<any> prop) >= 0) {
-            return function (...args) {
+          if (mutatingMethods.indexOf(prop) >= 0) {
+            return function (...args: any[]) {
               const ret = target[prop](...args);
               mainSubject.next(target);
               // emmit new values for all suscribed
@@ -46,7 +45,7 @@ export function RxObject(base: object) {
       }
 
       if (prop === GET_OBSERVABLE) {
-        return (propName) => propName in propSubjects ?
+        return (propName: any) => propName in propSubjects ?
           propSubjects[propName] :
           propSubjects[propName] = new BehaviorSubject<any>(propName in target ? target[propName] : undefined);
       } else if (prop === AS_OBSERVABLE) {
@@ -58,10 +57,10 @@ export function RxObject(base: object) {
       return target[prop];
     },
 
-    set: (target, prop, value, _obj) => {
+    set: (target: keyedObject, prop: string, value: any, _obj) => {
 
       target[prop] = value;
-      if (propSubjects[<any>prop]) propSubjects[<any>prop].next(value);
+      if (propSubjects[<any> prop]) propSubjects[<any> prop].next(value);
       mainSubject.next(target);
 
       return true;
@@ -71,6 +70,6 @@ export function RxObject(base: object) {
   return proxy;
 }
 
-export function isReactive(obj): boolean {
-  return obj && typeof obj[IS_REACTIVE] === 'function';
+export function isReactive(obj: any): boolean {
+  return !!(obj && typeof obj[IS_REACTIVE] === 'function');
 }

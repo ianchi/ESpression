@@ -6,12 +6,16 @@
  */
 
 import { INode } from './parser.interface';
+import { confIdentifierChars } from './rules';
 
 export interface IParser {
-  config: any;
+  config: {
+    identifier: confIdentifierChars,
+    [ops: string]: any
+  };
   ops: { [type: string]: { maxLen: number, ops: { [op: string]: boolean } } };
-  runRules(ctx: ParserContext, [type, from]: [number, number]): INode;
-  parse(expr: string | ParserContext): INode;
+  runRules(ctx: ParserContext, [type, from]: [number, number]): INode | null;
+  parse(expr: string | ParserContext): INode | null;
 
 }
 export class ParserContext {
@@ -38,20 +42,20 @@ export class ParserContext {
     this.i += cant;
   }
 
-  err(msg?: string) {
+  err(msg?: string): never {
     const e = new Error((msg || 'Unexpected char') + ' ' + this.gtCh() + ' at position ' + this.i);
-    e['expression'] = this.e;
+    (<any> e).expression = this.e;
     throw e;
   }
 
   teIdSt(): boolean {
     const ch = this.gtCh(), c = this.parser.config.identifier.st;
-    return c.re.test(ch) || this.gtCd() >= 0x80 && (!c.re2 || c.re2.test(ch));
+    return !!(c && c.re && c.re.test(ch) || this.gtCd() >= 0x80 && c && (!c.re2 || c.re2.test(ch)));
   }
 
   teIdPt(): boolean {
     const ch = this.gtCh(), c = this.parser.config.identifier.pt;
-    return c.re.test(ch) || this.gtCd() >= 0x80 && (!c.re2 || c.re2.test(ch));
+    return !!(c && c.re && c.re.test(ch) || this.gtCd() >= 0x80 && c && (!c.re2 || c.re2.test(ch)));
   }
 
   gbCh(): string {
@@ -82,7 +86,7 @@ export class ParserContext {
   }
 
   gbSp(): boolean {
-    let sp, lt;
+    let sp: boolean = false, lt: boolean = false;
     // space or tab
     // tslint:disable-next-line:no-conditional-assignment
     while ((sp = this.teSP()) || (lt = this.teLT())) {
@@ -105,7 +109,7 @@ export class ParserContext {
 
   }
 
-  gbHex(prefix: string): string {
+  gbHex(prefix: string): string | null {
     const len = (prefix === 'u') ? 4 : 2;
     let code = 0, digit: number;
     const hexDigit = '0123456789abcdef';
@@ -120,7 +124,7 @@ export class ParserContext {
     }
     return String.fromCharCode(code);
   }
-  gtOp(type: string): string {
+  gtOp(type: string): string | null {
 
     const ops = this.parser.ops[type];
     if (!ops) return null;
@@ -136,15 +140,15 @@ export class ParserContext {
     return null;
   }
 
-  handleUp(): INode {
+  handleUp(): INode | null {
     return this.parser.runRules(this, [this.hnd[0], this.hnd[1] + 1]);
   }
 
-  recurse(): INode {
+  recurse(): INode | null {
     return this.parser.runRules(this, this.hnd);
   }
 
-  handler(level: [number, number]): INode {
+  handler(level: [number, number]): INode | null {
     return this.parser.runRules(this, level);
   }
 }

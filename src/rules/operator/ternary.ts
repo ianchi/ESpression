@@ -37,7 +37,7 @@ export class TernaryOperatorRule extends BaseRule {
 
     if (!alternate) ctx.err();
 
-    const node = { type: c.type };
+    const node: INode = { type: c.type };
     node[c.left] = bubbledNode;
     node[c.middle] = consequent;
     node[c.right] = alternate;

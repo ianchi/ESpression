@@ -19,7 +19,7 @@ export class RegexRule extends BaseRule {
     const start = ctx.pos;
 
     // Regular expression literal must start with a slash
-    if (!ctx.tyCh('/')) return null;
+    if (!ctx.tyCh('/')) return { node: null };
 
     let ch: string, pattern = '', bracket = false, closed = false;
     let flags = '', value: RegExp;
@@ -53,7 +53,7 @@ export class RegexRule extends BaseRule {
     try {
       value = new RegExp(pattern, flags);
     } catch (e) {
-      ctx.err(e.message);
+      return ctx.err(e.message);
     }
 
     return {

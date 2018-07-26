@@ -10,13 +10,14 @@ import { ES5StaticEval } from './es5';
 import { isObservable, of, combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { isReactive, GET_OBSERVABLE, AS_OBSERVABLE } from './rxobject';
+import { ILvalue, keyedObject } from './eval';
 
 /**
  * Extends ES5 StaticEval to perform reactive evaluation of expressions having Observable values.
  * It returns an Observable which emmits a new result when any dependet member emmits a new value
  */
 export class ReactiveEval extends ES5StaticEval {
-  lvalue(node: INode, context: object): { o, m } {
+  lvalue(node: INode, context: object): ILvalue {
     const result = super.lvalue(node, context);
     if (isObservable(result.o) || isObservable(result.m) || isObservable(result.o[result.m])) throw new Error('Left side expression cannot be reactive.');
 
@@ -38,9 +39,9 @@ export class ReactiveEval extends ES5StaticEval {
     } else if (isObservable(obj)) {
 
       if (isObservable<any>(member)) {
-        return combineLatest([obj, member]).pipe(map(([o, m]) => o && o[m]));
+        return combineLatest([obj, member]).pipe(map(([o , m]: [keyedObject, string]) => o && o[m]));
       } else {
-        return obj.pipe(map(o => o && o[member]));
+        return obj.pipe(map((o: keyedObject) => o && o[member]));
       }
     }
 
@@ -52,7 +53,7 @@ export class ReactiveEval extends ES5StaticEval {
   /** Rule to evaluate `CallExpression` */
   protected CallExpression(node: INode, context: object) {
 
-    const funcDef: { obj, func, args } | Observable<{ obj, func, args }> = this._fcall(node, context);
+    const funcDef: { obj: object, func: () => any, args: any[] } | Observable<{ obj: object, func: () => any, args: any[]}> = this._fcall(node, context);
 
     if (!isObservable(funcDef)) return funcDef.func.apply(funcDef.obj, funcDef.args);
 
@@ -70,9 +71,9 @@ export class ReactiveEval extends ES5StaticEval {
 
   }
 
-  protected _resolve(context: object, operatorCB, ...operands: INode[]) {
+  protected _resolve(context: object, operatorCB: (...args: any[]) => any, ...operands: INode[]) {
 
-    let isObs = [], hasObs = false,
+    let isObs: number[] = [], hasObs = false,
       results = operands.map(
         (node, i) => {
           const res = this._eval(node, context);

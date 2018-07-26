@@ -6,13 +6,14 @@
  */
 
 export class JsonPath {
-  values = [];
+  values: any[] = [];
   paths: string[][] = [];
   root: object;
 
-  constructor(obj?: any) {
-    if (obj instanceof JsonPath) this.root = obj.root;
-    else if (obj) {
+  constructor(obj: JsonPath | object) {
+    if (obj instanceof JsonPath) {
+      this.root = obj.root;
+    } else {
       this.values.push(obj);
       this.paths.push(['$']);
       this.root = obj;
@@ -50,7 +51,7 @@ export class JsonPath {
       for (let i = first; (_step > 0 && i < last || _step < 0 && i > last) && i < val.length && i >= 0; i += _step) {
         ret.push(val[i], path.concat(i.toString()));
       }
-    }, descendant ? null : 0);
+    }, descendant ? undefined : 0);
     return ret;
   }
 
@@ -76,7 +77,7 @@ export class JsonPath {
 
 // auxiliary functions
 
-function traverse(obj: any, root: string[], maxDepth: number, callback: (val: any, path: string[], depth: number) => void, depth: number) {
+function traverse(obj: any, root: string[], maxDepth: number | undefined, callback: (val: any, path: string[], depth: number) => void, depth: number) {
 
   let path: string[];
 
@@ -97,11 +98,11 @@ function traverse(obj: any, root: string[], maxDepth: number, callback: (val: an
   }
 }
 
-function toInt(val: number | string): number {
-  let ret: number;
+function toInt(val: number | string | undefined): number | undefined {
+  let ret: number | undefined;
   if (typeof val === 'string') {
     if (!val) {
-      ret = null;
+      ret = undefined;
     } else {
       ret = parseInt(val, 10);
       if (isNaN(ret)) throw new Error('Invalid number');

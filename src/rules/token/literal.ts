@@ -12,7 +12,7 @@ import { ParserContext } from '../../context';
 export type confLiteralRule = {
   type: string, prop?: string,
   start?: string, part?: string,
-  literals: { [literal: string]: any },
+  literals?: { [literal: string]: any },
   value?: string
 };
 
@@ -47,7 +47,7 @@ export class LiteralRule extends BaseRule {
       if (c.literals.hasOwnProperty(identifier)) {
         if (c.value) node[c.value] = c.literals[identifier];
 
-      } else return null;
+      } else return { node: null };
     }
 
     return { node: node };

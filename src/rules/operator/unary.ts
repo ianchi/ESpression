@@ -9,11 +9,12 @@ import { INode, IPreResult } from '../../parser.interface';
 import { BaseRule, Parser } from '../../parser';
 import { ParserContext } from '../../context';
 
+export type confUnaryOp = {
+  [operator: string]: { type: string, space?: boolean, types?: string[] }
+};
 export type confUnaryRule = {
   pre?: boolean,
-  op: {
-    [operator: string]: { type: string, space?: boolean, types?: string[] }
-  }
+  op: confUnaryOp
 };
 
 export class UnaryOperatorRule extends BaseRule {
@@ -29,7 +30,7 @@ export class UnaryOperatorRule extends BaseRule {
   register(parser: Parser) {
     for (const op in this.config.op) {
       if (!this.config.op.hasOwnProperty(op)) continue;
-      parser.registerOp('unary', op, this.config.op[op].space);
+      parser.registerOp('unary', op, !!this.config.op[op].space);
     }
   }
 
@@ -70,12 +71,12 @@ export class UnaryOperatorRule extends BaseRule {
     return pre;
   }
 
-  gobOperator(ctx: ParserContext): string {
+  gobOperator(ctx: ParserContext): string | null {
     ctx.gbSp();
 
     const op = ctx.gtOp('unary');
 
-    if (this.config.op.hasOwnProperty(op)) {
+    if (op && this.config.op.hasOwnProperty(op)) {
       ctx.gb(op.length);
       return op;
     }

@@ -6,7 +6,7 @@
  */
 
 export interface IPreResult {
-  node: INode;
+  node: INode | null;
   final?: boolean;
   skip?: boolean;
 }

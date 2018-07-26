@@ -17,10 +17,10 @@ export class WrapperRule extends BaseRule {
     super();
   }
 
-  post(_ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode {
+  post(_ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode | null {
     const c = this.config;
 
-    const node = { type: c.type };
+    const node: INode = { type: c.type };
 
     node[c.wrap] = bubbledNode;
 

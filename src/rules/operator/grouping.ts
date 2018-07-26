@@ -15,13 +15,13 @@ export type confGroupingRule = {
   level?: number, rules?: BaseRule[][]
 };
 export class GroupingOperatorRule extends BaseRule {
-  parser: Parser;
+  parser: Parser | undefined;
   level: number = 0;
 
   constructor(public config: confGroupingRule) {
     super();
     if (typeof config.level === 'number') this.level = config.level;
-    else this.parser = new Parser(config.rules);
+    else if (config.rules) this.parser = new Parser(config.rules);
   }
 
   register(parser: Parser) {
@@ -30,7 +30,7 @@ export class GroupingOperatorRule extends BaseRule {
   pre(ctx: ParserContext): IPreResult {
 
     const c = this.config;
-    let node: INode;
+    let node: INode | null;
 
     ctx.gbSp();
 

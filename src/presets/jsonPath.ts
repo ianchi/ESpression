@@ -118,10 +118,10 @@ export function jsonPathRules(): BaseRule[][] {
 
   return [
     [new BinaryOperatorRule(jsPathMemberConf([[
-      new IdentifierRule({ thisStr: null, literals: {} }),
+      new IdentifierRule({ thisStr: undefined, literals: {} }),
       new LiteralRule(JPWILDCARD_TYPE)]],
       jsComputedRules()))],
-    [new LiteralRule({ type: 'JPRoot', prop: 'name', literals: null })]
+    [new LiteralRule({ type: 'JPRoot', prop: 'name', literals: undefined })]
   ];
 
 }

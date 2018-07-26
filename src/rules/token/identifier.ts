@@ -27,11 +27,12 @@ export type confIdentifierRule = {
 // (e.g. `true`, `false`, `null`) or `this`
 export class IdentifierRule extends BaseRule {
 
-  newParser: Parser;
+  newParser: Parser | undefined;
   constructor(public config: confIdentifierRule) {
     super();
 
     if (config.new && config.new.rules) this.newParser = new Parser(config.new.rules);
+    if (!config.literals) config.literals = {};
   }
 
   register(parser: Parser) {
@@ -57,11 +58,11 @@ export class IdentifierRule extends BaseRule {
       identifier += ctx.gbCh();
     }
 
-    if (c.literals.hasOwnProperty(identifier)) {
+    if (c.literals!.hasOwnProperty(identifier)) {
       return {
         node: {
           type: LITERAL_EXP,
-          value: c.literals[identifier],
+          value: c.literals![identifier],
           raw: identifier
         }
       };
@@ -70,13 +71,14 @@ export class IdentifierRule extends BaseRule {
     } else if (c.new && identifier === 'new') {
 
       ctx.gbSp();
-      const operand = this.newParser ? this.newParser.parse(ctx) : ctx.handler([c.new.level, 0]);
+      const operand = this.newParser ? this.newParser.parse(ctx) : ctx.handler([c.new.level || 0, 0]);
+      if (!operand) return ctx.err('Missing operand');
 
       return {
         node: {
           type: NEW_EXP,
-          callee: operand.type === CALL_EXP ? operand.callee : operand,
-          arguments: operand.type === CALL_EXP ? operand.arguments : []
+          callee: operand && operand.type === CALL_EXP ? operand.callee : operand,
+          arguments: operand && operand.type === CALL_EXP ? operand.arguments : []
         }
       };
     } else {

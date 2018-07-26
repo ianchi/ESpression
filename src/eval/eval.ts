@@ -9,6 +9,12 @@ import { INode } from '../parser.interface';
 
 export type evalFn = (expression: INode) => any;
 
+export type keyedObject = { [key: string]: any }; // tslint:disable-line:interface-over-type-literal
+
+export interface ILvalue {
+  o: keyedObject;
+  m: string;
+}
 /**
  * Abstract Base class to be customized with specific rules.
  *
@@ -17,6 +23,7 @@ export type evalFn = (expression: INode) => any;
  */
 export abstract class StaticEval {
 
+  [evalFn: string]: any;
   /**
    * Evaluates an expression in an optionally provided context
    * @param expression AST to evaluate
@@ -27,7 +34,7 @@ export abstract class StaticEval {
     return this._eval(expression, context || {});
   }
 
-  abstract lvalue(node: INode, context: object): { o, m };
+  abstract lvalue(node: INode, context: object): ILvalue;
   /**
    * Calls the corresponding eval function, with a mandatory context
    * Implementation of expression evaluation functions should call this version for evaluating subexpressions
@@ -35,7 +42,7 @@ export abstract class StaticEval {
    * @param expression
    * @param context
    */
-  protected _eval(expression: INode, context: object) {
+  protected _eval(expression: INode, context: keyedObject) {
     if (!(expression.type in this)) throw new Error('Unsupported expression type: ' + expression.type);
     return this[expression.type](expression, context);
 
@@ -48,7 +55,7 @@ export abstract class StaticEval {
    * @param operatorCB Callback function to *execute* the actual expression
    * @param operands Operands to sub eval and use to call the callback
    */
-  protected _resolve(context: object, operatorCB: (...operands) => any, ...operands: INode[]) {
+  protected _resolve(context: object, operatorCB: (...operands: any[]) => any, ...operands: INode[]) {
 
     let results = operands.map(node => this._eval(node, context));
 

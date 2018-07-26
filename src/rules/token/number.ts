@@ -14,7 +14,7 @@ export type configNumberRule = { radix: number; prefix?: RegExp; int?: boolean; 
 export class NumberRule extends BaseRule {
   digits: RegExp;
 
-  constructor(public config: configNumberRule = { radix: 10, prefix: null, int: false, noexp: false }) {
+  constructor(public config: configNumberRule = { radix: 10, prefix: undefined, int: false, noexp: false }) {
     super();
     if (config.radix < 2 || config.radix > 36) throw new Error('Radix out of range');
     let digits = '0-' + (config.radix < 10 ? config.radix - 1 : 9);
@@ -35,7 +35,7 @@ export class NumberRule extends BaseRule {
 
     if (c.prefix) {
       let m = c.prefix.exec(ctx.rest());
-      if (!m) return null;
+      if (!m) return { node: null };
       prefix = m[0];
       ctx.gb(prefix.length);
     }

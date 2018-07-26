@@ -43,17 +43,18 @@ export class BinaryOperatorRule extends BaseRule {
 
   register(parser: Parser) {
     for (const op in this.config) {
-      parser.registerOp('binary', op, this.config[op].space);
+      parser.registerOp('binary', op, !!this.config[op].space);
     }
   }
 
   post(ctx: ParserContext, _preNode: INode, bubbledNode: INode): INode {
 
-    let right: INode, multi: INode[] = [], node: INode, nxt = false,
-      op = this.gbOp(ctx),
-      c = this.config[op];
+    let right: INode | null, multi: INode[] = [], node: INode, nxt: boolean = false,
+      op = this.gbOp(ctx);
 
     if (!op || !bubbledNode) return bubbledNode;
+
+    let c = this.config[op];
 
     do {
       do {
@@ -71,14 +72,14 @@ export class BinaryOperatorRule extends BaseRule {
 
         if (right && c.multi) multi.push(right);
         // tslint:disable-next-line:no-conditional-assignment
-        if (!(nxt = c.multi && right && ctx.tyCh(c.multi)) && c.close && !ctx.tyCh(c.close)) ctx.err();
+        if (!(nxt = !!(c.multi && right && ctx.tyCh(c.multi))) && c.close && !ctx.tyCh(c.close)) ctx.err();
       }
       while (nxt);
 
       node = { type: c.type };
       if (!c.noop) node.operator = op;
-      node[c.left] = bubbledNode;
-      node[c.right] = c.multi ? multi : right;
+      node[c.left!] = bubbledNode;
+      node[c.right!] = c.multi ? multi : right;
 
       // tslint:disable-next-line:whitespace
       if (c.extra) node = <INode>{ ...node, ...c.extra };
@@ -94,12 +95,12 @@ export class BinaryOperatorRule extends BaseRule {
     return node;
   }
 
-  gbOp(ctx: ParserContext): string {
+  gbOp(ctx: ParserContext): string | null {
     ctx.gbSp();
 
     const op = ctx.gtOp('binary');
 
-    if (op in this.config) {
+    if (op && (op in this.config)) {
       ctx.gb(op.length);
       return op;
     }

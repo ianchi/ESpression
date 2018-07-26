@@ -8,18 +8,20 @@
 import { INode, IPreResult } from './parser.interface';
 import { ParserContext, IParser } from './context';
 import { confIdentifierChars } from './rules/token/identifier';
+import { keyedObject } from './eval/eval';
 
 export class Parser implements IParser {
+  ops: {
+    [type: string]: { maxLen: number; ops: { [op: string]: boolean } };
+  } = {};
 
-  ops: { [type: string]: { maxLen: number, ops: { [op: string]: boolean } } } = {};
-
-  config: any = {
+  config = {
     identifier: <confIdentifierChars> {
       st: { re: /[$_A-Za-z]/ },
       pt: { re: /[$_0-9A-Za-z]/ }
     }
   };
-  constructor(public rules: BaseRule[][], config?: object) {
+  constructor(public rules: BaseRule[][], config?: keyedObject) {
     if (!rules || !rules.length) throw new Error('Must provide rules');
 
     this.config = { ...this.config, ...config };
@@ -39,17 +41,19 @@ export class Parser implements IParser {
     this.ops[type].maxLen = Math.max(this.ops[type].maxLen, op.length);
   }
 
-  parse(expr: string | ParserContext): INode {
-    let ctx: ParserContext, origParser: IParser = null, node: INode;
-    try {
-      if (typeof expr === 'string') {
-        ctx = new ParserContext(expr, this);
-      } else {
-        origParser = expr.parser;
-        expr.parser = this;
-        ctx = expr;
-      }
+  parse(expr: string | ParserContext): INode | null {
+    let ctx: ParserContext | undefined = undefined,
+      origParser: IParser | undefined = undefined,
+      node: INode | null;
 
+    if (typeof expr === 'string') {
+      ctx = new ParserContext(expr, this);
+    } else {
+      origParser = expr.parser;
+      expr.parser = this;
+      ctx = expr;
+    }
+    try {
       node = this.runRules(ctx, [0, 0]);
 
       if (origParser) {
@@ -65,13 +69,18 @@ export class Parser implements IParser {
     return node;
   }
 
-  runRules(ctx: ParserContext, [type, from]: [number, number]): INode {
-    const r = this.rules, oldHnd = ctx.hnd;
+  runRules(ctx: ParserContext, [type, from]: [number, number]): INode | null {
+    const r = this.rules,
+      oldHnd = ctx.hnd;
 
-    if (from >= r[type].length) { type++; from = 0; }
+    if (from >= r[type].length) {
+      type++;
+      from = 0;
+    }
     if (type >= r.length) return null;
 
-    let res: INode = null, pre: IPreResult;
+    let res: INode | null = null,
+      pre: IPreResult | undefined;
 
     if (type < r.length - 1) {
       ctx.hnd = [type, from];
@@ -95,24 +104,23 @@ export class Parser implements IParser {
         pre = r[type][i].pre(ctx);
         if (pre && pre.node) break;
       }
-      res = pre && pre.node;
+      res = pre ? pre.node : null;
     }
 
     ctx.hnd = oldHnd;
     return res;
   }
-
 }
 export class BaseRule {
   config = {};
 
-  register(_parser: Parser) { } // tslint:disable-line:no-empty
+  register(_parser: Parser) {} // tslint:disable-line:no-empty
 
   pre(_ctx: ParserContext): IPreResult {
     return { node: null };
   }
 
-  post(_ctx: ParserContext, _preNode: INode, bubbledNode: INode) {
+  post(_ctx: ParserContext, _preNode: INode | null, bubbledNode: INode | null) {
     return bubbledNode;
   }
 }

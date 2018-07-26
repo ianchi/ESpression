@@ -16,17 +16,20 @@ export type configStringRule = {
 };
 export class StringRule extends BaseRule {
 
-  exprRules: Parser;
+  exprRules: Parser | undefined;
 
   constructor(public config: configStringRule = { LT: true, hex: true, raw: true }) {
     super();
 
-    if (config.templateRule && config.templateRule.rules) this.exprRules = new Parser(config.templateRule.rules);
+    if (config.templateRule) {
+      if (config.templateRule.rules) this.exprRules = new Parser(config.templateRule.rules);
+      else if (!config.templateRule.level) throw new Error('Missing "level" or "rules" property');
+    }
   }
 
   pre(ctx: ParserContext): IPreResult {
     const c = this.config;
-    let str = '', quote: string, closed = false, ch: string, start = ctx.pos, isTemplate = false;
+    let str = '', quote: string, closed = false, ch: string | null, start = ctx.pos, isTemplate = false;
     const expressions = [], quasis = [];
 
     ch = ctx.gtCh();
@@ -62,7 +65,7 @@ export class StringRule extends BaseRule {
           tail: false
         });
         str = '';
-        expressions.push(this.exprRules ? this.exprRules.parse(ctx) : ctx.handler([c.templateRule.level, 0]));
+        expressions.push(this.exprRules ? this.exprRules.parse(ctx) : ctx.handler([c.templateRule!.level || 0, 0]));
         ctx.gbSp();
         if (!ctx.tyCh('}')) ctx.err('Unclosed "}" after ');
         start = ctx.pos;

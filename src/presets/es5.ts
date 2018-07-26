@@ -39,7 +39,7 @@ export function es5Rules(identifier: confIdentifierChars = { st: identStartConf,
   ];
 
   // properties can have reserved words as names
-  const PropertyRule = new IdentifierRule({ thisStr: null, literals: {} });
+  const PropertyRule = new IdentifierRule({ thisStr: undefined, literals: {} });
 
   // object needs subset of tokens for parsing properties.
   const tokenRules = numberRules.concat([
@@ -50,7 +50,7 @@ export function es5Rules(identifier: confIdentifierChars = { st: identStartConf,
     new ObjectRule({
       key: {
         rules: [numberRules.concat(
-          new StringRule({ LT: true, hex: true, raw: true, templateRule: null }),
+          new StringRule({ LT: true, hex: true, raw: true, templateRule: undefined }),
           PropertyRule)]
       },
       value: { level: 2 }

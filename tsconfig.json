@@ -7,11 +7,6 @@
         "sourceMap": true,
 
         "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noImplicitAny": false,
-        "strictNullChecks": false,
 
         "outDir": "dist",
         "typeRoots": [

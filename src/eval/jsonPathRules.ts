@@ -8,7 +8,7 @@
 import { INode } from '../parser.interface';
 import { JsonPath } from './jsonPath';
 import { ES5StaticEval } from './es5';
-import { StaticEval } from './eval';
+import { StaticEval, keyedObject } from './eval';
 import {
   JPUNION_EXP, JPEXP_EXP, JPFILTER_EXP, JPSLICE_EXP, JPWILDCARD_EXP,
   jsonPathParserFactory, es5PathParserFactory
@@ -17,24 +17,24 @@ import { LITERAL_EXP } from '../presets/es5conf';
 
 export class JsonPathStaticEval extends ES5StaticEval {
 
-  protected JPRoot(node: INode, context: object) {
+  protected JPRoot(node: INode, context: keyedObject) {
     return new JsonPath(context[node.name]);
   }
 
-  protected JPChildExpression(node: INode, context: object) {
+  protected JPChildExpression(node: INode, context: keyedObject) {
     return this.evalMember(this._eval(node.object, context), node, false, context);
   }
 
-  protected JPDescendantExpression(node: INode, context: object) {
+  protected JPDescendantExpression(node: INode, context: keyedObject) {
     return this.evalMember(this._eval(node.object, context), node, true, context);
   }
 
-  protected evalMember(obj: JsonPath, node: INode, descendant: boolean, context: object): JsonPath {
+  protected evalMember(obj: JsonPath, node: INode, descendant: boolean, context: keyedObject): JsonPath {
 
     const props = node.property.type === JPUNION_EXP ? node.property.expressions : [node.property];
     const childContext = Object.create(context);
 
-    return props.reduce((acum: JsonPath, n) => {
+    return props.reduce((acum: JsonPath, n: any) => {
       let ret = new JsonPath(obj);
       let member: string;
       switch (n.type) {
@@ -46,7 +46,7 @@ export class JsonPathStaticEval extends ES5StaticEval {
               member = this._eval(n.expression, childContext);
               if (member in val) ret.push(val[member], path.concat(member));
             }
-          }, descendant ? null : 0);
+          }, descendant ? undefined : 0);
           break;
 
         case JPFILTER_EXP:
@@ -54,11 +54,11 @@ export class JsonPathStaticEval extends ES5StaticEval {
             if (!depth) return; // filter applies on children
             childContext['@'] = val;
             if (this._eval(n.expression, childContext)) ret.push(val, path);
-          }, descendant ? null : 1);
+          }, descendant ? undefined : 1);
           break;
 
         case JPSLICE_EXP:
-          let idx = n.expressions.map(i => i && this._eval(i, childContext));
+          let idx = n.expressions.map((i: INode) => i && this._eval(i, childContext));
           ret = obj.slice(idx[0], idx[1], idx[2], descendant);
           break;
 
@@ -66,7 +66,7 @@ export class JsonPathStaticEval extends ES5StaticEval {
           obj.forEach((val, path, depth) => {
             if (!depth) return; // applies on children
             ret.push(val, path);
-          }, descendant ? null : 1);
+          }, descendant ? undefined : 1);
           break;
 
         default:
@@ -76,7 +76,7 @@ export class JsonPathStaticEval extends ES5StaticEval {
             if (typeof val === 'object' && member in val) {
               ret.push(val[member], path.concat(member));
             }
-          }, descendant ? null : 0);
+          }, descendant ? undefined : 0);
       }
       return acum ? acum.concat(ret) : ret;
     }, null);
@@ -94,10 +94,10 @@ export function jsonPathFactory() {
   const espParser = es5PathParserFactory();
 
   return {
-    eval: (ast, ctx) => staticEval.eval(ast, ctx),
-    parse: expr => espParser.parse(expr),
-    evaluate: (expr, ctx) => staticEval.eval(espParser.parse(expr), ctx),
+    eval: (ast: INode, ctx: keyedObject) => staticEval.eval(ast, ctx),
+    parse: (expr: string) => espParser.parse(expr),
+    evaluate: (expr: string, ctx: keyedObject) => staticEval.eval(espParser.parse(expr)!, ctx),
 
-    jsonPath: (obj, expr) => staticEval.eval(jpParser.parse(expr), { $: obj })
+    jsonPath: (obj: object, expr: string) => staticEval.eval(jpParser.parse(expr)!, { $: obj })
   };
 }
