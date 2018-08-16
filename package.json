@@ -1,6 +1,6 @@
 {
   "name": "espression",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Small and customizable EcmaScript expression parser and static eval, with support for jsonPath.",
   "author": "Adrian Panella <ianchi74@outlook.com>",
   "license": "MIT",
