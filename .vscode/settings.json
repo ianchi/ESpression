@@ -1,0 +1,30 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "tslint.rulesDirectory": "./node_modules/tslint-eslint-rules/dist/rules",
+  "editor.tabSize": 2,
+  "css.validate": false,
+  "scss.validate": false,
+  "typescript.tsc.autoDetect": "off",
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.enabled": true,
+
+  "terminal.integrated.shellArgs.linux": [
+    "--rcfile",
+    ".vscode/bashrc"
+  ],
+  "tslint.exclude": "**/node_modules/**",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  },
+  "editor.formatOnSave": true,
+  "spellright.language": "en_US",
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext"
+  ]
+}
