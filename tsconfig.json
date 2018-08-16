@@ -1,22 +1,22 @@
 {
-    "compilerOptions": {
-        "moduleResolution": "node",
-        "target": "es5",
-        "module":"commonjs",
-        "lib": ["es2015", "dom"],
-        "sourceMap": true,
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es5",
+    "module": "ES2015",
+    "lib": ["es2015"],
+    "sourceMap": true,
 
-        "strict": true,
+    "strict": true,
 
-        "outDir": "dist",
-        "typeRoots": [
-          "node_modules/@types"
-        ],
-        "importHelpers": true,
-        "noEmitHelpers": true
-    },
-     "files": [
-       "src/main.ts",
-       "src/rules/index.ts"
-     ]
+    "outDir": "dist",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "importHelpers": true,
+    "noEmitHelpers": true
+  },
+  "files": [
+    "src/main.ts",
+    "test/test.ts"
+  ]
 }
