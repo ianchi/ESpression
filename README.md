@@ -1,108 +1,72 @@
 # ESpression
 
-*Small and customizable EcmaScript expression parser and static eval, with support for jsonPath.*
+_Small and customizable EcmaScript expression parser and static eval._
 
 Try it live at [ESpression Tester](https://ianchi.github.io/ESpression-tester/)
+
+The goal is to have a specialized expression parser with a small footprint, but full ES5+ feature set and possibility to create new syntax.
 
 Inspired by [jsep](https://github.com/soney/jsep) Java Script Expression Parser.
 
 ## Usage
 
 ESpression can be used with different purposes:
-+ as a parser to generate an AST
-+ to do static evaluation of an expression's AST
-+ to evaluate [jsonPath expressions](http://goessner.net/articles/JsonPath/index.html#e2), as a special case of the above
-+ to do *reactive* evaluation of expressions involving observable operands. 
 
-The easiest way to use it is through one of the presets, but it can also be completely configured to parse with custom rules. 
+- as a parser to generate an AST for an expression
+- to do static evaluation of an expression's AST
+- to evaluate [jsonPath expressions](http://goessner.net/articles/JsonPath/index.html#e2), as a special case of the above
+- to do _reactive_ evaluation of expressions involving observable operands.
+- your own use case.
+
+The easiest way to use it is through one of the presets, but it can also be completely configured to parse with custom rules.
 
 ### ES5 expressions
-```
-import { es5EvalFactory, es5ParserFactory } from 'espression';
 
-const parser = es5ParserFactory();
-const staticEval = es5EvalFactory();
+```
+import { ES5Eval, ES5Parser } from 'espression';
+
+const parser = new ES5Parser();
+const staticEval = new ES5Eval();
 
 let ast = parser.parse('a + b * c');
 let result = staticEval.eval(ast, {a:1, b:2, c:3});
 ```
 
-This preset returns Esprima compatible AST (ExpressionStatetments inside a Program Body).
-All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body) and new expressions.
+This preset can return Esprima compatible AST (ExpressionStatetments inside a Program Body), or .
+All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body). Some ES6 features are supported:
+
+- template literals
+- array spread operator
+- object literal: shorthand and computed properties
 
 To evaluate the ast you can provide a context object.
 
-### jsep expressions
-```
-import { jsepParserFactory, es5EvalFactory } from 'espression';
+### basic expressions
 
-const parser = jsepParserFactory();
-const staticEval = es5EvalFactory();
+Limited expressions, compatible with **JSEP** syntax. It is a bit smaller, but almost neligible.
+
+```
+import { BasicParser, BasicEval } from 'espression';
+
+const parser = new BasicParser();
+const staticEval = new BasicEval();
 
 let ast = parser.parse('a + b * c');
 let result = staticEval.eval(ast, {a:1, b:2, c:3});
 ```
+
 Returns a jsep compatible AST (with compound statements). Keeps same limitations for expressions (i.e. no RegExp literals, no object literals, no assignment).
 
-The static evaluation can be performed by the same es5 preset as this ast is a subset of the other.
-
-This preset generates a slightly smaller packages.
+The static evaluation could also be performed by the same ES5Eval preset as this AST is a subset of the other.
 
 ### jsonPath expressions
 
-jsonPath expressions can be handled in two ways:
-+ pure jsonPath expressions: `$..member`
-+ mixed ES5 expressions with jsonPath: ` a + <$..member>.values[0] * 2`
+jsonPath expressions can be parsed & evaluated with a preset provided by [ESpression-jsonpath](http://github.com/ianchi/espression-jsonpath) extension package.
 
-#### pure jsonPath expressions
+### Reactive Eval
 
-In this case only a valid jsonPath expression is allowed in the parser. 
-
-```
-import { jsonPathFactory } from 'espression';
-
-const jp = jsonPathFactory();
-
-let result = jp.jsonPath({a:1, b:2, c:3, d: [1,2,3]}, '$..d[:-1]');
-```
-The query returns a `jsonPath` object with the following properties:
-+ `values`: array of matching values
-+ `paths`: array of matching paths (each an array of strings with the keys)
-+ `root`: the object being queried
-
-This is shorthand for:
-```
-import { jsonPathParserFactory, jsonPathEvalFactory } from 'espression';
-
-const parser = jsonPathParserFactory();
-const staticEval = jsonPathEvalFactory();
-
-let ast = parser.parse('$..d[:-1]');
-let result = staticEval.eval(ast, {$: {a:1, b:2, c:3, d: [1,2,3]}});
-```
-
-#### mixed expressions
-
-This preset introduces a new syntax to mix jsonPath inside a normal ES5 expression with a jsonPath literal notation. It is a regular jsonPath expression enclosed in `<>`, it returns a `jsonPath` object as described above.
-
-```
-import { jsonPathFactory } from 'espression';
-
-const jp = jsonPathFactory();
-
-let result = jp.evaluate('x + <z..d[:-1]>.values[0]', {x: 10, z: {a:1, b:2, c:3, d: [1,2,3]}});
-```
-
-This is shorthand for:
-```
-import { es5PathParserFactory, jsonPathEvalFactory } from 'espression';
-
-const parser = es5PathParserFactory();
-const staticEval = jsonPathEvalFactory();
-
-let ast = parser.parse('x + <z..d[:-1]>.values[0]');
-let result = staticEval.eval(ast, {x: 10, z: {a:1, b:2, c:3, d: [1,2,3]}});
-```
+Reactive expressions can be evaluated using [ESpression-rx](http://github.com/ianchi/espression-rx) extension package.
+The evaluation returns an observable which emits the result each time any operand emits a result.
 
 ## Parser
 
@@ -110,35 +74,8 @@ The parser aims to be fully customizable, so it is split into a basic core and t
 To have a working parser, you need to instantiate one with a configured set of rules.
 
 ## Static Eval
+
 A configurable static eval is included to evaluate parsed expressions.
-
-## Reactive Eval
-
-Reactive expressions can be evaluated using `reactiveEvalFactory`. The evaluation returns an observable which emits the result each time any operand emits a result.
-
-If any operand is or returns an observable, the expression will be evaluated with the values it emmits instead of the observable object itself.
-Static operands are evaluated only once, when creating the resulting observable, any later changes won't be seen.
-If an lvalue is required (any update/assing operation) it canno't be an observable. This operations are only statically evaluated.
-
-```
-import { es5PathParserFactory, reactiveEvalFactory } from 'espression';
-import { of } from 'rxjs';
-
-
-const parser = es5PathParserFactory();
-const rxEval = reactiveEvalFactory();
-
-const context = {
-  a: rxjs.of(1,2,3, rxjs.asyncScheduler),
-  b: 0,
-  c: rxjs.of(10, 20, 30, 40,rxjs.asyncScheduler).pipe(rxop.share()) };
-
-rxEval.eval(parser.parse('d=c*1000; a + ++b * c + d '), context)
-  .subscribe(d =>
-    console.log(d)
-  );
-```
-
 
 ## Bundling
 
