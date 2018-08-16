@@ -34,7 +34,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "rollup -c && gzip -k ./dist/bundle/*.min.js",
+    "build": "rollup -c",
     "dev": "rollup -w",
     "test": "node test/test.js",
     "lint": "tslint -p . ",

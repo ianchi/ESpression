@@ -9,14 +9,9 @@
     "strict": true,
 
     "outDir": "dist",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "importHelpers": true,
     "noEmitHelpers": true
   },
-  "files": [
-    "src/main.ts",
-    "test/test.ts"
-  ]
+  "files": ["src/main.ts"]
 }
