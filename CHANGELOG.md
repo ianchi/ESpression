@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/ianchi/ESpression/compare/v0.4.1...v1.0.0) (2018-08-16)
+
+
+### Features
+
+* adds more ES6 features ([2afefe5](https://github.com/ianchi/ESpression/commit/2afefe5))
+
+
+### BREAKING CHANGES
+
+* Complete reorganization of Parser codebase
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/ianchi/ESpression/compare/v0.4.0...v0.4.1) (2018-07-26)
 
