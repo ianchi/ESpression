@@ -2,13 +2,9 @@ const assert = require('assert');
 const jsep = require('jsep');
 const esprima = require('esprima');
 
-const espression = require('../')
-const espressionJsep = espression.jsepParserFactory();
-const espressionEsprima = espression.es5ParserFactory();
-
-const evaluate = espression.es5EvalFactory();
-
-const jsonPath = espression.jsonPathParserFactory();
+const espression = require('../dist/bundle/espression.cjs')
+const espressionJsep = new espression.BasicParser();
+const espressionEsprima = new espression.ES5Parser();
 
 function compare(expr, parser1, parser2) {
   let n1, n2, fail1, fail2;
@@ -27,20 +23,18 @@ function compare(expr, parser1, parser2) {
   if (fail1 && fail2) {
     //console.log('Passed with both throwing on: ' + expr);
     return true;
-  }
-  else if (fail1 || fail2) {
-    console.log("Failed on :", expr);
+  } else if (fail1 || fail2) {
+    console.log(`Failed on: "${expr}"`);
 
     console.log("Parsed: ", fail1 || JSON.stringify(n1, null, 2));
     console.log("Expected: ", fail2 || JSON.stringify(n2, null, 2));
     return false;
-  }
-  else
+  } else
     try {
       assert.deepEqual(n1, n2);
 
     } catch (e) {
-      console.log("Failed on :", expr);
+      console.log(`Failed on: "${expr}"`);
       console.log("Parsed: ", JSON.stringify(n1, null, 2));
       console.log("Expected: ", JSON.stringify(n2, null, 2));
       return false;
@@ -94,32 +88,12 @@ const test2 = require('./parser/nojsep');
 // octal escapes
 const test3 = require('./parser/noespression');
 
-const obj = {
-  "firstName": "John",
-  "lastName": "doe",
-  "age": 26,
-  "address": {
-    "streetAddress": "naist street",
-    "city": "Nara",
-    "postalCode": "630-0192"
-  },
-  "phoneNumbers": [
-    {
-      "type": "iPhone",
-      "number": "0123-4567-8888"
-    },
-    {
-      "type": "home",
-      "number": "0123-4567-8910"
-    }
-  ]
-};
-
 let code = true;
 
-code = code && compJsep(test1.concat(test3));
-code = code && compEsprima(test1.concat(test2));
+compEsprima(["[,,]"]);
+compJsep([";a+b"]);
 
-code = code && testJsonPath(require('./parser/jsonPath'));
+code = code && compJsep(test1.concat(test3));
+code = compEsprima(test1.concat(test2)) && code;
 
 process.exit(code ? 0 : 1);

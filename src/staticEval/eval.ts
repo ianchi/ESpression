@@ -5,7 +5,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { INode } from '../parser.interface';
+import { INode } from '../parser';
 
 export type evalFn = (expression: INode) => any;
 
@@ -22,15 +22,13 @@ export interface ILvalue {
  * it handles evaluation. The method must have the signature: `(expression: INode) => any`
  */
 export abstract class StaticEval {
-
   [evalFn: string]: any;
   /**
    * Evaluates an expression in an optionally provided context
    * @param expression AST to evaluate
    * @param context Optional custom contex object. Defaults to empty context `{}`
    */
-  eval(expression: INode, context?: object) {
-
+  eval(expression: INode, context?: object): any {
     return this._eval(expression, context || {});
   }
 
@@ -42,10 +40,10 @@ export abstract class StaticEval {
    * @param expression
    * @param context
    */
-  protected _eval(expression: INode, context: keyedObject) {
-    if (!(expression.type in this)) throw new Error('Unsupported expression type: ' + expression.type);
+  protected _eval(expression: INode, context: keyedObject): any {
+    if (!(expression.type in this))
+      throw new Error('Unsupported expression type: ' + expression.type);
     return this[expression.type](expression, context);
-
   }
 
   /**
@@ -55,10 +53,17 @@ export abstract class StaticEval {
    * @param operatorCB Callback function to *execute* the actual expression
    * @param operands Operands to sub eval and use to call the callback
    */
-  protected _resolve(context: object, operatorCB: (...operands: any[]) => any, ...operands: INode[]) {
-
-    let results = operands.map(node => this._eval(node, context));
+  protected _resolve(
+    context: object,
+    operatorCB: (...operands: any[]) => any,
+    ...operands: INode[]
+  ): any {
+    const results = operands.map(node => this._eval(node, context));
 
     return operatorCB(...results);
   }
+}
+
+export function unsuportedError(type: string, operator: string): Error {
+  return new Error('Unsuported ' + type + ': ' + operator);
 }

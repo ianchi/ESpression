@@ -1,24 +1,21 @@
-const assert = require('assert');
 const jsep = require('jsep');
 const esprima = require('esprima');
 
 const espression = require('../')
-const espressionJsep = espression.jsepParserFactory();
-const espressionEsprima = espression.es5ParserFactory();
+const espressionParser_ = new espression.BasicParser();
+const espressionParser = new espression.ES5Parser();
 
-const evaluate = espression.es5EvalFactory();
-
-const jsonPath = espression.jsonPathParserFactory();
-
+const test1 = require('./parser/common.js');
 benchmark();
 
 function benchmark() {
-  let init = Date.now(), len;
+  let init = Date.now(),
+    len;
   for (let i = 0; i < 250; i++)
     for (let str of test1) {
       try {
         jsep.parse(str);
-      } catch (e) { }
+      } catch (e) {}
     }
   len = Date.now() - init;
 
@@ -28,8 +25,8 @@ function benchmark() {
   for (let i = 0; i < 250; i++)
     for (let str of test1) {
       try {
-        espressionEsprima.parse(str);
-      } catch (e) { }
+        espressionParser.parse(str);
+      } catch (e) {}
     }
 
   len = Date.now() - init;
@@ -42,7 +39,7 @@ function benchmark() {
     for (let str of test1) {
       try {
         esprima.parse(str);
-      } catch (e) { }
+      } catch (e) {}
     }
   len = Date.now() - init;
 

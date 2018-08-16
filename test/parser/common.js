@@ -105,7 +105,7 @@ module.exports = [
   "[ 42, ]",
   "[ 1, 2, 3, ]",
   "[", // should throw
-  "[,",// should throw
+  "[,", // should throw
 
 
 
@@ -210,6 +210,10 @@ module.exports = [
   "delete x",
   "typeof x",
 
+  "!!a",
+  "void void x",
+  "- - x",
+
 
   // ternary
 
@@ -252,8 +256,16 @@ module.exports = [
   "a;b",
   "a\nb",
   " \n ",
+  "",
+  "   ",
+  "\t",
+  ", ",
+  ";\n\n",
+  "a;; \n ",
+  "a; \n b",
   ";",
   ";a+b",
   ",,3",
+  "func()123"
 
 ];

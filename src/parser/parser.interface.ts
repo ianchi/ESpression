@@ -5,12 +5,6 @@
  * https://opensource.org/licenses/MIT
  */
 
-export interface IPreResult {
-  node: INode | null;
-  final?: boolean;
-  skip?: boolean;
-}
-
 export interface INode {
   type: string;
   [prop: string]: any;
@@ -19,4 +13,16 @@ export interface INode {
 export interface ICharClass {
   re: RegExp;
   re2?: RegExp;
+}
+
+export interface IOperatorDef {
+  [operator: string]: { space?: boolean };
+}
+
+export interface IParserConfig {
+  identStart: ICharClass;
+  identPart: ICharClass;
+
+  maxOpLen: number;
+  ops: { [op: string]: boolean };
 }

@@ -17,4 +17,5 @@ module.exports = [
   "'\\8'",
   "'\\9'",
 
+  // consecutive expressions
 ];

@@ -3,6 +3,7 @@ module.exports = [
   "[,,]",
   "[ ,, 42 ]",
   "[ 1, 2,, 3, ]",
+  " [a , b, ...c, ...d,]",
   "'abc'.length",
   "() + 42",
   "() <= 42",
@@ -38,6 +39,8 @@ module.exports = [
   "x ^= 42",
   "x |= 42",
 
+  "a ? b=c : d=e",
+
   "3 = 4", // should fail
   "func() = 4",
   "(1 + 1) = 10",
@@ -49,11 +52,16 @@ module.exports = [
   "x--",
   "++x",
   "--x",
+  "a\n++b",
 
   "1++", // should fail
   "1--",
   "++1",
   "--1",
+  "++a++",
+  "++ ++ a",
+  "a++ --",
+  "a\n++",
 
   // new
   "new Date",
@@ -84,6 +92,12 @@ module.exports = [
   "a = {a:1}",
   "a = {a: 1+2, '.b': 'text', c: 25 }",
   "a = {}",
-  "a = {  }"
+  "a = {  }",
+  "a = { b:1, c:2,}",
+  "a = { [b()]:c, d, e,}",
+
+  // inconsistent behaviour in jsep
+  " ; ",
+  ";\n\n;\n",
 
 ];
