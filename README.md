@@ -33,17 +33,18 @@ let result = staticEval.evaluate(ast, {a:1, b:2, c:3});
 ```
 
 This preset can return Esprima compatible AST (ExpressionStatetments inside a Program Body), or .
-All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body). Some ES6 features are supported:
+All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body). Most ES6 features are also supported:
 
 - template literals
+- tagged template expressions
 - array spread operator
 - object literal: shorthand and computed properties
 
-To evaluate the ast you can provide a context object.
+To evaluate the AST you can provide a context object whose properties are visible as variables inside the expression.
 
 ### basic expressions
 
-Limited expressions, compatible with **JSEP** syntax. It is a bit smaller, but almost neligible.
+Limited expressions, compatible with **JSEP** syntax. It is a bit smaller, but almost negligible.
 
 ```
 import { BasicParser, BasicEval } from 'espression';
