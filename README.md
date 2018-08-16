@@ -29,7 +29,7 @@ const parser = new ES5Parser();
 const staticEval = new ES5Eval();
 
 let ast = parser.parse('a + b * c');
-let result = staticEval.eval(ast, {a:1, b:2, c:3});
+let result = staticEval.evaluate(ast, {a:1, b:2, c:3});
 ```
 
 This preset can return Esprima compatible AST (ExpressionStatetments inside a Program Body), or .
@@ -52,7 +52,7 @@ const parser = new BasicParser();
 const staticEval = new BasicEval();
 
 let ast = parser.parse('a + b * c');
-let result = staticEval.eval(ast, {a:1, b:2, c:3});
+let result = staticEval.evaluate(ast, {a:1, b:2, c:3});
 ```
 
 Returns a jsep compatible AST (with compound statements). Keeps same limitations for expressions (i.e. no RegExp literals, no object literals, no assignment).
