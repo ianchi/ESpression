@@ -46,7 +46,9 @@ import {
   opConf,
   PROPERTY,
   PROPERTY_TYPE,
+  SPREAD_EXP,
   STATEMENT,
+  TAGGED_EXP,
   TOKEN,
   UNARY_EXP,
   UNARY_TYPE_PRE,
@@ -158,6 +160,7 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
         '.': MEMBER_TYPE,
         '[': MEMBER_TYPE_COMP,
         '(': CALL_TYPE,
+        '`': { type: TAGGED_EXP, left: 'tag', right: 'quasi', subRules: 'template' },
       }),
       newRule,
       new UnaryOperatorRule({ '(': GROUP_TYPE }),
@@ -194,9 +197,18 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 
     [ARRAY_EXP]: [
       new UnaryOperatorRule({
-        '...': { type: 'SpreadElement', isPre: true, subRules: NOCOMMA_EXPR },
+        '...': { type: SPREAD_EXP, isPre: true, subRules: NOCOMMA_EXPR },
       }),
       NOCOMMA_EXPR,
+    ],
+    template: [
+      new StringRule({
+        LT: true,
+        hex: true,
+        raw: true,
+        unquoted: false,
+        templateRules: EXPRESSION,
+      }),
     ],
   };
 }

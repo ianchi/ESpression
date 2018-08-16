@@ -18,7 +18,10 @@ export interface IConfStringRule extends ISubRuleConf {
   /** Allow hex scape sequences */
   hex?: boolean;
   /**
-   * Parse unquoted text string, matches everything till eof.
+   * Parse unquoted text string:
+   * if `undefined`, needs a starting quote to match rule
+   * if `true` matches everything till eof
+   * if `false` and `templateRules` no starting quote, but expects closing backtick char (used for tagged templates).
    */
   unquoted?: boolean;
   /**
@@ -78,7 +81,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
   pre(ctx: ParserContext): INode | null {
     const c = this.config;
     let str = '',
-      quote = '',
+      quote = c.unquoted === false && c.templateRules ? '`' : '',
       closed = false,
       ch: string | null,
       start = ctx.i,
@@ -88,7 +91,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
       quasis = [];
 
     // check for string start marker
-    if (!c.unquoted) {
+    if (typeof c.unquoted === 'undefined') {
       ch = ctx.gtCh();
 
       if (c.templateRules && ch === '`') {
