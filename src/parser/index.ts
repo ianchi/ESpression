@@ -10,3 +10,6 @@ export * from './parseError';
 export * from './parser.interface';
 export * from './parserContext';
 export * from './rules';
+
+// needed to generate typings file for pure interface source
+import './parser.interface';
