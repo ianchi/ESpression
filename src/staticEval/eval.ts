@@ -28,7 +28,7 @@ export abstract class StaticEval {
    * @param expression AST to evaluate
    * @param context Optional custom contex object. Defaults to empty context `{}`
    */
-  eval(expression: INode, context?: object): any {
+  evaluate(expression: INode, context?: object): any {
     return this._eval(expression, context || {});
   }
 
