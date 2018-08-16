@@ -8,9 +8,11 @@
 import { INode } from '../../parser';
 import {
   ASSIGN_EXP,
+  CALL_EXP,
   IDENTIFIER_EXP,
   LITERAL_EXP,
   MEMBER_EXP,
+  SPREAD_EXP,
   UPDATE_EXP,
 } from '../../parser/presets';
 import { ILvalue, keyedObject, unsuportedError } from '../eval';
@@ -61,24 +63,53 @@ export class ES5StaticEval extends BasicEval {
     return { o: obj, m: member };
   }
 
+  /** Rule to evaluate `ArrayExpression` with spread operator */
+  protected ArrayExpression(node: INode, context: keyedObject): any {
+    return this._resolve(
+      context,
+      (...values) => {
+        const result: any[] = [];
+        node.elements.forEach((n: INode, i: number) => {
+          if (n.type === SPREAD_EXP) {
+            for (const val of values) result.push(val);
+          } else result.push(values[i]);
+        });
+        return result;
+      },
+      ...node.elements
+    );
+  }
   /** Rule to evaluate `ObjectExpression` */
   protected ObjectExpression(node: INode, context: keyedObject): any {
-    const keys: string[] = [],
-      nodes = node.properties.map((n: INode) => {
+    const keys: Array<string | undefined> = [],
+      computedNodes: INode[] = [],
+      computed: number[] = [],
+      nodes = node.properties.map((n: INode, i: number) => {
         let key: string;
-        if (n.key.type === IDENTIFIER_EXP) key = n.key.name;
-        else if (n.key.type === LITERAL_EXP) key = n.key.value.toString();
-        else throw new Error('Invalid property');
-        if (keys.indexOf(key) >= 0) throw new Error('Duplicate property');
-        keys.push(key);
-
+        if (n.computed) {
+          keys.push(undefined);
+          computed.push(i);
+          computedNodes.push(n.key);
+        } else {
+          if (n.key.type === IDENTIFIER_EXP) key = n.key.name;
+          else if (n.key.type === LITERAL_EXP) key = n.key.value.toString();
+          else throw new Error('Invalid property');
+          if (keys.indexOf(key) >= 0) throw new Error('Duplicate property');
+          keys.push(key);
+        }
         return n.value;
       });
 
     // add callback as first argument
     return this._resolve(
       context,
-      (...values) => values.reduce((ret, val, i) => ((ret[keys[i]] = val), ret), {}),
+      (...args) => {
+        // completed resolved key names
+        computed.forEach(idx => (keys[idx] = args.shift()));
+        // generate object
+        return args.reduce((ret, val, i) => ((ret[keys[i]!] = val), ret), {});
+      },
+      ...computedNodes,
       ...nodes
     );
   }
@@ -93,6 +124,17 @@ export class ES5StaticEval extends BasicEval {
           node.quasis[0].value.cooked
         ),
       ...node.expressions
+    );
+  }
+
+  protected TaggedTemplateExpression(node: INode, context: keyedObject): any {
+    return this.CallExpression(
+      {
+        type: CALL_EXP,
+        callee: node.tag,
+        arguments: [node.quasi.quasis, ...node.quasi.expressions],
+      },
+      context
     );
   }
 
