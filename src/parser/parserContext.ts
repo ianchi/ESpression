@@ -28,6 +28,7 @@ export class ParserContext {
 
   private branch = '';
   private level = 0;
+  private nxtOp = '';
 
   constructor(public e: string, public rules: IRuleSet, public config: IParserConfig) {}
 
@@ -42,6 +43,7 @@ export class ParserContext {
     if (!cant) return;
     this.sp = this.lt = false;
     this.i += cant;
+    this.nxtOp = '';
   }
 
   /**
@@ -73,6 +75,7 @@ export class ParserContext {
 
   gbCh(): string {
     this.sp = this.lt = false;
+    this.nxtOp = '';
     return this.e.charAt(this.i++);
   }
 
@@ -87,6 +90,7 @@ export class ParserContext {
     if (ch !== this.e.charAt(this.i)) return false;
     this.sp = this.lt = false;
     this.i++;
+    this.nxtOp = '';
     return true;
   }
 
@@ -99,6 +103,7 @@ export class ParserContext {
       this.i++;
       this.sp = this.sp || sp;
       this.lt = this.lt || lt;
+      this.nxtOp = '';
     }
     return this.sp || this.lt;
   }
@@ -126,6 +131,7 @@ export class ParserContext {
     for (let i = 0; i < len; ++i) {
       digit = hexDigit.indexOf(this.gtCh().toLowerCase());
       if (!this.eof() && digit >= 0) {
+        this.nxtOp = '';
         this.i++;
         code = code * 16 + digit;
       } else return null;
@@ -133,8 +139,9 @@ export class ParserContext {
     return String.fromCharCode(code);
   }
   gtOp(): string | null {
+    // cache result
+    if (this.nxtOp) return this.nxtOp;
     const ops = this.config.ops;
-    if (!ops) return null;
     let toCheck = this.e.substr(this.i, this.config.maxOpLen),
       tcLen = toCheck.length;
     while (tcLen > 0) {
@@ -145,6 +152,7 @@ export class ParserContext {
           this.teLT(tcLen) ||
           this.i + tcLen >= this.e.length
         ) {
+          this.nxtOp = toCheck;
           return toCheck;
         }
       }
@@ -262,7 +270,8 @@ export class ParserContext {
             // empty last expression
 
             if (!c.trailling && index > 0) return this.err('Expected expression');
-            else break;
+            if (index > 0) sep = true;
+            break;
 
             // sparse
           } else if (!c.sparse) return this.err('Expected expression');
