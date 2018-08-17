@@ -1,12 +1,11 @@
 {
   "name": "espression",
   "version": "1.0.3",
-  "description": "Small and customizable EcmaScript expression parser and static eval, with support for jsonPath.",
+  "description": "Small and customizable EcmaScript expression parser and static eval, with support for most ES6 expression syntax and jsonPath.",
   "author": "Adrian Panella <ianchi74@outlook.com>",
   "license": "MIT",
   "repository": "https://github.com/ianchi/ESpression.git",
   "main": "dist/bundle/espression.cjs.js",
-  "browser": "dist/bundle/espression.umd.js",
   "module": "dist/esm5/espression.js",
   "es2015": "dist/esm2015/espression.js",
   "types": "dist/src/main.d.ts",
