@@ -7,6 +7,12 @@
     "sourceMap": true,
 
     "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true,
 
     "outDir": "dist",
     "typeRoots": ["node_modules/@types"],

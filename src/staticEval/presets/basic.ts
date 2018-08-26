@@ -6,7 +6,7 @@
  */
 
 import { INode } from '../../parser';
-import { BINARY_EXP, IDENTIFIER_EXP, MEMBER_EXP, UNARY_EXP } from '../../parser/presets';
+import { BINARY_EXP, MEMBER_EXP, UNARY_EXP } from '../../parser/presets';
 
 import { ILvalue, keyedObject, StaticEval, unsuportedError } from '../eval';
 
@@ -47,7 +47,7 @@ export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
 
 export class BasicEval extends StaticEval {
   /** Dummy implemantation, it is not used */
-  lvalue(node: INode, context: keyedObject): ILvalue {
+  lvalue(_node: INode, _context: keyedObject): ILvalue {
     return { o: {}, m: '' };
   }
 

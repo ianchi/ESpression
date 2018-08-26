@@ -135,7 +135,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
         if (!ctx.tyCh('}')) return ctx.err('Expected "}" but found ');
         start = ctx.i;
       } else if (ch === '\\') {
-        if (c.LT && ctx.teLT()) {
+        if (LT && ctx.teLT()) {
           // check for line continuation
           ch = ctx.gbCh();
           if (ch === '\r') ctx.tyCh('\n');
