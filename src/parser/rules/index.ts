@@ -6,6 +6,7 @@
  */
 
 export * from './baseRule';
+export * from './tryBranch';
 export { BinaryOperatorRule, IConfBinaryRule, IConfBinaryOp } from './operator/binary';
 export { MultiOperatorRule, IConfMultipleRule } from './operator/multiple';
 export { TernaryOperatorRule, IConfTernaryRule } from './operator/ternary';
