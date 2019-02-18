@@ -4,7 +4,7 @@ const esprima = require('esprima');
 
 const espression = require('../dist/bundle/espression.cjs');
 const espressionJsep = new espression.BasicParser();
-const espressionEsprima = new espression.ES5Parser();
+const espressionEsprima = new espression.ES6Parser();
 
 function compare(expr, parser1, parser2) {
   let n1, n2, fail1, fail2;

@@ -109,4 +109,25 @@ module.exports = [
   // inconsistent behaviour in jsep
   ' ; ',
   ';\n\n;\n',
+
+  // Arrow Functions
+
+  'a => r',
+  '( ) => r',
+  '(a, b) => r',
+  '(a, b, ) => r',
+  '(a, b=1, ...c) => r',
+  '(a, b) => a || b && c | d ^ e & f == g < h >>> i + j * k',
+  'd = (a, b) => r',
+
+  //should fail
+  '(a, b=1, ...c, k) => r',
+  '(a, , ...c) => r',
+  '(a, b=1, ...c=1 ) => r',
+  'w + (a, b) => r',
+
+  // non compliant in ESpression, they are allowed and shouldn't
+  // '(a, b=1, ...c, ) => r',
+  // '(a, b=1, ...c ) \n=> r',
+  // '(a, b=1, ...c ) => {r:a}',
 ];

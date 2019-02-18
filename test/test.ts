@@ -5,11 +5,18 @@
  * https://opensource.org/licenses/MIT
  */
 
-import { BasicParser, ES5Parser } from '../src/main';
-const es5 = new ES5Parser(true);
+import { BasicParser, ES6Parser, ES6StaticEval } from '../src/main';
+const es5 = new ES6Parser(true);
 const jsep = new BasicParser();
 
-const node1 = es5.parse('!a');
-const node2 = jsep.parse('func(a,b)');
+const node1 = es5.parse('(a, b=(console.log(a), a*2), ...c, ) => (console.log(c),a+b)');
+const node2 = jsep.parse('A+B');
 console.log(node1);
 console.log(node2);
+
+const ev = new ES6StaticEval();
+
+const func = ev.evaluate(node1, { console });
+
+console.log(func(10, 12, 1, 2, 3, 4));
+console.log(func(10));

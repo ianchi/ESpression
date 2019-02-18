@@ -1,7 +1,6 @@
 // unsupported in ESpression
 
 module.exports = [
-
   // octal escapes
   "'Hello\\1World'",
   "'Hello\\02World'",
@@ -12,10 +11,13 @@ module.exports = [
   "'Hello\\412World'",
   "'Hello\\712World'",
   "'Hello\\0World'",
-  "012",
-  "0012",
+  '012',
+  '0012',
   "'\\8'",
   "'\\9'",
 
-  // consecutive expressions
+  // arrow function expressions non compliant cases
+  '(a, b=1, ...c, ) => r',
+  '(a, b=1, ...c ) \n=> r',
+  '(a, b=1, ...c ) => {r:a}',
 ];
