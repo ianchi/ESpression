@@ -11,6 +11,7 @@ import { IConfBinaryOp, IConfMultipleRule, IConfUnaryOp } from '../rules';
 export const BINARY_EXP = 'BinaryExpression',
   LOGICAL_EXP = 'LogicalExpression',
   ASSIGN_EXP = 'AssignmentExpression',
+  ASSIGN_PAT = 'AssignmentPattern',
   LITERAL_EXP = 'Literal',
   TEMPLATE_EXP = 'TemplateLiteral',
   TEMPLATE_ELE = 'TemplateElement',
@@ -28,6 +29,8 @@ export const BINARY_EXP = 'BinaryExpression',
   NEW_EXP = 'NewExpression',
   EXPRESSION_EXP = 'ExpressionStatement',
   SPREAD_EXP = 'SpreadElement',
+  REST_ELE = 'RestElement',
+  ARROW_EXP = 'ArrowFunctionExpression',
   OPER = 'operator',
   PREFIX = 'prefix',
   OBJECT = 'object',
@@ -66,6 +69,21 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     empty: true,
     subRules: ARRAY_EXP,
   },
+  PARAMS_TYPE: IConfUnaryOp = {
+    type: 'params',
+    prop: 'params',
+    close: ')',
+    separators: ',',
+    trailling: true,
+    empty: true,
+    subRules: 'bindElem',
+    extra: (node: INode) => {
+      const rest = (node.params as [INode]).findIndex(n => n.type === REST_ELE);
+      if (rest >= 0 && rest !== node.params.length - 1) throw new Error();
+
+      return node;
+    },
+  },
   OBJECT_TYPE: IConfUnaryOp = {
     type: OBJECT_EXP,
     prop: 'properties',
@@ -76,19 +94,18 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     subRules: OBJECT,
     types: [IDENTIFIER_EXP, 'Property'],
     extra: (node: INode) => (
-      (node.properties = node.properties.map(
-        (n: INode) =>
-          n.type !== IDENTIFIER_EXP
-            ? n
-            : {
-                type: 'Property',
-                key: n,
-                value: n,
-                kind: 'init',
-                method: false,
-                shorthand: true,
-                computed: false,
-              }
+      (node.properties = node.properties.map((n: INode) =>
+        n.type !== IDENTIFIER_EXP
+          ? n
+          : {
+              type: 'Property',
+              key: n,
+              value: n,
+              kind: 'init',
+              method: false,
+              shorthand: true,
+              computed: false,
+            }
       )),
       node
     ),

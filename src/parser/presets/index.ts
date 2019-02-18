@@ -9,4 +9,5 @@ export * from './const';
 
 export { es5IdentStart, es5IdentPart } from './identStartConf';
 export { es5Rules, ES5Parser } from './es5';
+export { es6Rules, ES6Parser } from './es6';
 export { basicRules, BasicParser } from './basic';
