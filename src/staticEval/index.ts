@@ -8,3 +8,4 @@
 export * from './eval';
 export * from './presets/basic';
 export * from './presets/es5';
+export * from './presets/es6';
