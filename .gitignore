@@ -6,5 +6,6 @@ dist
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json*.log
+!.vscode/*.dict
 .rpt2_cache
 *.log
