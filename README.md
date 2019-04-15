@@ -32,13 +32,14 @@ let ast = parser.parse('a + b * c');
 let result = staticEval.evaluate(ast, {a:1, b:2, c:3});
 ```
 
-This preset can return Esprima compatible AST (ExpressionStatetments inside a Program Body), or .
+This preset can return Esprima compatible AST (ExpressionStatements inside a Program Body), or .
 All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body). Most ES6 features are also supported:
 
 - template literals
 - tagged template expressions
 - array spread operator
 - object literal: shorthand and computed properties
+- arrow function expressions (only with *expression* body)
 
 To evaluate the AST you can provide a context object whose properties are visible as variables inside the expression.
 
