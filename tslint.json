@@ -86,7 +86,6 @@
     "no-unnecessary-initializer": true,
     "no-unsafe-any": false,
     "no-unused-expression": [true, "allow-fast-null-checks"],
-    "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": true,
     "object-literal-key-quotes": {

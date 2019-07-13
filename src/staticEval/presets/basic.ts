@@ -7,7 +7,6 @@
 
 import { INode } from '../../parser';
 import { BINARY_EXP, MEMBER_EXP, UNARY_EXP } from '../../parser/presets';
-
 import { ILvalue, keyedObject, StaticEval, unsuportedError } from '../eval';
 
 // tslint:disable:no-bitwise
