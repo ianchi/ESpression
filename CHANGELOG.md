@@ -1,6 +1,22 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [1.2.0](https://github.com/ianchi/ESpression/compare/v1.1.1...v1.2.0) (2019-07-13)
+
+
+### Features
+
+* **preset:** Add ArrowFunction parsing in new ES6 preset ([b965915](https://github.com/ianchi/ESpression/commit/b965915))
+* **rules:** Add TryBranch rule ([be6a3d8](https://github.com/ianchi/ESpression/commit/be6a3d8))
+* **stticEval:** Adds evaluation of ArrowFunction expressions in new ES6 preset ([1f67bb1](https://github.com/ianchi/ESpression/commit/1f67bb1))
+
+
+### Tests
+
+* add ArrowFunction tests ([f651347](https://github.com/ianchi/ESpression/commit/f651347))
+
+
 
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/ianchi/ESpression/compare/v1.1.0...v1.1.1) (2018-08-26)
