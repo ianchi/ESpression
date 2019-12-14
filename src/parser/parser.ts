@@ -16,7 +16,7 @@ export class Parser {
     private startBranch: string,
     identStart?: ICharClass,
     identPart?: ICharClass,
-    private range?: boolean
+    range?: boolean
   ) {
     this.config = {
       identStart: identStart || { re: /[$_A-Za-z]/ },

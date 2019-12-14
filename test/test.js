@@ -4,7 +4,7 @@ const esprima = require('esprima');
 
 const espression = require('../dist/bundle/espression.cjs');
 const espressionJsep = new espression.BasicParser();
-const espressionEsprima = new espression.ES6Parser(undefined, undefined, true);
+const espressionEsprima = new espression.ES6Parser(undefined, undefined, undefined, undefined, true);
 
 function compare(expr, parser1, parser2) {
   let n1, n2, fail1, fail2;
@@ -54,7 +54,7 @@ function compJsep(exprs) {
 function compEsprima(exprs) {
   let ok = 0;
   console.log('Testing vs ESPRIMA');
-  exprs.forEach(element => compare(element, espressionEsprima, expr => esprima.parse(expr, {range: true}) && ok++);
+  exprs.forEach(element => compare(element, espressionEsprima, expr => esprima.parse(expr, { range: true })) && ok++);
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
 }
