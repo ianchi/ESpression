@@ -15,12 +15,14 @@ export class Parser {
     public rules: IRuleSet,
     private startBranch: string,
     identStart?: ICharClass,
-    identPart?: ICharClass
+    identPart?: ICharClass,
+    range?: boolean
   ) {
     this.config = {
       identStart: identStart || { re: /[$_A-Za-z]/ },
       identPart: identPart || { re: /[$_0-9A-Za-z]/ },
       maxOpLen: 0,
+      range: !!range,
       ops: {},
     };
 
@@ -61,6 +63,7 @@ export class Parser {
    */
   parse(expr: string): INode {
     const ctx = new ParserContext(expr, this.rules, this.config);
+    ctx.gbSp();
     const node = ctx.parseNext(this.startBranch);
     ctx.gbSp();
     if (!ctx.eof()) return ctx.err();

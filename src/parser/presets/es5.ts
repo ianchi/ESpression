@@ -214,7 +214,18 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 }
 
 export class ES5Parser extends Parser {
-  constructor(noStatement?: boolean, identStart?: ICharClass, identPart?: ICharClass) {
-    super(es5Rules(identStart, identPart), noStatement ? EXPRESSION : STATEMENT);
+  constructor(
+    noStatement?: boolean,
+    identStart?: ICharClass,
+    identPart?: ICharClass,
+    range?: boolean
+  ) {
+    super(
+      es5Rules(identStart, identPart),
+      noStatement ? EXPRESSION : STATEMENT,
+      identStart,
+      identPart,
+      range
+    );
   }
 }

@@ -81,7 +81,6 @@ export class IdentifierRule extends BaseRule<IConfIdentifierRule> {
     identifier = ctx.gbCh();
 
     while (!ctx.eof()) {
-      ctx.gtCh();
       if (!ctx.teIdPt(c.identPart)) break;
       identifier += ctx.gbCh();
     }

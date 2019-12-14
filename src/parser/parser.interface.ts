@@ -24,5 +24,6 @@ export interface IParserConfig {
   identPart: ICharClass;
 
   maxOpLen: number;
+  range?: boolean;
   ops: { [op: string]: boolean };
 }

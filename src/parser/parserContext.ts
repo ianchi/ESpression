@@ -23,6 +23,7 @@ export interface IRuleSet {
 export class ParserContext {
   sp = false;
   lt = false;
+  ch = 0;
 
   i = 0;
 
@@ -43,6 +44,7 @@ export class ParserContext {
     if (!cant) return;
     this.sp = this.lt = false;
     this.i += cant;
+    this.ch = this.i;
   }
 
   /**
@@ -74,6 +76,7 @@ export class ParserContext {
 
   gbCh(): string {
     this.sp = this.lt = false;
+    this.ch = this.i + 1;
     return this.e.charAt(this.i++);
   }
 
@@ -88,12 +91,14 @@ export class ParserContext {
     if (ch !== this.e.charAt(this.i)) return false;
     this.sp = this.lt = false;
     this.i++;
+    this.ch = this.i;
     return true;
   }
 
   gbSp(): boolean {
     let sp = false,
       lt = false;
+
     // space or tab
     // tslint:disable-next-line:no-conditional-assignment
     while (!this.eof() && ((sp = this.teSP()) || (lt = this.teLT()))) {
@@ -128,6 +133,7 @@ export class ParserContext {
       digit = hexDigit.indexOf(this.gtCh().toLowerCase());
       if (!this.eof() && digit >= 0) {
         this.i++;
+        this.ch = this.i;
         code = code * 16 + digit;
       } else return null;
     }
@@ -206,16 +212,17 @@ export class ParserContext {
    */
   parseNext(jump: string | number): INode {
     const curBranch = this.branch,
-      curLevel = this.level;
+      curLevel = this.level,
+      curPos = this.i;
     let res: INode;
 
     try {
       const rule = this.moveRule(jump);
 
       res = rule.pre(this) || this.parseNext(1);
-
       this.gbSp();
       res = rule.post(this, res);
+      if (this.config.range && !res.range) res.range = [curPos, this.ch];
       return res;
     } finally {
       this.branch = curBranch;
@@ -242,10 +249,12 @@ export class ParserContext {
     const nodes: Array<INode | null> & { match?: boolean } = [];
     let sep: boolean | string,
       node: INode,
-      index = 0;
+      index = 0,
+      curPos;
 
     do {
       this.gbSp();
+      curPos = this.i;
 
       try {
         node = this.parseNext(jump);
@@ -270,7 +279,11 @@ export class ParserContext {
 
             // sparse
           } else if (!c.sparse) return this.err('Expected expression');
-          else nodes[index] = c.sparse !== true ? c.sparse : null;
+          else {
+            nodes[index] = c.sparse !== true ? c.sparse : null;
+            if (this.config.range && nodes[index] !== null)
+              nodes[index]!.range = [curPos, this.eof() && !this.lt ? this.ch : this.i];
+          }
         } else throw e;
       }
 
