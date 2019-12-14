@@ -206,7 +206,8 @@ export class ParserContext {
    */
   parseNext(jump: string | number): INode {
     const curBranch = this.branch,
-      curLevel = this.level;
+      curLevel = this.level,
+      curPos = this.pos;
     let res: INode;
 
     try {
@@ -216,6 +217,7 @@ export class ParserContext {
 
       this.gbSp();
       res = rule.post(this, res);
+      if (this.config.range) res.range = [curPos, this.pos];
       return res;
     } finally {
       this.branch = curBranch;

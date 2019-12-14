@@ -15,12 +15,14 @@ export class Parser {
     public rules: IRuleSet,
     private startBranch: string,
     identStart?: ICharClass,
-    identPart?: ICharClass
+    identPart?: ICharClass,
+    private range?: boolean
   ) {
     this.config = {
       identStart: identStart || { re: /[$_A-Za-z]/ },
       identPart: identPart || { re: /[$_0-9A-Za-z]/ },
       maxOpLen: 0,
+      range: !!range,
       ops: {},
     };
 

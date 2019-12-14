@@ -66,7 +66,7 @@ export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 }
 
 export class ES6Parser extends Parser {
-  constructor(noStatement?: boolean, identStart?: ICharClass, identPart?: ICharClass) {
-    super(es6Rules(identStart, identPart), noStatement ? EXPRESSION : STATEMENT);
+  constructor(noStatement?: boolean, identStart?: ICharClass, identPart?: ICharClass, range?: boolean) {
+    super(es6Rules(identStart, identPart), noStatement ? EXPRESSION : STATEMENT, range);
   }
 }
