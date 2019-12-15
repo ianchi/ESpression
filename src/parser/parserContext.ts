@@ -30,7 +30,7 @@ export class ParserContext {
   private level = 0;
   private nxtOp = '';
   private opPos = -1;
-  constructor(public e: string, public rules: IRuleSet, public config: IParserConfig) { }
+  constructor(public e: string, public rules: IRuleSet, public config: IParserConfig) {}
 
   rest(): string {
     return this.e.substr(this.i);
@@ -208,16 +208,17 @@ export class ParserContext {
     const curBranch = this.branch,
       curLevel = this.level,
       curPos = this.i;
-    let res: INode;
+    let res: INode, aux: number;
 
     try {
       const rule = this.moveRule(jump);
 
       res = rule.pre(this) || this.parseNext(1);
-
-      this.gbSp();
-      res = rule.post(this, res);
       if (this.config.range) res.range = [curPos, this.i];
+      this.gbSp();
+      aux = this.i;
+      res = rule.post(this, res);
+      if (this.config.range && aux !== this.i) res.range = [curPos, this.i];
       return res;
     } finally {
       this.branch = curBranch;
