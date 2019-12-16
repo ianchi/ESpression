@@ -51,7 +51,7 @@ export class MultiOperatorRule extends BaseRule<IConfMultipleRule> {
 
   pre(ctx: ParserContext): INode | null {
     // use pre to be able to check for empty expression on first slot
-
+    const curPos = ctx.i;
     const c = this.config,
       nodes = ctx.parseMulti(c, c.subRules || 1);
 
@@ -63,9 +63,12 @@ export class MultiOperatorRule extends BaseRule<IConfMultipleRule> {
 
     if (!nodes.length && (!c.empty || !c.separators)) return ctx.err('Expression expected');
 
-    return this.addExtra(c, {
+    const ret = this.addExtra(c, {
       type: c.type,
       [c.prop!]: c.separators ? nodes : nodes[0],
     });
+
+    if (ctx.config.range) ret.range = [curPos, ctx.eof() && !ctx.lt ? ctx.ch : ctx.i];
+    return ret;
   }
 }

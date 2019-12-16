@@ -92,6 +92,7 @@ export class BinaryOperatorRule extends BaseRule<IConfBinaryRule> {
   }
 
   post(ctx: ParserContext, bubbledNode: INode): INode {
+    const curPos = bubbledNode.range ? bubbledNode.range[0] : ctx.i;
     let op = ctx.gbOp(this.config);
 
     while (op) {
@@ -113,7 +114,7 @@ export class BinaryOperatorRule extends BaseRule<IConfBinaryRule> {
         [c.right || 'right']: c.separators ? nodes : nodes[0],
       });
       if (c.oper) bubbledNode[c.oper] = op;
-
+      if (ctx.config.range) bubbledNode.range = [curPos, ctx.ch];
       op = c.rasoc ? '' : ctx.gbOp(this.config);
     }
 

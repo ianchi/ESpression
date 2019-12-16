@@ -94,19 +94,22 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     subRules: OBJECT,
     types: [IDENTIFIER_EXP, 'Property'],
     extra: (node: INode) => (
-      (node.properties = node.properties.map((n: INode) =>
-        n.type !== IDENTIFIER_EXP
-          ? n
-          : {
-              type: 'Property',
-              key: n,
-              value: n,
-              kind: 'init',
-              method: false,
-              shorthand: true,
-              computed: false,
-            }
-      )),
+      (node.properties = node.properties.map((n: INode) => {
+        const ret =
+          n.type !== IDENTIFIER_EXP
+            ? n
+            : {
+                type: 'Property',
+                key: n,
+                value: n,
+                kind: 'init',
+                method: false,
+                shorthand: true,
+                computed: false,
+              };
+        if (n.range) ret.range = n.range;
+        return ret;
+      })),
       node
     ),
   },

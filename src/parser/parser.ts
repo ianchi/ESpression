@@ -63,6 +63,7 @@ export class Parser {
    */
   parse(expr: string): INode {
     const ctx = new ParserContext(expr, this.rules, this.config);
+    ctx.gbSp();
     const node = ctx.parseNext(this.startBranch);
     ctx.gbSp();
     if (!ctx.eof()) return ctx.err();

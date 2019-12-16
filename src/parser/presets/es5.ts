@@ -126,9 +126,9 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
         extra: (node: INode) =>
           node.expression.type === LITERAL_EXP && typeof node.expression.value === 'string'
             ? {
-              ...node,
-              directive: node.expression.raw.substring(1, node.expression.raw.length - 1),
-            }
+                ...node,
+                directive: node.expression.raw.substring(1, node.expression.raw.length - 1),
+              }
             : node,
       }),
       EXPRESSION,
@@ -214,7 +214,18 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 }
 
 export class ES5Parser extends Parser {
-  constructor(noStatement?: boolean, identStart?: ICharClass, identPart?: ICharClass, range?: boolean) {
-    super(es5Rules(identStart, identPart), noStatement ? EXPRESSION : STATEMENT, identStart, identPart, range);
+  constructor(
+    noStatement?: boolean,
+    identStart?: ICharClass,
+    identPart?: ICharClass,
+    range?: boolean
+  ) {
+    super(
+      es5Rules(identStart, identPart),
+      noStatement ? EXPRESSION : STATEMENT,
+      identStart,
+      identPart,
+      range
+    );
   }
 }
