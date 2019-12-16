@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/ianchi/ESpression/compare/v1.2.0...v1.3.0) (2019-12-16)
+
+
+### Features
+
+* **parser:** new option to add range info in AST ([9101d0d](https://github.com/ianchi/ESpression/commit/9101d0d))
+
+
+
 ## [1.2.0](https://github.com/ianchi/ESpression/compare/v1.1.1...v1.2.0) (2019-07-13)
 
 
