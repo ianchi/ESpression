@@ -16,13 +16,13 @@ export interface IConfNumberRule {
 
   /**
    * Regex pattern with start prefix marking the number. Case insensitive.
-   * If not set, matchs any number starting with a digit in the radix range
+   * If not set, matches any number starting with a digit in the radix range
    * @example `0x` `0o`
    */
   prefix?: string;
   /** Allow decimal number, only for base 10  */
   decimal?: boolean;
-  /** Allow exponencial notation, only for base 10 */
+  /** Allow exponential notation, only for base 10 */
   exp?: boolean;
 }
 /**

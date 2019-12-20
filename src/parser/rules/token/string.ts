@@ -13,7 +13,7 @@ import { ISubRuleConf } from '../conf.interface';
 
 /** Configuration object for String Rule */
 export interface IConfStringRule extends ISubRuleConf {
-  /** Allow line continuation (escaped CR|LF). Allways true for templates */
+  /** Allow line continuation (escaped CR|LF). Always true for templates */
   LT?: boolean;
   /** Allow hex scape sequences */
   hex?: boolean;
@@ -25,7 +25,7 @@ export interface IConfStringRule extends ISubRuleConf {
    */
   unquoted?: boolean;
   /**
-   * Label tu jump to parse template expressions
+   * Label to jump to parse template expressions
    * If not set, it doesn't match template expressions
    */
   templateRules?: string;
@@ -34,6 +34,17 @@ export interface IConfStringRule extends ISubRuleConf {
    * If false include cooked string between quotes.
    */
   raw?: boolean;
+
+  /**
+   * For string literals include a map of positions and length of
+   * escape sequences, to allow to map from raw to cooked.
+   *
+   * It adds an `escapes: IPosition[]` property to the parsed node
+   * with an array of the positions and length of the raw escape
+   * sequences.
+   *
+   */
+  escapes?: boolean;
 }
 
 /**
@@ -73,6 +84,11 @@ export interface IConfStringRule extends ISubRuleConf {
  * }
  * ```
  */
+
+export interface IPosition {
+  offset: number;
+  length: number;
+}
 export class StringRule extends BaseRule<IConfStringRule> {
   constructor(public config: IConfStringRule = { LT: true, hex: true, raw: true }) {
     super();
@@ -88,7 +104,8 @@ export class StringRule extends BaseRule<IConfStringRule> {
       isTemplate = false,
       LT = c.LT;
     const expressions = [],
-      quasis = [];
+      quasis = [],
+      escapes: IPosition[] = [];
 
     // check for string start marker
     if (typeof c.unquoted === 'undefined') {
@@ -135,6 +152,8 @@ export class StringRule extends BaseRule<IConfStringRule> {
         if (!ctx.tyCh('}')) return ctx.err('Expected "}" but found ');
         start = ctx.i;
       } else if (ch === '\\') {
+        const init = ctx.i - 1;
+
         if (LT && ctx.teLT()) {
           // check for line continuation
           ch = ctx.gbCh();
@@ -168,7 +187,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
             case 'x':
               if (c.hex) {
                 ch = ctx.gbHex(ch);
-                if (ch === null) return ctx.err('Invalid Hex Escape');
+                if (ch === null) return ctx.err('Hexadecimal digit expected');
               }
               str += ch;
               break;
@@ -176,6 +195,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
               str += ch;
           }
         }
+        escapes.push({ offset: init, length: ctx.i - init });
       } else if (c.LT && ctx.teLT(-1)) {
         if (!isTemplate) return ctx.err('Invalid line terminator in string');
         if (ch === '\r') ctx.tyCh('\n');
@@ -189,12 +209,30 @@ export class StringRule extends BaseRule<IConfStringRule> {
       ctx.err('Unclosed quote after ');
     }
 
-    return isTemplate
-      ? { type: TEMPLATE_EXP, quasis, expressions }
-      : {
-          type: LITERAL_EXP,
-          value: str,
-          raw: c.raw ? ctx.e.substring(start, ctx.i) : quote + str + quote,
-        };
+    if (isTemplate) return { type: TEMPLATE_EXP, quasis, expressions };
+    else {
+      const ret: INode = {
+        type: LITERAL_EXP,
+        value: str,
+        raw: c.raw ? ctx.e.substring(start, ctx.i) : quote + str + quote,
+      };
+
+      if (c.escapes) ret.escapes = escapes;
+      return ret;
+    }
   }
+}
+
+// convert from cooked to raw
+
+export function toRawPosition(node: INode, pos: number): number {
+  let offset = 0;
+
+  if (!node || !node.escapes || node.type !== LITERAL_EXP) return pos;
+
+  for (let n of node.escapes) {
+    if (n.offset < pos + offset) offset += n.length - 1;
+    else break;
+  }
+  return pos + offset;
 }

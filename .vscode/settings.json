@@ -18,12 +18,13 @@
   },
   "editor.formatOnSave": true,
   "spellright.language": [
-    "en_US"
+    "en"
   ],
   "spellright.documentTypes": [
     "latex",
     "plaintext",
-    "markdown"
+    "markdown",
+    "typescript"
   ],
 "eslint.enable": false,
 "typescript.tsdk": "node_modules/typescript/lib"
