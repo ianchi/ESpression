@@ -15,7 +15,7 @@ export { UnaryOperatorRule, IConfUnaryRule, IConfUnaryOp } from './operator/unar
 export { IdentifierRule, IConfIdentifierRule } from './token/identifier';
 export { NumberRule, IConfNumberRule } from './token/number';
 export { RegexRule, IConfRegexRule } from './token/regex';
-export { StringRule, IConfStringRule } from './token/string';
+export { StringRule, IConfStringRule, IPosition, toRawPosition } from './token/string';
 
-// needed to generate typings' file for pure interface source
+// needed to generate typing's' file for pure interface source
 import './conf.interface';

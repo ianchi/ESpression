@@ -7,3 +7,6 @@ eval
 Esprima
 Eval
 jsonpath
+boolean
+eof
+quasis

@@ -9,6 +9,9 @@ export class ParseError extends SyntaxError {
   /** Original expression being parsed */
   expression: string;
 
+  /** Error description */
+  description: string;
+
   /** Position in the expression where the error was found */
   position: number;
 
@@ -16,7 +19,7 @@ export class ParseError extends SyntaxError {
   noMatch: boolean;
   constructor(message: string, expression: string, position: number, noMatch?: boolean) {
     super(`${message} ${expression[position] || ''} at position ${position}`);
-
+    this.description = message;
     this.expression = expression;
     this.position = position;
     this.noMatch = !!noMatch;
