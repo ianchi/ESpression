@@ -223,14 +223,16 @@ export class StringRule extends BaseRule<IConfStringRule> {
   }
 }
 
-// convert from cooked to raw
+/**
+ * Converts cooked position offset to raw position in string
+ */
 
 export function toRawPosition(node: INode, pos: number): number {
   let offset = 0;
 
   if (!node || !node.escapes || node.type !== LITERAL_EXP) return pos;
 
-  for (let n of node.escapes) {
+  for (const n of node.escapes) {
     if (n.offset < pos + offset) offset += n.length - 1;
     else break;
   }
