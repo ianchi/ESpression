@@ -90,10 +90,11 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
     new NumberRule(),
   ];
 
+  const identifierRule = new IdentifierRule(es5IdentifierConf(identStart, identPart));
   // object needs subset of tokens for parsing properties.
   const tokenRules = numberRules.concat([
     new StringRule({ LT: true, hex: true, raw: true, templateRules: EXPRESSION }),
-    new IdentifierRule(es5IdentifierConf(identStart, identPart)),
+    identifierRule,
     new UnaryOperatorRule({ '[': ARRAY_TYPE }),
     new RegexRule(),
     new UnaryOperatorRule({ '{': OBJECT_TYPE }),
@@ -116,6 +117,13 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
       },
     },
   });
+
+  const groupingRule = new UnaryOperatorRule({ '(': GROUP_TYPE });
+  const memberRule = new BinaryOperatorRule({
+    '.': MEMBER_TYPE,
+    '[': MEMBER_TYPE_COMP,
+  });
+  const propertyRule = new IdentifierRule({ identStart, identPart });
 
   return {
     [STATEMENT]: [
@@ -163,7 +171,7 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
         '`': { type: TAGGED_EXP, left: 'tag', right: 'quasi', subRules: 'template' },
       }),
       newRule,
-      new UnaryOperatorRule({ '(': GROUP_TYPE }),
+      groupingRule,
       TOKEN,
     ],
 
@@ -171,17 +179,14 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 
     // auxiliary branches
     // member identifier (allows reserved words)
-    [PROPERTY]: [new IdentifierRule({ identStart, identPart })],
+    [PROPERTY]: [propertyRule],
     // new operator
 
     [NEW_EXP]: [
       newRule,
       new BinaryOperatorRule({ '(': CALL_TYPE }),
-      new BinaryOperatorRule({
-        '.': MEMBER_TYPE,
-        '[': MEMBER_TYPE_COMP,
-      }),
-      new UnaryOperatorRule({ '(': GROUP_TYPE }),
+      memberRule,
+      groupingRule,
       TOKEN,
     ],
 
@@ -191,7 +196,7 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
       new UnaryOperatorRule({ '[': { type: EXPRESSION, close: ']', subRules: NOCOMMA_EXPR } }),
 
       ...numberRules,
-      new IdentifierRule({ identStart, identPart }),
+      propertyRule,
       new StringRule({ LT: true, hex: true, raw: true }),
     ],
 
@@ -210,6 +215,7 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
         templateRules: EXPRESSION,
       }),
     ],
+    lvalue: [memberRule, identifierRule],
   };
 }
 
