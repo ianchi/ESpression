@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/ianchi/ESpression/compare/v1.2.0...v1.4.0) (2020-01-18)
+
+
+### Features
+
+* add 'lvalue' rules in preset ([0440cf8](https://github.com/ianchi/ESpression/commit/0440cf8a8a28a3d83ddf0378c5f0e68ddfe3f05e))
+* **parser:** new option to add range info in AST ([9101d0d](https://github.com/ianchi/ESpression/commit/9101d0d08b0bb67340e58a58ad3349385605b66a))
+
+
+### Bug Fixes
+
+* **parser:** linting error ([1b6a60d](https://github.com/ianchi/ESpression/commit/1b6a60d1fccc3394a3b1dfc06c94070b46f3a525))
+* **parser:** position fixes and enhancements ([699258a](https://github.com/ianchi/ESpression/commit/699258af20615f6c96962c341f4dbd54ce8aad3e))
+
 ### [1.3.1](https://github.com/ianchi/ESpression/compare/v1.3.0...v1.3.1) (2019-12-20)
 
 
