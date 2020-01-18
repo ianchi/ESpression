@@ -10,25 +10,24 @@
   "es2015": "dist/esm2015/espression.js",
   "types": "dist/src/main.d.ts",
   "private": false,
+  "sideEffects": false,
   "dependencies": {
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "esprima": "^4.0.1",
     "jsep": "^0.3.4",
-    "prettier": "^1.18.2",
-    "rimraf": "^2.6.3",
-    "rollup": "^1.16.7",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.29.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^5.1.1",
-    "rollup-plugin-typescript2": "^0.22.0",
-    "rollup-plugin-uglify": "^6.0.0",
-    "standard-version": "^6.0.0",
-    "ts-node": "^7.0.0",
-    "tslint": "^5.18.0",
-    "typedoc": "^0.14.2",
-    "typedoc-plugin-markdown": "^2.0.9",
-    "typescript": "^3.5.3"
+    "rollup-plugin-typescript2": "^0.25.3",
+    "standard-version": "^7.0.1",
+    "ts-node": "^8.6.2",
+    "tslint": "^5.20.1",
+    "typedoc": "^0.16.7",
+    "typedoc-plugin-markdown": "^2.2.16",
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "prebuild": "rimraf dist",
