@@ -39,6 +39,8 @@ module.exports = [
   'x &= 42',
   'x ^= 42',
   'x |= 42',
+  'a = b = x',
+  'a += c += d',
 
   'a ? b=c : d=e',
 
@@ -63,6 +65,8 @@ module.exports = [
   '++ ++ a',
   'a++ --',
   'a\n++',
+  '- - ++x',
+  '- - x++',
 
   // new
   'new Date',
