@@ -134,4 +134,28 @@ module.exports = [
   // '(a, b=1, ...c, ) => r',
   // '(a, b=1, ...c ) \n=> r',
   // '(a, b=1, ...c ) => {r:a}',
+
+  // Exponentiation
+
+  'a**b',
+  'a**b**c',
+  'a**-b.c',
+  'd * a**b * d + c',
+  'a + b ** c * d',
+
+  '-a ** 2', // should fail
+  '(-a) ** 2', // OK
+  'a ** b ** -c',
+
+  'a ** -b',
+  'a ** -b ** c', // should fail
+  'a ** ( -b) ** c',
+  '(a ** b).toString()',
+  '(a + b).toString()',
+  'a ** (a + b) ** (c/2)',
+  'new Date() ** 2',
+  '(new Date()) ** 2',
+
+  'a**=2',
+  'a**= b **= c',
 ];

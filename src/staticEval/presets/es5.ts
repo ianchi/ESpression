@@ -28,6 +28,7 @@ export const assignOpCB: { [operator: string]: (a: keyedObject, m: string, b: an
     '*=': (a: keyedObject, m: string, b: any) => (a[m] *= b),
     '/=': (a: keyedObject, m: string, b: any) => (a[m] /= b),
     '%=': (a: keyedObject, m: string, b: any) => (a[m] %= b),
+    '**=': (a: keyedObject, m: string, b: any) => (a[m] **= b),
     '<<=': (a: keyedObject, m: string, b: any) => (a[m] <<= b),
     '>>=': (a: keyedObject, m: string, b: any) => (a[m] >>= b),
     '>>>=': (a: keyedObject, m: string, b: any) => (a[m] >>>= b),

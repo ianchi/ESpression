@@ -34,6 +34,7 @@ export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
     '*': (a: any, b: any) => a * b,
     '/': (a: any, b: any) => a / b,
     '%': (a: any, b: any) => a % b,
+    '**': (a: any, b: any) => a ** b,
   },
   unaryOpCB: { [operator: string]: (a: any) => any } = {
     '-': (a: any) => -a,
@@ -45,7 +46,7 @@ export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
   };
 
 export class BasicEval extends StaticEval {
-  /** Dummy implemantation, it is not used */
+  /** Dummy implementation, it is not used */
   lvalue(_node: INode, _context: keyedObject): ILvalue {
     return { o: {}, m: '' };
   }

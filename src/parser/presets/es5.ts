@@ -53,6 +53,7 @@ import {
   UNARY_EXP,
   UNARY_TYPE_PRE,
   UNARY_TYPE_PRE_SP,
+  UPDATE_EXP,
   UPDATE_TYPE,
   UPDATE_TYPE_PRE,
 } from './const';
@@ -75,7 +76,13 @@ const biOpConfs: IConfBinaryRule[] = [
   { '^': BINARY_TYPE },
   { '&': BINARY_TYPE },
   opConf(['==', '!=', '===', '!=='], BINARY_TYPE),
-  opConf([['<', '>', '<=', '>='], ['instanceof', 'in']], [BINARY_TYPE, BINARY_TYPE_SP]),
+  opConf(
+    [
+      ['<', '>', '<=', '>='],
+      ['instanceof', 'in'],
+    ],
+    [BINARY_TYPE, BINARY_TYPE_SP]
+  ),
   opConf(['<<', '>>', '>>>'], BINARY_TYPE),
   opConf(['+', '-'], BINARY_TYPE),
   opConf(['*', '/', '%'], BINARY_TYPE),
@@ -159,10 +166,18 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
     [UNARY_EXP]: [
       new UnaryOperatorRule(
         opConf(
-          [['+', '-', '!', '~'], ['typeof', 'void', 'delete'], ['++', '--']],
-          [UNARY_TYPE_PRE, UNARY_TYPE_PRE_SP, UPDATE_TYPE_PRE]
+          [
+            ['+', '-', '!', '~'],
+            ['typeof', 'void', 'delete'],
+          ],
+          [UNARY_TYPE_PRE, UNARY_TYPE_PRE_SP]
         )
       ),
+      UPDATE_EXP,
+    ],
+
+    [UPDATE_EXP]: [
+      new UnaryOperatorRule(opConf(['++', '--'], UPDATE_TYPE_PRE)),
       new UnaryOperatorRule(opConf(['++', '--'], UPDATE_TYPE)),
       new BinaryOperatorRule({
         '.': MEMBER_TYPE,

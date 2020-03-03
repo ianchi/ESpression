@@ -4,14 +4,8 @@ const acorn = require('acorn');
 
 const espression = require('../dist/bundle/espression.cjs');
 const espressionJsep = new espression.BasicParser();
-const espressionEsprima = new espression.ES6Parser(
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  true
-);
-const espressionEsprimaLoc = new espression.ES6Parser(undefined, undefined, undefined, true);
+const espressionNext = new espression.ESnextParser(undefined, undefined, undefined, false);
+const espressionNextLoc = new espression.ESnextParser(undefined, undefined, undefined, true);
 
 const rules = {
   string: [new espression.StringRule({ LT: true, hex: true, raw: false, escapes: true })],
@@ -68,7 +62,7 @@ function compAcorn(exprs) {
   console.log('Testing vs Acorn');
   exprs.forEach(
     element =>
-      compare(element, espressionEsprima, expr =>
+      compare(element, espressionNext, expr =>
         removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 10, ranges: false }), [
           'start',
           'end',
