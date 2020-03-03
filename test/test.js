@@ -1,6 +1,6 @@
 const assert = require('assert');
 const jsep = require('jsep');
-const esprima = require('esprima');
+const acorn = require('acorn');
 
 const espression = require('../dist/bundle/espression.cjs');
 const espressionJsep = new espression.BasicParser();
@@ -11,6 +11,7 @@ const espressionEsprima = new espression.ES6Parser(
   undefined,
   true
 );
+const espressionEsprimaLoc = new espression.ES6Parser(undefined, undefined, undefined, true);
 
 const rules = {
   string: [new espression.StringRule({ LT: true, hex: true, raw: false, escapes: true })],
@@ -62,12 +63,17 @@ function compJsep(exprs) {
   return ok === exprs.length;
 }
 
-function compEsprima(exprs) {
+function compAcorn(exprs) {
   let ok = 0;
-  console.log('Testing vs ESPRIMA');
+  console.log('Testing vs Acorn');
   exprs.forEach(
     element =>
-      compare(element, espressionEsprima, expr => esprima.parse(expr, { range: false })) && ok++
+      compare(element, espressionEsprima, expr =>
+        removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 10, ranges: false }), [
+          'start',
+          'end',
+        ])
+      ) && ok++
   );
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
@@ -91,6 +97,18 @@ function compStringPos(expr, pos, result) {
   console.log(`Wrong toRawPosition: ${raw} expected ${result} `);
 }
 
+function removeKeys(obj, keys) {
+  var index;
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      index = keys.indexOf(prop);
+      if (index > -1) delete obj[prop];
+      else if (typeof obj[prop] === 'object') removeKeys(obj[prop], keys);
+    }
+  }
+
+  return obj;
+}
 var test1 = require('./parser/common');
 
 // unsupported in jsep
@@ -100,11 +118,8 @@ const test3 = require('./parser/noespression');
 
 let code = true;
 
-compEsprima(['[,,]']);
-compJsep([';a+b']);
-
 code = code && compJsep(test1.concat(test3));
-code = compEsprima(test1.concat(test2)) && code;
+code = compAcorn(test1.concat(test2)) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 2, 2) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 6, 8) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 12, 16) && code;

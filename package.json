@@ -15,7 +15,7 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "esprima": "^4.0.1",
+    "acorn": "^7.1.1",
     "jsep": "^0.3.4",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.0",
@@ -24,7 +24,7 @@
     "rollup-plugin-typescript2": "^0.25.3",
     "standard-version": "^7.0.1",
     "ts-node": "^8.6.2",
-    "tslint": "^5.20.1",
+    "tslint": "^6.0.0",
     "typedoc": "^0.16.7",
     "typedoc-plugin-markdown": "^2.2.16",
     "typescript": "^3.7.5"
