@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/ianchi/ESpression/compare/v1.4.0...v1.5.0) (2020-03-03)
+
+
+### Features
+
+* add esnext preset with exponentiation op ([1b6413d](https://github.com/ianchi/ESpression/commit/1b6413dcbf8d7a0f60b8dc9c8cf66c0ab5dbd937))
+
+
+### Bug Fixes
+
+* location range info in string templates ([bee7140](https://github.com/ianchi/ESpression/commit/bee7140a19ad9b51f2d00c867fb8b354f211aabf))
+* use right asociativity in assignment ([e09bbbc](https://github.com/ianchi/ESpression/commit/e09bbbce6433bbac89ca971037a7b3f7131fb8d6))
+
 ## [1.4.0](https://github.com/ianchi/ESpression/compare/v1.2.0...v1.4.0) (2020-01-18)
 
 
