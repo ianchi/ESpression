@@ -134,6 +134,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
               raw: ctx.e.substring(start, ctx.i - 1),
             },
             tail: true,
+            ...(ctx.config.range ? { range: [start, ctx.i - 1] } : {}),
           });
         }
         break;
@@ -145,6 +146,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
             raw: ctx.e.substring(start, ctx.i - 2),
           },
           tail: false,
+          ...(ctx.config.range ? { range: [start, ctx.i - 2] } : {}),
         });
         str = '';
         expressions.push(ctx.parseNext(c.templateRules!));
