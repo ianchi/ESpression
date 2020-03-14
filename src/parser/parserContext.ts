@@ -261,8 +261,8 @@ export class ParserContext {
 
         nodes[index] = node;
         sep = this.tySep(c.separators);
-        if (c.types && (sep || !c.separators) && c.types.indexOf(node.type) < 0)
-          return this.err('Invalid argument type');
+        if (c.types && c.types.indexOf(node.type) < 0)
+          return this.err(`Invalid argument type: ${node.type}`);
       } catch (e) {
         // use instanceof "SyntaxError" as transpiled code looses the reference to ParseError
         if (e instanceof SyntaxError && (<ParseError>e).noMatch) {
