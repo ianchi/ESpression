@@ -25,14 +25,14 @@ export interface IConfBinaryOp extends IMultiConf, ISubRuleConf, IExtraConf {
    * If it is empty, the operator is not stored in the AST
    */
   oper?: string;
-  /** Operator has right asociativity */
+  /** Operator has right associativity */
   rasoc?: boolean;
   /** Operator needs a mandatory space afterwards. @example `a instanceof b` */
   space?: boolean;
   /** Restrict left operand to only the specified AST types */
   ltypes?: string[];
   /**
-   * If set, the binary expressiong must be closed after right operand
+   * If set, the binary expression must be closed after right operand
    * using this closing character.
    */
   close?: string;

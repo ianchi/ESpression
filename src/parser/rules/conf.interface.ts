@@ -23,20 +23,20 @@ export interface IMultiConf {
    */
   separators?: string;
   /**
-   * If set, it limits the maximun number of operators.
+   * If set, it limits the maximum number of operators.
    * Thus the maximum number of expressions is one more.
    * @default Infinity
    */
   maxSep?: number;
   /**
-   * Allow empty expressions between **explict** character separators.
+   * Allow empty expressions between **explicit** character separators.
    * If `true` empty slots are allowed and left blank
    * If an `INode` is provided, empty slots are replaced by it
    * If `false` | `undefined` error on empty slots
    */
   sparse?: boolean | INode;
   /**
-   * Allow trailling separator.
+   * Allow trailing separator.
    * It is redundant if `empty` is set. Otherwise it allows empty expression only at the end
    */
   trailling?: boolean;

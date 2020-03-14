@@ -194,7 +194,7 @@ export class ParserContext {
    * Perform the actual parsing. It is done in two stages:
    *
    * ## 1: Pre Parse - Bottom up operators
-   * First all operators' rules are called from the lowest to the highiest invoking its `pre` hook.
+   * First all operators' rules are called from the lowest to the highest invoking its `pre` hook.
    * If any rule detects a match it can stop the bubbling up if it completely parses the expression,
    * or just pass some pre-parse information to the next phase
    *
@@ -206,7 +206,7 @@ export class ParserContext {
    * ## Post Parse - Top Down operators
    * Once the first expression has been parsed, traverse down the operators level, passing the pre-parse information
    * and the parsed node.
-   * The rules should complete the parsing of the remainder expressions, triggering subparses for the next operands
+   * The rules should complete the parsing of the remainder expressions, triggering sub-parses for the next operands
    *
    * @remark If the string has not been complete consumed, throw an `Error`
    */

@@ -10,3 +10,10 @@ jsonpath
 boolean
 eof
 quasis
+param
+instanceof
+nullish
+conf
+func
+oper
+evals

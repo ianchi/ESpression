@@ -39,7 +39,7 @@ export interface IConfUnaryOp extends ISubRuleConf, IMultiConf, IExtraConf {
   /** Operator needs a mandatory space afterwards. @example `a instanceof b` */
   space?: boolean;
   empty?: boolean;
-  /** If set, the unary expressiong must be closed using this closing character */
+  /** If set, the unary expression must be closed using this closing character */
   close?: string;
 }
 export interface IConfUnaryRule extends IOperatorDef {
