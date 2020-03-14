@@ -17,7 +17,9 @@ import {
   EXPRESSION,
   GROUP_TYPE,
   NOCOMMA_EXPR,
+  OBJECT,
   opConf,
+  SPREAD_EXP,
   STATEMENT,
   UNARY_EXP,
 } from './const';
@@ -58,6 +60,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
     ],
   };
 
+  // needed to add '**=' to assignment operators
   rules[NOCOMMA_EXPR][0] = new BinaryOperatorRule(
     opConf(
       ['=', '+=', '-=', '*=', '/=', '%=', '>>=', '<<=', '>>>=', '|=', '&=', '^=', '**='],
@@ -65,7 +68,15 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
     )
   );
 
+  // add exponential operator
   rules[NOCOMMA_EXPR][rules[NOCOMMA_EXPR].length - 1] = 'Exponential';
+
+  // add object spread
+  rules[OBJECT].splice(
+    0,
+    0,
+    new UnaryOperatorRule({ '...': { type: SPREAD_EXP, isPre: true, subRules: NOCOMMA_EXPR } })
+  );
 
   return rules;
 }

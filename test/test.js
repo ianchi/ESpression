@@ -63,7 +63,7 @@ function compAcorn(exprs) {
   exprs.forEach(
     element =>
       compare(element, espressionNext, expr =>
-        removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 10, ranges: false }), [
+        removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 11, ranges: false }), [
           'start',
           'end',
         ])
@@ -110,10 +110,12 @@ const test2 = require('./parser/nojsep');
 // octal escapes
 const test3 = require('./parser/noespression');
 
+const testESnext = require('./parser/esNext');
+
 let code = true;
 
-code = code && compJsep(test1.concat(test3));
-code = compAcorn(test1.concat(test2)) && code;
+code = code && compJsep([...test1, ...test3]);
+code = compAcorn([...test1, ...test2, ...testESnext]) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 2, 2) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 6, 8) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 12, 16) && code;

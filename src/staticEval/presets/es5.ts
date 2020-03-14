@@ -85,9 +85,14 @@ export class ES5StaticEval extends BasicEval {
     const keys: Array<string | undefined> = [],
       computedNodes: INode[] = [],
       computed: number[] = [],
+      spread: number[] = [],
       nodes = node.properties.map((n: INode, i: number) => {
         let key: string;
-        if (n.computed) {
+        if (n.type === SPREAD_EXP) {
+          keys.push(undefined);
+          spread.push(i);
+          return n.argument;
+        } else if (n.computed) {
           keys.push(undefined);
           computed.push(i);
           computedNodes.push(n.key);
@@ -95,7 +100,6 @@ export class ES5StaticEval extends BasicEval {
           if (n.key.type === IDENTIFIER_EXP) key = n.key.name;
           else if (n.key.type === LITERAL_EXP) key = n.key.value.toString();
           else throw new Error('Invalid property');
-          if (keys.indexOf(key) >= 0) throw new Error('Duplicate property');
           keys.push(key);
         }
         return n.value;
@@ -108,7 +112,11 @@ export class ES5StaticEval extends BasicEval {
         // completed resolved key names
         computed.forEach(idx => (keys[idx] = args.shift()));
         // generate object
-        return args.reduce((ret, val, i) => ((ret[keys[i]!] = val), ret), {});
+        return args.reduce((ret, val, i) => {
+          if (spread.indexOf(i) >= 0) Object.keys(val).forEach(key => (ret[key] = val[key]));
+          else ret[keys[i]!] = val;
+          return ret;
+        }, {});
       },
       ...computedNodes,
       ...nodes
