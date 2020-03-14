@@ -79,11 +79,15 @@ export class TernaryOperatorRule extends BaseRule<IConfTernaryRule> {
 
     const alternate = ctx.parseNext(c.subRules || 0);
 
-    return this.addExtra(c, {
-      type: c.type,
-      [c.first || 'test']: bubbledNode,
-      [c.middle || 'consequent']: consequent,
-      [c.last || 'alternate']: alternate,
-    });
+    return this.addExtra(
+      c,
+      {
+        type: c.type,
+        [c.first || 'test']: bubbledNode,
+        [c.middle || 'consequent']: consequent,
+        [c.last || 'alternate']: alternate,
+      },
+      ctx
+    );
   }
 }

@@ -135,7 +135,7 @@ export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
 
     if (c.close && !ctx.tyCh(c.close)) return ctx.err('Closing character expected. Found');
 
-    return this.makeNode(op, c.separators || !nodes.length || !nodes[0] ? nodes : nodes[0]!);
+    return this.makeNode(op, c.separators || !nodes.length || !nodes[0] ? nodes : nodes[0]!, ctx);
   }
   post(ctx: ParserContext, bubbledNode: INode): INode {
     const c = this.postConf;
@@ -149,10 +149,10 @@ export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
     if (c[op].types && c[op].types!.indexOf(bubbledNode.type) < 0)
       return ctx.err(`Invalid argument type: ${bubbledNode.type}`);
 
-    return this.makeNode(op, bubbledNode);
+    return this.makeNode(op, bubbledNode, ctx);
   }
 
-  makeNode(op: string, argument: INode | Array<INode | null>): INode {
+  makeNode(op: string, argument: INode | Array<INode | null>, ctx: ParserContext): INode {
     const c = this.config[op];
     const node: INode = !c.type
       ? <INode>argument
@@ -163,6 +163,6 @@ export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
     if (c.oper) node[c.oper] = op;
     if (c.prefix) node[c.prefix] = !!c.isPre;
 
-    return this.addExtra(c, node);
+    return this.addExtra(c, node, ctx);
   }
 }

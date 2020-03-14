@@ -6,6 +6,7 @@
  */
 
 import { INode } from '../parser.interface';
+import { ParserContext } from '../parserContext';
 export interface ISubRuleConf {
   subRules?: string;
 }
@@ -47,5 +48,5 @@ export interface IExtraConf {
    * additional properties to add to AST node
    * or callback to postprocess the resulting AST node.
    */
-  extra?: ((node: INode) => INode) | object;
+  extra?: ((node: INode, ctx: ParserContext) => INode) | object;
 }

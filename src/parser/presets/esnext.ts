@@ -14,15 +14,20 @@ import {
   ASSIGN_TYPE,
   BINARY_EXP,
   BINARY_TYPE,
+  CALL_TYPE,
   EXPRESSION,
   GROUP_TYPE,
   LOGICAL_EXP,
   LOGICAL_TYPE,
+  MEMBER_EXP,
+  MEMBER_TYPE,
+  MEMBER_TYPE_COMP,
   NOCOMMA_EXPR,
   OBJECT,
   opConf,
   SPREAD_EXP,
   STATEMENT,
+  TAGGED_EXP,
   UNARY_EXP,
 } from './const';
 import { es6Rules } from './es6';
@@ -34,12 +39,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
     Exponential: [
       new TryBranchRule({
         subRules: 'ParentesisExponential',
-        extra: n => {
-          // only match (...) **
-          if (n.type !== 'Exponential') throw new Error();
-          n.type = BINARY_EXP;
-          return n;
-        },
+        test: '(',
       }),
       new BinaryOperatorRule({
         '**': {
@@ -55,14 +55,54 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
       UNARY_EXP,
     ],
     ParentesisExponential: [
-      new BinaryOperatorRule({
-        '**': { ...BINARY_TYPE, subRules: 'Exponential', type: 'Exponential' },
-      }),
+      new BinaryOperatorRule(
+        { '**': { ...BINARY_TYPE, subRules: 'Exponential', type: BINARY_EXP } },
+        true
+      ),
       new UnaryOperatorRule({ '(': GROUP_TYPE }),
     ],
-    Nullish: [
-      new BinaryOperatorRule({ '??': { ...LOGICAL_TYPE, extra: { nullish: true } } }),
-      BINARY_EXP,
+    Nullish: [new BinaryOperatorRule({ '??': LOGICAL_TYPE }, true), BINARY_EXP],
+    ParentesisOptChain: [
+      new BinaryOperatorRule(
+        {
+          '?.': {
+            ...MEMBER_TYPE,
+            extra: { computed: false, optional: true, shortCircuited: false },
+          },
+
+          '?.[': {
+            ...MEMBER_TYPE_COMP,
+            extra: { computed: true, optional: true, shortCircuited: false },
+          },
+          '?.(': {
+            ...CALL_TYPE,
+            extra: { optional: true, shortCircuited: false },
+          },
+
+          '.': {
+            ...MEMBER_TYPE,
+            extra: { computed: false, optional: false, shortCircuited: false },
+          },
+
+          '[': {
+            ...MEMBER_TYPE_COMP,
+            extra: { computed: true, optional: false, shortCircuited: false },
+          },
+          '(': {
+            ...CALL_TYPE,
+            extra: { optional: false, shortCircuited: false },
+          },
+          '`': {
+            type: TAGGED_EXP,
+            left: 'tag',
+            right: 'quasi',
+            subRules: 'template',
+            extra: { optional: false, shortCircuited: false },
+          },
+        },
+        true
+      ),
+      new UnaryOperatorRule({ '(': GROUP_TYPE }),
     ],
   };
 
@@ -85,18 +125,86 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
   );
 
   // add nullish coalescing operator
-  rules[LOGICAL_EXP].splice(
-    0,
-    0,
-    new TryBranchRule({
-      subRules: 'Nullish',
-      extra: n => {
-        if (!n.nullish) throw new Error();
-        delete n.nullish;
+  rules[LOGICAL_EXP].splice(0, 0, new TryBranchRule({ subRules: 'Nullish' }));
 
-        return n;
+  // add optional member operator
+  rules[MEMBER_EXP].splice(
+    0,
+    1,
+
+    new BinaryOperatorRule({
+      '?.': {
+        ...MEMBER_TYPE,
+        extra: n => ({
+          ...n,
+          computed: false,
+          optional: true,
+          shortCircuited: !!(n.object && (n.object.shortCircuited || n.object.optional)),
+        }),
       },
-    })
+
+      '?.[': {
+        ...MEMBER_TYPE_COMP,
+        extra: n => ({
+          ...n,
+          computed: true,
+          optional: true,
+          shortCircuited: !!(n.object && (n.object.shortCircuited || n.object.optional)),
+        }),
+      },
+      '?.(': {
+        ...CALL_TYPE,
+        extra: n => ({
+          ...n,
+          optional: true,
+          shortCircuited: !!(n.callee && (n.callee.shortCircuited || n.callee.optional)),
+        }),
+      },
+
+      '.': {
+        ...MEMBER_TYPE,
+        extra: n => ({
+          ...n,
+          computed: false,
+          optional: false,
+          shortCircuited: !!(n.object && (n.object.shortCircuited || n.object.optional)),
+        }),
+      },
+
+      '[': {
+        ...MEMBER_TYPE_COMP,
+        extra: n => ({
+          ...n,
+          computed: true,
+          optional: false,
+          shortCircuited: !!(n.object && (n.object.shortCircuited || n.object.optional)),
+        }),
+      },
+      '(': {
+        ...CALL_TYPE,
+        extra: n => ({
+          ...n,
+          optional: false,
+          shortCircuited: !!(n.callee && (n.callee.shortCircuited || n.callee.optional)),
+        }),
+      },
+      '`': {
+        type: TAGGED_EXP,
+        left: 'tag',
+        right: 'quasi',
+        subRules: 'template',
+        extra: (n, ctx) => {
+          if (n.tag && (n.tag.shortCircuited || n.tag.optional))
+            throw ctx.err('Invalid tagged template on optional chain');
+          return {
+            ...n,
+            optional: false,
+            shortCircuited: false,
+          };
+        },
+      },
+    }),
+    new TryBranchRule({ subRules: 'ParentesisOptChain', test: '(' })
   );
 
   return rules;

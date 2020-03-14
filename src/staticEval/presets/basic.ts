@@ -73,14 +73,21 @@ export class BasicEval extends StaticEval {
 
   /** Rule to evaluate `MemberExpression` */
   protected MemberExpression(node: INode, context: keyedObject): any {
+    const obj = this._eval(node.object, context);
+
+    if ((node.optional || node.shortCircuited) && (obj === null || typeof obj === 'undefined'))
+      return undefined;
+
     return node.computed
-      ? this._resolve(context, (obj, prop) => obj[prop], node.object, node.property)
-      : this._resolve(context, obj => obj[node.property.name], node.object);
+      ? this._resolve(context, prop => obj[prop], node.property)
+      : obj[node.property.name];
   }
 
   /** Rule to evaluate `CallExpression` */
   protected CallExpression(node: INode, context: keyedObject): any {
     const funcDef = this._fcall(node, context);
+
+    if (!funcDef) return undefined;
 
     return funcDef.func.apply(funcDef.obj, funcDef.args);
   }
@@ -147,33 +154,30 @@ export class BasicEval extends StaticEval {
    */
 
   protected _fcall(node: INode, context: keyedObject): any {
-    let result;
+    let obj: any, func: any;
     // capture context in closure for use in callback
     // Getting it from 'this' is not reliable for async evaluation as it may have changed in later evals
 
     if (node.callee.type === MEMBER_EXP) {
-      result = node.computed
-        ? this._resolve(
-            context,
-            (obj, prop, ...args) => ({ obj, func: obj[prop], args }),
-            node.callee.object,
-            node.callee.property,
-            ...node.arguments
-          )
-        : this._resolve(
-            context,
-            (obj, ...args) => ({ obj, func: obj[node.callee.property.name], args }),
-            node.callee.object,
-            ...node.arguments
-          );
-    } else
-      result = this._resolve(
-        context,
-        (func, ...args) => ({ obj: context, func, args }),
-        node.callee,
-        ...node.arguments
-      );
+      obj = this._eval(node.callee.object, context);
 
-    return result;
+      if (
+        (node.callee.optional || node.callee.shortCircuited) &&
+        (obj === null || typeof obj === 'undefined')
+      )
+        func = undefined;
+      else
+        func = node.computed
+          ? this._resolve(context, prop => obj[prop], node.callee.property)
+          : obj[node.callee.property.name];
+    } else {
+      obj = context;
+      func = this._eval(node.callee.object, context);
+    }
+
+    if ((node.optional || node.shortCircuited) && (func === null || typeof func === 'undefined'))
+      return undefined;
+
+    return this._resolve(context, (...args) => ({ obj, func, args }), ...node.arguments);
   }
 }

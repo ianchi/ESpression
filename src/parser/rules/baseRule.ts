@@ -20,12 +20,12 @@ export abstract class BaseRule<T> {
     config.maxSep = !config.separators
       ? 0
       : typeof config.maxSep === 'undefined'
-        ? Infinity
-        : config.maxSep;
+      ? Infinity
+      : config.maxSep;
   }
-  addExtra(conf: IExtraConf, node: INode): INode {
+  addExtra(conf: IExtraConf, node: INode, ctx: ParserContext): INode {
     if (!conf.extra) return node;
-    if (typeof conf.extra === 'function') return conf.extra(node);
+    if (typeof conf.extra === 'function') return conf.extra(node, ctx);
     return { ...conf.extra, ...node };
   }
   register(): IOperatorDef {

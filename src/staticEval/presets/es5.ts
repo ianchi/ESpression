@@ -141,6 +141,8 @@ export class ES5StaticEval extends BasicEval {
       {
         type: CALL_EXP,
         callee: node.tag,
+        optional: node.optional,
+        shortCircuited: node.shortCircuited,
         arguments: [node.quasi.quasis, ...node.quasi.expressions],
       },
       context

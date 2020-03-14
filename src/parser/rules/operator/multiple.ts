@@ -63,10 +63,14 @@ export class MultiOperatorRule extends BaseRule<IConfMultipleRule> {
 
     if (!nodes.length && (!c.empty || !c.separators)) return ctx.err('Expression expected');
 
-    const ret = this.addExtra(c, {
-      type: c.type,
-      [c.prop!]: c.separators ? nodes : nodes[0],
-    });
+    const ret = this.addExtra(
+      c,
+      {
+        type: c.type,
+        [c.prop!]: c.separators ? nodes : nodes[0],
+      },
+      ctx
+    );
 
     if (ctx.config.range) ret.range = [curPos, ctx.eof() && !ctx.lt ? ctx.ch : ctx.i];
     return ret;

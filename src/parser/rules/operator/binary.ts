@@ -75,7 +75,7 @@ export interface IConfBinaryRule extends IOperatorDef {
  *
  */
 export class BinaryOperatorRule extends BaseRule<IConfBinaryRule> {
-  constructor(public config: IConfBinaryRule) {
+  constructor(public config: IConfBinaryRule, public required: boolean = false) {
     super();
     let c: IConfBinaryOp;
 
@@ -95,6 +95,9 @@ export class BinaryOperatorRule extends BaseRule<IConfBinaryRule> {
     const curPos = bubbledNode.range ? bubbledNode.range[0] : ctx.i;
     let op = ctx.gbOp(this.config);
 
+    if (this.required && !op)
+      return ctx.err(`Expected operator (${Object.keys(this.config).join(',')})`);
+
     while (op) {
       const c = this.config[op];
 
@@ -108,11 +111,15 @@ export class BinaryOperatorRule extends BaseRule<IConfBinaryRule> {
 
       if (c.close && !ctx.tyCh(c.close)) return ctx.err('Closing character expected. Found');
 
-      bubbledNode = this.addExtra(c, {
-        type: c.type,
-        [c.left || 'left']: bubbledNode,
-        [c.right || 'right']: c.separators ? nodes : nodes[0],
-      });
+      bubbledNode = this.addExtra(
+        c,
+        {
+          type: c.type,
+          [c.left || 'left']: bubbledNode,
+          [c.right || 'right']: c.separators ? nodes : nodes[0],
+        },
+        ctx
+      );
       if (c.oper) bubbledNode[c.oper] = op;
       if (ctx.config.range) bubbledNode.range = [curPos, ctx.ch];
       op = c.rasoc ? '' : ctx.gbOp(this.config);

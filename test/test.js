@@ -13,17 +13,25 @@ const rules = {
 const stringParser = new espression.Parser(rules, 'string');
 
 function compare(expr, parser1, parser2) {
-  let n1, n2, fail1, fail2;
-  try {
-    n1 = parser1.parse(expr);
-  } catch (e) {
-    fail1 = e.message;
+  let n1, n2, fail1, fail2, ast;
+
+  if (typeof expr === 'object') {
+    ast = expr;
+    expr = ast.expr;
+    n2 = ast.ast;
+    fail2 = ast.fail;
+  } else {
+    try {
+      n2 = parser2(expr);
+    } catch (e) {
+      fail2 = e.message;
+    }
   }
 
   try {
-    n2 = parser2(expr);
+    n1 = parser1(expr);
   } catch (e) {
-    fail2 = e.message;
+    fail1 = e.message;
   }
 
   if (fail1 && fail2) {
@@ -52,7 +60,7 @@ function compare(expr, parser1, parser2) {
 function compJsep(exprs) {
   let ok = 0;
   console.log('Testing vs JSEP');
-  exprs.forEach(element => compare(element, espressionJsep, jsep) && ok++);
+  exprs.forEach(element => compare(element, e => espressionJsep.parse(e), jsep) && ok++);
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
 }
@@ -62,13 +70,24 @@ function compAcorn(exprs) {
   console.log('Testing vs Acorn');
   exprs.forEach(
     element =>
-      compare(element, espressionNext, expr =>
-        removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 11, ranges: false }), [
-          'start',
-          'end',
-        ])
+      compare(
+        element,
+        expr => removeKeys(espressionNext.parse(expr), ['optional', 'shortCircuited']),
+        expr =>
+          removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 11, ranges: false }), [
+            'start',
+            'end',
+          ])
       ) && ok++
   );
+  console.log('Passed: ' + ok + '/' + exprs.length);
+  return ok === exprs.length;
+}
+
+function compAST(exprs) {
+  let ok = 0;
+  console.log('Testing vs AST');
+  exprs.forEach(element => compare(element, expr => espressionNext.parse(expr)) && ok++);
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
 }
@@ -112,10 +131,13 @@ const test3 = require('./parser/noespression');
 
 const testESnext = require('./parser/esNext');
 
+const testAST = require('./parser/ast');
+
 let code = true;
 
 code = code && compJsep([...test1, ...test3]);
 code = compAcorn([...test1, ...test2, ...testESnext]) && code;
+code = compAST(testAST) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 2, 2) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 6, 8) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 12, 16) && code;
