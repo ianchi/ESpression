@@ -16,6 +16,8 @@ import {
   BINARY_TYPE,
   EXPRESSION,
   GROUP_TYPE,
+  LOGICAL_EXP,
+  LOGICAL_TYPE,
   NOCOMMA_EXPR,
   OBJECT,
   opConf,
@@ -58,6 +60,10 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
       }),
       new UnaryOperatorRule({ '(': GROUP_TYPE }),
     ],
+    Nullish: [
+      new BinaryOperatorRule({ '??': { ...LOGICAL_TYPE, extra: { nullish: true } } }),
+      BINARY_EXP,
+    ],
   };
 
   // needed to add '**=' to assignment operators
@@ -69,13 +75,28 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
   );
 
   // add exponential operator
-  rules[NOCOMMA_EXPR][rules[NOCOMMA_EXPR].length - 1] = 'Exponential';
+  rules[BINARY_EXP].splice(-1, 1, 'Exponential');
 
   // add object spread
   rules[OBJECT].splice(
     0,
     0,
     new UnaryOperatorRule({ '...': { type: SPREAD_EXP, isPre: true, subRules: NOCOMMA_EXPR } })
+  );
+
+  // add nullish coalescing operator
+  rules[LOGICAL_EXP].splice(
+    0,
+    0,
+    new TryBranchRule({
+      subRules: 'Nullish',
+      extra: n => {
+        if (!n.nullish) throw new Error();
+        delete n.nullish;
+
+        return n;
+      },
+    })
   );
 
   return rules;

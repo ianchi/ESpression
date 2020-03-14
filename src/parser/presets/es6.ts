@@ -51,6 +51,7 @@ export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
     ],
   };
 
+  // add arrow function expressions
   rules[NOCOMMA_EXPR].splice(
     1,
     0,
@@ -66,7 +67,18 @@ export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 }
 
 export class ES6Parser extends Parser {
-  constructor(noStatement?: boolean, identStart?: ICharClass, identPart?: ICharClass, range?: boolean) {
-    super(es6Rules(identStart, identPart), noStatement ? EXPRESSION : STATEMENT, identStart, identPart, range);
+  constructor(
+    noStatement?: boolean,
+    identStart?: ICharClass,
+    identPart?: ICharClass,
+    range?: boolean
+  ) {
+    super(
+      es6Rules(identStart, identPart),
+      noStatement ? EXPRESSION : STATEMENT,
+      identStart,
+      identPart,
+      range
+    );
   }
 }

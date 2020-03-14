@@ -106,6 +106,8 @@ export class BasicEval extends StaticEval {
         return this._eval(node.left, context) || this._eval(node.right, context);
       case '&&':
         return this._eval(node.left, context) && this._eval(node.right, context);
+      case '??':
+        return this._eval(node.left, context) ?? this._eval(node.right, context);
       default:
         throw unsuportedError(BINARY_EXP, node.operator);
     }

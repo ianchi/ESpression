@@ -26,6 +26,7 @@ import {
   ARRAY_EXP,
   ARRAY_TYPE,
   ASSIGN_TYPE,
+  BINARY_EXP,
   BINARY_TYPE,
   BINARY_TYPE_SP,
   CALL_EXP,
@@ -36,7 +37,9 @@ import {
   EXPRESSION_EXP,
   GROUP_TYPE,
   LITERAL_EXP,
+  LOGICAL_EXP,
   LOGICAL_TYPE,
+  MEMBER_EXP,
   MEMBER_TYPE,
   MEMBER_TYPE_COMP,
   NEW_EXP,
@@ -69,24 +72,23 @@ const PROGRAM_CONF: IConfMultipleRule = {
   empty: true,
 };
 
-const biOpConfs: IConfBinaryRule[] = [
-  { '||': LOGICAL_TYPE },
-  { '&&': LOGICAL_TYPE },
-  { '|': BINARY_TYPE },
-  { '^': BINARY_TYPE },
-  { '&': BINARY_TYPE },
-  opConf(['==', '!=', '===', '!=='], BINARY_TYPE),
-  opConf(
-    [
-      ['<', '>', '<=', '>='],
-      ['instanceof', 'in'],
-    ],
-    [BINARY_TYPE, BINARY_TYPE_SP]
-  ),
-  opConf(['<<', '>>', '>>>'], BINARY_TYPE),
-  opConf(['+', '-'], BINARY_TYPE),
-  opConf(['*', '/', '%'], BINARY_TYPE),
-];
+const logiOpConfs: IConfBinaryRule[] = [{ '||': LOGICAL_TYPE }, { '&&': LOGICAL_TYPE }],
+  biOpConfs: IConfBinaryRule[] = [
+    { '|': BINARY_TYPE },
+    { '^': BINARY_TYPE },
+    { '&': BINARY_TYPE },
+    opConf(['==', '!=', '===', '!=='], BINARY_TYPE),
+    opConf(
+      [
+        ['<', '>', '<=', '>='],
+        ['instanceof', 'in'],
+      ],
+      [BINARY_TYPE, BINARY_TYPE_SP]
+    ),
+    opConf(['<<', '>>', '>>>'], BINARY_TYPE),
+    opConf(['+', '-'], BINARY_TYPE),
+    opConf(['*', '/', '%'], BINARY_TYPE),
+  ];
 
 export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRuleSet {
   // basic tokens used also in parsing object literal's properties
@@ -159,9 +161,11 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
 
       new TernaryOperatorRule({ type: CONDITIONAL_EXP, subRules: NOCOMMA_EXPR }),
 
-      ...biOpConfs.map(conf => new BinaryOperatorRule(conf)),
-      UNARY_EXP,
+      LOGICAL_EXP,
     ],
+
+    [LOGICAL_EXP]: [...logiOpConfs.map(conf => new BinaryOperatorRule(conf)), BINARY_EXP],
+    [BINARY_EXP]: [...biOpConfs.map(conf => new BinaryOperatorRule(conf)), UNARY_EXP],
 
     [UNARY_EXP]: [
       new UnaryOperatorRule(
@@ -179,6 +183,10 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
     [UPDATE_EXP]: [
       new UnaryOperatorRule(opConf(['++', '--'], UPDATE_TYPE_PRE)),
       new UnaryOperatorRule(opConf(['++', '--'], UPDATE_TYPE)),
+      MEMBER_EXP,
+    ],
+
+    [MEMBER_EXP]: [
       new BinaryOperatorRule({
         '.': MEMBER_TYPE,
         '[': MEMBER_TYPE_COMP,
