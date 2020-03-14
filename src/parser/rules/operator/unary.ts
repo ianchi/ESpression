@@ -142,12 +142,12 @@ export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
     let op: string | null = null;
 
     // case of simple postfix operator
-    // it doesnt allow LT between operand and operator
+    // it doesn't allow LT between operand and operator
     if (!ctx.lt) op = ctx.gbOp(c);
     if (!op) return bubbledNode;
 
     if (c[op].types && c[op].types!.indexOf(bubbledNode.type) < 0)
-      return ctx.err('Invalid argument type');
+      return ctx.err(`Invalid argument type: ${bubbledNode.type}`);
 
     return this.makeNode(op, bubbledNode);
   }
