@@ -22,6 +22,12 @@ The easiest way to use it is through one of the presets, but it can also be comp
 
 ### ES5 expressions
 
+Presets:
+
+- ES5
+- ES6
+- ESnext
+
 ```
 import { ES5Eval, ES5Parser } from 'espression';
 
@@ -39,7 +45,8 @@ All ES5 expressions are supported, except for function expressions (as it would 
 - tagged template expressions
 - array spread operator
 - object literal: shorthand and computed properties
-- arrow function expressions (only with *expression* body)
+- arrow function expressions (only with _expression_ body)
+- destructuring assignment
 
 To evaluate the AST you can provide a context object whose properties are visible as variables inside the expression.
 
