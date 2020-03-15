@@ -75,12 +75,13 @@ export class ES5StaticEval extends BasicEval {
         const result: any[] = [];
         node.elements.forEach((n: INode, i: number) => {
           if (n && n.type === SPREAD_EXP) {
-            for (const val of values) result.push(val);
-          } else result.push(values[i]);
+            for (const val of values[i]) result.push(val);
+          } else if (n) result.push(values[i]);
+          else result.length++;
         });
         return result;
       },
-      ...node.elements
+      ...node.elements.map((n: any) => (n && n.type === SPREAD_EXP ? n.argument : n))
     );
   }
   /** Rule to evaluate `ObjectExpression` */
@@ -116,7 +117,7 @@ export class ES5StaticEval extends BasicEval {
         computed.forEach(idx => (keys[idx] = args.shift()));
         // generate object
         return args.reduce((ret, val, i) => {
-          if (spread.indexOf(i) >= 0) Object.keys(val).forEach(key => (ret[key] = val[key]));
+          if (spread.indexOf(i) >= 0) Object.keys(val ?? {}).forEach(key => (ret[key] = val[key]));
           else ret[keys[i]!] = val;
           return ret;
         }, {});
