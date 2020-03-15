@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/ianchi/ESpression/compare/v1.5.0...v1.6.0) (2020-03-15)
+
+
+### Features
+
+* add destructuring assignment support ([51e667c](https://github.com/ianchi/ESpression/commit/51e667c93e54897879e7c6cd246738b9e79ef8c0))
+* add destructuring in arrow func parameters ([96f195d](https://github.com/ianchi/ESpression/commit/96f195d2f54476c46d015a8a1ac6de1dfc1e1248))
+* add nullish coalescing operator ([bc432bb](https://github.com/ianchi/ESpression/commit/bc432bb8fd5328b9728f614ff86597aa55e86f72))
+* add object spread operator ([e54b81a](https://github.com/ianchi/ESpression/commit/e54b81a6fa6345f91ec6ba0bb0e4db85b36f5052))
+* add optional chaining operators to ESnext ([3774faf](https://github.com/ianchi/ESpression/commit/3774fafa40921514ed120bf7eb3d21a37ad4b169))
+
+
+### Bug Fixes
+
+* add type information on invalid type error ([b90a92b](https://github.com/ianchi/ESpression/commit/b90a92b841e05f9d830c0da0ed7868c5809c9e08))
+* array & object spread operator evaluation ([b8ab2d5](https://github.com/ianchi/ESpression/commit/b8ab2d5431e3e5460c38425069502e3a65d94502))
+* function call ([793ce76](https://github.com/ianchi/ESpression/commit/793ce765ae7fa41794cf766ed6885865856b49d8))
+* parseMulti check type on last element ([629429c](https://github.com/ianchi/ESpression/commit/629429c49d58a85cd327e4215a4a0269092afd88))
+
 ## [1.5.0](https://github.com/ianchi/ESpression/compare/v1.4.0...v1.5.0) (2020-03-03)
 
 
