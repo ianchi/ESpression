@@ -6,7 +6,7 @@
  */
 
 import { INode } from '../../parser';
-import { ASSIGN_PAT, IDENTIFIER_EXP, REST_ELE } from '../../parser/presets';
+import { ARRAY_PAT } from '../../parser/presets';
 import { keyedObject } from '../eval';
 
 import { ES5StaticEval } from './es5';
@@ -16,21 +16,8 @@ export class ES6StaticEval extends ES5StaticEval {
     return (...params: any[]) => {
       const ctx = Object.create(context);
 
-      for (const p of node.params) {
-        switch (p.type) {
-          case IDENTIFIER_EXP:
-            ctx[p.name] = params.shift();
-            break;
-          case ASSIGN_PAT:
-            const v = params.shift();
-            ctx[p.left.name] = typeof v === 'undefined' ? this._eval(p.right, ctx) : v;
-            break;
-          case REST_ELE:
-            ctx[p.argument.name] = params;
-            break;
-          default:
-        }
-      }
+      this._assignPattern({ type: ARRAY_PAT, elements: node.params }, '=', params, ctx);
+
       return this._eval(node.body, ctx);
     };
   }

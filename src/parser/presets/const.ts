@@ -84,6 +84,48 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     subRules: 'bindElem',
     extra: checkRest.bind(null, 'params'),
   },
+  ARRAY_PAT_TYPE: IConfUnaryOp = {
+    type: ARRAY_PAT,
+    close: ']',
+    prop: 'elements',
+    isPre: true,
+    separators: ',',
+    sparse: true,
+    empty: true,
+    trailling: true,
+
+    subRules: ARRAY_PAT,
+    extra: checkRest.bind(null, 'elements'),
+  },
+  OBJECT_PAT_TYPE: IConfUnaryOp = {
+    type: OBJECT_PAT,
+    close: '}',
+    prop: 'properties',
+    isPre: true,
+    separators: ',',
+    empty: true,
+    trailling: true,
+    subRules: OBJECT_PAT,
+    extra: (node: INode, ctx: ParserContext) => {
+      node.properties = node.properties.map((n: INode) => {
+        const ret =
+          n.type !== IDENTIFIER_EXP && n.type !== ASSIGN_PAT
+            ? n
+            : {
+                type: 'Property',
+                key: n.type === IDENTIFIER_EXP ? n : n.left,
+                value: n,
+                kind: 'init',
+                method: false,
+                shorthand: true,
+                computed: false,
+              };
+        if (n.range) ret.range = n.range;
+        return ret;
+      });
+      return checkRest('properties', node, ctx);
+    },
+  },
   OBJECT_TYPE: IConfUnaryOp = {
     type: OBJECT_EXP,
     prop: 'properties',

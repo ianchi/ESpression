@@ -180,13 +180,14 @@ const testAST = require('./parser/ast');
 
 const testAssign = require('./staticeval/assignement_pattern');
 const testSpread = require('./staticeval/spread');
+const testArrow = require('./staticeval/arrow');
 
 let code = true;
 
 code = code && compJsep([...test1, ...test3]);
 code = compAcorn([...test1, ...test2, ...testESnext]) && code;
 code = compAST(testAST) && code;
-code = compEval([...testAssign, ...testSpread]) && code;
+code = compEval([...testAssign, ...testSpread, ...testArrow]) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 2, 2) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 6, 8) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 12, 16) && code;

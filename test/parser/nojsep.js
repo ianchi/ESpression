@@ -127,6 +127,16 @@ module.exports = [
   '(a, b) => a || b && c | d ^ e & f == g < h >>> i + j * k',
   'd = (a, b) => r',
 
+  '([a,b]) => r',
+  '([a.x, b]) => r', // should fail
+  '(a, [b, c], ...z) => r',
+  '(a, [b, c]=[1,2], ...z) => r',
+  '( ...r, a) => r', // should fail
+  '([a,b, ...r], {x, y, ...z}, ...o) => r',
+  '({a: x, b: y} = {}) => r',
+  '({a: x.x, b: x.y} = {}) => r', // should fail
+  '({a: x = 1, b: y=2, [prop]: z} = {}) => r',
+
   //should fail
   '(a, b=1, ...c, k) => r',
   '(a, , ...c) => r',

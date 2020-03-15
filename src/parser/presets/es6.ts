@@ -7,19 +7,19 @@
 
 import { Parser } from '..';
 import { ICharClass, INode } from '../parser.interface';
-import { IRuleSet, ParserContext } from '../parserContext';
+import { IRuleSet } from '../parserContext';
 import { BinaryOperatorRule, StringRule, TryBranchRule, UnaryOperatorRule } from '../rules';
 
 import {
   ARRAY_PAT,
+  ARRAY_PAT_TYPE,
   ARROW_EXP,
   ASSIGN_PAT,
   ASSIGN_TYPE,
-  checkRest,
   EXPRESSION,
-  IDENTIFIER_EXP,
   NOCOMMA_EXPR,
   OBJECT_PAT,
+  OBJECT_PAT_TYPE,
   PARAMS_TYPE,
   PROPERTY,
   PROPERTY_TYPE,
@@ -30,48 +30,13 @@ import { es5Rules, memberRule, numberRules } from './es5';
 
 export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRuleSet {
   const destructuring = new UnaryOperatorRule({
-    '[': {
-      type: ARRAY_PAT,
-      close: ']',
-      prop: 'elements',
-      isPre: true,
-      separators: ',',
-      sparse: true,
-      empty: true,
-      trailling: true,
+    '[': ARRAY_PAT_TYPE,
+    '{': OBJECT_PAT_TYPE,
+  });
 
-      subRules: ARRAY_PAT,
-      extra: checkRest.bind(null, 'elements'),
-    },
-    '{': {
-      type: OBJECT_PAT,
-      close: '}',
-      prop: 'properties',
-      isPre: true,
-      separators: ',',
-      empty: true,
-      trailling: true,
-      subRules: OBJECT_PAT,
-      extra: (node: INode, ctx: ParserContext) => {
-        node.properties = node.properties.map((n: INode) => {
-          const ret =
-            n.type !== IDENTIFIER_EXP && n.type !== ASSIGN_PAT
-              ? n
-              : {
-                  type: 'Property',
-                  key: n.type === IDENTIFIER_EXP ? n : n.left,
-                  value: n,
-                  kind: 'init',
-                  method: false,
-                  shorthand: true,
-                  computed: false,
-                };
-          if (n.range) ret.range = n.range;
-          return ret;
-        });
-        return checkRest('properties', node, ctx);
-      },
-    },
+  const destructuringBind = new UnaryOperatorRule({
+    '[': { ...ARRAY_PAT_TYPE, subRules: 'ArrayBind' },
+    '{': { ...OBJECT_PAT_TYPE, subRules: 'ObjectBind' },
   });
 
   const rules: IRuleSet = {
@@ -80,6 +45,7 @@ export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
     bindElem: [
       new UnaryOperatorRule({ '...': { type: REST_ELE, isPre: true, subRules: PROPERTY } }),
       new BinaryOperatorRule({ '=': { type: ASSIGN_PAT, subRules: NOCOMMA_EXPR } }),
+      destructuringBind,
       PROPERTY,
     ],
 
@@ -93,6 +59,12 @@ export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
       new TryBranchRule({ subRules: 'property_with_target' }),
       new BinaryOperatorRule({ '=': { type: ASSIGN_PAT, subRules: NOCOMMA_EXPR } }),
       memberRule,
+      PROPERTY,
+    ],
+    ObjectBind: [
+      new UnaryOperatorRule({ '...': { type: REST_ELE, isPre: true, subRules: PROPERTY } }),
+      new TryBranchRule({ subRules: 'property_with_target_bind' }),
+      new BinaryOperatorRule({ '=': { type: ASSIGN_PAT, subRules: NOCOMMA_EXPR } }),
       PROPERTY,
     ],
 
@@ -110,11 +82,30 @@ export function es6Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
       PROPERTY,
     ],
 
+    property_with_target_bind: [
+      new BinaryOperatorRule({ ':': { ...PROPERTY_TYPE, subRules: 'property_target_bind' } }, true),
+      new UnaryOperatorRule({ '[': { type: EXPRESSION, close: ']', subRules: NOCOMMA_EXPR } }),
+      ...numberRules,
+      new StringRule({ LT: true, hex: true, raw: true }),
+      PROPERTY,
+    ],
+    property_target_bind: [
+      new BinaryOperatorRule({ '=': { type: ASSIGN_PAT, subRules: NOCOMMA_EXPR } }),
+      destructuringBind,
+      PROPERTY,
+    ],
+
     [ARRAY_PAT]: [
       new UnaryOperatorRule({ '...': { type: REST_ELE, isPre: true, subRules: PROPERTY } }),
       new BinaryOperatorRule({ '=': { type: ASSIGN_PAT, subRules: NOCOMMA_EXPR } }),
       memberRule,
       destructuring,
+      PROPERTY,
+    ],
+    ArrayBind: [
+      new UnaryOperatorRule({ '...': { type: REST_ELE, isPre: true, subRules: PROPERTY } }),
+      new BinaryOperatorRule({ '=': { type: ASSIGN_PAT, subRules: NOCOMMA_EXPR } }),
+      destructuringBind,
       PROPERTY,
     ],
 
