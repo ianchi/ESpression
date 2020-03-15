@@ -172,7 +172,7 @@ export class BasicEval extends StaticEval {
           : obj[node.callee.property.name];
     } else {
       obj = context;
-      func = this._eval(node.callee.object, context);
+      func = this._eval(node.callee, context);
     }
 
     if ((node.optional || node.shortCircuited) && (func === null || typeof func === 'undefined'))
