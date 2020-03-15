@@ -107,7 +107,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
   };
 
   // needed to add '**=' to assignment operators
-  rules[NOCOMMA_EXPR][0] = new BinaryOperatorRule(
+  rules[NOCOMMA_EXPR][1] = new BinaryOperatorRule(
     opConf(
       ['=', '+=', '-=', '*=', '/=', '%=', '>>=', '<<=', '>>>=', '|=', '&=', '^=', '**='],
       ASSIGN_TYPE

@@ -58,7 +58,7 @@ export abstract class StaticEval {
     operatorCB: (...operands: any[]) => any,
     ...operands: INode[]
   ): any {
-    const results = operands.map(node => this._eval(node, context));
+    const results = operands.map(node => (node || undefined) && this._eval(node, context));
 
     return operatorCB(...results);
   }

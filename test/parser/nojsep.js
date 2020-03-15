@@ -133,8 +133,42 @@ module.exports = [
   '(a, b=1, ...c=1 ) => r',
   'w + (a, b) => r',
 
+  // destructuring assignement
+  '[a, b] = c',
+  '[a, b, ] = c',
+  '[a, ,b=2] = c',
+  '[[a, b], c] = d',
+  '[a, b] = [c, d] = e',
+  '[a, , ...r] = c',
+  '[...a, , b] = c', //should fail
+  '[a.b, c] = d',
+  '[a.b=2*5, c] = d',
+  '[a, {b, c}] = d',
+  '[a, {b, c} = f ] = d',
+  '[a.x , a.y, c, , ...d ] = c',
+  'a = [b, c] = d',
+  '[a, b] *= [0, 0]', // should fail
+
+  '({a, b} = c)',
+  '({a, b=2} = c)',
+  '({a, b:alias } = c)',
+  '({a, [b]:alias } = c)',
+  '({a, [b] } = c)', // should fail
+  '({a, 1:alias, "text": alias2 = 123 } = c)',
+  '({a, ...b } = c)',
+  '({a, , ...b } = c)', // should fail
+  '({a, ...b, c } = c)', // should fail
+  '({a, b, } = c)',
+  '({a, b: o.x, d: o.y = 12 } = c)',
+  '({a, b:[d,e] } = c)',
+  '({a, b:[d,e] = [1,2] } = c)',
+  '({a, b:{d,e} } = c)',
+  '({a, b:{d,e} = {} } = c)',
+
   // non compliant in ESpression, they are allowed and shouldn't
   // '(a, b=1, ...c, ) => r',
   // '(a, b=1, ...c ) \n=> r',
   // '(a, b=1, ...c ) => {r:a}',
+  // '[a, , ...r,] = c',
+  // '({a, ...b, } = c)',
 ];

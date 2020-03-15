@@ -7,11 +7,14 @@
 
 import { INode } from '../../parser';
 import {
+  ARRAY_PAT,
   ASSIGN_EXP,
   CALL_EXP,
   IDENTIFIER_EXP,
   LITERAL_EXP,
   MEMBER_EXP,
+  OBJECT_PAT,
+  REST_ELE,
   SPREAD_EXP,
   UPDATE_EXP,
 } from '../../parser/presets';
@@ -71,7 +74,7 @@ export class ES5StaticEval extends BasicEval {
       (...values) => {
         const result: any[] = [];
         node.elements.forEach((n: INode, i: number) => {
-          if (n.type === SPREAD_EXP) {
+          if (n && n.type === SPREAD_EXP) {
             for (const val of values) result.push(val);
           } else result.push(values[i]);
         });
@@ -149,12 +152,65 @@ export class ES5StaticEval extends BasicEval {
     );
   }
 
+  _assignPattern(node: INode, operator: string, right: any, context: any): any {
+    switch (node.type) {
+      case ARRAY_PAT:
+        if (!Array.isArray(right)) throw new Error('TypeError: must be array');
+
+        for (let i = 0; i < node.elements.length; i++) {
+          if (!node.elements[i]) continue;
+
+          if (node.elements[i].type === REST_ELE)
+            this._assignPattern(node.elements[i].argument, operator, right.slice(i), context);
+          else this._assignPattern(node.elements[i], operator, right[i], context);
+        }
+        break;
+
+      case OBJECT_PAT:
+        if (right === null || typeof right === 'undefined')
+          throw new Error('TypeError: must be convertible to object');
+
+        const visited: any = {};
+        for (let i = 0; i < node.properties.length; i++) {
+          if (node.properties[i].type === REST_ELE) {
+            const rest = Object.keys(right)
+              .filter(k => !(k in visited))
+              .reduce((r: any, k) => ((r[k] = right[k]), r), {});
+            this._assignPattern(node.properties[i].argument, operator, rest, context);
+          } else {
+            const key = node.properties[i].computed
+              ? this._eval(node.properties[i].key, context)
+              : node.properties[i].key.type === LITERAL_EXP
+              ? node.properties[i].key.value
+              : node.properties[i].key.name;
+            visited[key] = true;
+            this._assignPattern(node.properties[i].value, operator, right[key], context);
+          }
+        }
+
+        break;
+
+      case 'AssignmentPattern':
+        if (typeof right === 'undefined') right = this._eval(node.right, context);
+
+        return this._assignPattern(node.left, operator, right, context);
+
+      default:
+        const left = this.lvalue(node, context);
+
+        return assignOpCB[operator](left.o, left.m, right);
+    }
+
+    return right;
+  }
+
   /** Rule to evaluate `AssignmentExpression` */
   protected AssignmentExpression(node: INode, context: keyedObject): any {
     if (!(node.operator in assignOpCB)) throw unsuportedError(ASSIGN_EXP, node.operator);
-    const left = this.lvalue(node.left, context);
 
-    return assignOpCB[node.operator](left.o, left.m, this._eval(node.right, context));
+    const right = this._eval(node.right, context);
+
+    return this._assignPattern(node.left, node.operator, right, context);
   }
 
   /** Rule to evaluate `UpdateExpression` */

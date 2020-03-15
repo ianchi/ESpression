@@ -5,6 +5,7 @@ const acorn = require('acorn');
 const espression = require('../dist/bundle/espression.cjs');
 const espressionJsep = new espression.BasicParser();
 const espressionNext = new espression.ESnextParser(undefined, undefined, undefined, false);
+const espressionEval = new espression.ES6StaticEval();
 const espressionNextLoc = new espression.ESnextParser(undefined, undefined, undefined, true);
 
 const rules = {
@@ -122,6 +123,50 @@ function removeKeys(obj, keys) {
 
   return obj;
 }
+
+function compEval(exprs) {
+  let ok = 0;
+  console.log('Testing Static Evaluations');
+  exprs.forEach(element => compResults(element) && ok++);
+  console.log('Passed: ' + ok + '/' + exprs.length);
+  return ok === exprs.length;
+}
+
+function compResults(expr) {
+  let ast, fail, res;
+  try {
+    ast = espressionNext.parse(expr.expr);
+  } catch (e) {
+    console.log('Failed parsing: ', e.message);
+    return false;
+  }
+
+  try {
+    res = espressionEval.evaluate(ast, expr.context);
+  } catch (e) {
+    fail = e.message;
+  }
+
+  if (fail && expr.fail) return true;
+  else if (fail || expr.fail) {
+    console.log(`Failed evaluating: "${expr.expr}"`);
+
+    console.log('Evaluated: ', fail || JSON.stringify(res, null, 2));
+    console.log('Expected: ', (expr.fail && 'EvalError') || JSON.stringify(expr.result, null, 2));
+    return false;
+  } else
+    try {
+      assert.deepEqual(res, expr.result);
+    } catch (e) {
+      console.log(`Failed evaluating: "${expr.expr}"`);
+      console.log('Evaluated: ', JSON.stringify(res, null, 2));
+      console.log('Expected: ', JSON.stringify(expr.result, null, 2));
+      return false;
+    }
+
+  return true;
+}
+
 var test1 = require('./parser/common');
 
 // unsupported in jsep
@@ -133,11 +178,14 @@ const testESnext = require('./parser/esNext');
 
 const testAST = require('./parser/ast');
 
+const testEval = require('./staticeval/assignement_pattern');
+
 let code = true;
 
 code = code && compJsep([...test1, ...test3]);
 code = compAcorn([...test1, ...test2, ...testESnext]) && code;
 code = compAST(testAST) && code;
+code = compEval(testEval) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 2, 2) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 6, 8) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 12, 16) && code;

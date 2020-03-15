@@ -90,14 +90,18 @@ const logiOpConfs: IConfBinaryRule[] = [{ '||': LOGICAL_TYPE }, { '&&': LOGICAL_
     opConf(['*', '/', '%'], BINARY_TYPE),
   ];
 
+export const numberRules: Array<BaseRule<any>> = [
+  new NumberRule({ radix: 16, prefix: '0x' }),
+  new NumberRule({ radix: 8, prefix: '0o' }),
+  new NumberRule({ radix: 2, prefix: '0b' }),
+  new NumberRule(),
+];
+export const memberRule = new BinaryOperatorRule({
+  '.': MEMBER_TYPE,
+  '[': MEMBER_TYPE_COMP,
+});
 export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRuleSet {
   // basic tokens used also in parsing object literal's properties
-  const numberRules: Array<BaseRule<any>> = [
-    new NumberRule({ radix: 16, prefix: '0x' }),
-    new NumberRule({ radix: 8, prefix: '0o' }),
-    new NumberRule({ radix: 2, prefix: '0b' }),
-    new NumberRule(),
-  ];
 
   const identifierRule = new IdentifierRule(es5IdentifierConf(identStart, identPart));
   // object needs subset of tokens for parsing properties.
@@ -128,10 +132,6 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
   });
 
   const groupingRule = new UnaryOperatorRule({ '(': GROUP_TYPE });
-  const memberRule = new BinaryOperatorRule({
-    '.': MEMBER_TYPE,
-    '[': MEMBER_TYPE_COMP,
-  });
   const propertyRule = new IdentifierRule({ identStart, identPart });
 
   return {

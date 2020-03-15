@@ -6,12 +6,15 @@
  */
 
 import { INode } from '../parser.interface';
+import { ParserContext } from '../parserContext';
 import { IConfBinaryOp, IConfMultipleRule, IConfUnaryOp } from '../rules';
 
 export const BINARY_EXP = 'BinaryExpression',
   LOGICAL_EXP = 'LogicalExpression',
   ASSIGN_EXP = 'AssignmentExpression',
   ASSIGN_PAT = 'AssignmentPattern',
+  ARRAY_PAT = 'ArrayPattern',
+  OBJECT_PAT = 'ObjectPattern',
   LITERAL_EXP = 'Literal',
   TEMPLATE_EXP = 'TemplateLiteral',
   TEMPLATE_ELE = 'TemplateElement',
@@ -49,6 +52,7 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     ltypes: [IDENTIFIER_EXP, MEMBER_EXP],
     oper: OPER,
     rasoc: true,
+    subRules: NOCOMMA_EXPR,
   },
   UNARY_TYPE: IConfUnaryOp = { type: UNARY_EXP, oper: OPER, prefix: PREFIX },
   UNARY_TYPE_PRE: IConfUnaryOp = { ...UNARY_TYPE, isPre: true },
@@ -78,12 +82,7 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     trailling: true,
     empty: true,
     subRules: 'bindElem',
-    extra: (node: INode) => {
-      const rest = (node.params as [INode]).findIndex(n => n.type === REST_ELE);
-      if (rest >= 0 && rest !== node.params.length - 1) throw new Error();
-
-      return node;
-    },
+    extra: checkRest.bind(null, 'params'),
   },
   OBJECT_TYPE: IConfUnaryOp = {
     type: OBJECT_EXP,
@@ -153,6 +152,13 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     empty: true,
     subRules: NOCOMMA_EXPR,
   };
+
+export function checkRest(attr: string, node: INode, ctx: ParserContext): INode {
+  const rest = (node[attr] as [INode]).findIndex(n => n && n.type === REST_ELE);
+  if (rest >= 0 && rest !== node[attr].length - 1) ctx.err('rest element must be the last');
+
+  return node;
+}
 
 export function opConf<T>(
   operators: string[] | string[][],
