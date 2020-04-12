@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/ianchi/ESpression/compare/v1.6.0...v1.7.0) (2020-04-12)
+
+
+### Features
+
+* allow lvalue to be unchecked ([602fe80](https://github.com/ianchi/ESpression/commit/602fe809a916c7e8f7ec45ef0265b8da8c29f325))
+
 ## [1.6.0](https://github.com/ianchi/ESpression/compare/v1.5.0...v1.6.0) (2020-03-15)
 
 
