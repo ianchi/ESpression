@@ -26,24 +26,31 @@ export abstract class StaticEval {
   /**
    * Evaluates an expression in an optionally provided context
    * @param expression AST to evaluate
-   * @param context Optional custom contex object. Defaults to empty context `{}`
+   * @param context Optional custom context object. Defaults to empty context `{}`
    */
   evaluate(expression: INode, context?: object): any {
     return this._eval(expression, context || {});
   }
 
-  abstract lvalue(node: INode, context: object): ILvalue;
+  abstract lvalue(node: INode, context: object, unchecked?: boolean): ILvalue;
   /**
    * Calls the corresponding eval function, with a mandatory context
    * Implementation of expression evaluation functions should call this version for evaluating subexpressions
-   * as it enforces passing arround the context.
+   * as it enforces passing around the context.
    * @param expression
    * @param context
    */
   protected _eval(expression: INode, context: keyedObject): any {
-    if (!(expression.type in this))
-      throw new Error('Unsupported expression type: ' + expression.type);
-    return this[expression.type](expression, context);
+    try {
+      if (!(expression.type in this))
+        throw new Error('Unsupported expression type: ' + expression.type);
+      return this[expression.type](expression, context);
+    } catch (e) {
+      if (!e.pos) e.pos = expression.pos;
+      if (!e.node) e.node = expression;
+
+      throw e;
+    }
   }
 
   /**
