@@ -7,24 +7,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/dist/bundle/espression.cjs.js",
-      "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Run Tests",
       "program": "${workspaceFolder}/test/test.js",
-      "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run Reactive Tests",
-      "program": "${workspaceFolder}/test/reactive.js",
       "sourceMaps": true,
       "outFiles": ["${workspaceFolder}/dist/**/*.js"]
     },
