@@ -1,0 +1,37 @@
+module.exports = [
+  {
+    context: {
+      x: 1,
+      y: 2,
+      z: 3,
+      b: true,
+      s: 'some text',
+      n: null,
+      f: (val) => val,
+      a: [10, 20, 30],
+      o: { k1: 1, k2: 2, k3: (val) => val },
+    },
+  },
+
+  { expr: 'x + y' },
+  { expr: '!b' },
+  { expr: '++y' },
+  { expr: 'y ** z' },
+  { expr: 'o?.k1', result: 1 },
+  { expr: 'o["k2"]' },
+  { expr: 'n && ++x, x' },
+  { expr: 'n || ++x, x' },
+  { expr: 'a[x++] + x' },
+  { expr: 'a?.[x++] , x', result: 2 },
+  { expr: 'n?.[x++] , x', result: 1 },
+
+  { expr: 'n ?? s', result: 'some text' },
+  { expr: '1 & 2' },
+  { expr: 'a.k1 ? x++ : y++ , [x, y]' },
+  { expr: 'f(123)' },
+  { expr: 'o.k3(o.k1)' },
+  { expr: 'o?.k3?.(o.k1)', result: 1 },
+  { expr: 'o?.k4?.(o.k1)', result: undefined },
+  { expr: 'n.error' },
+  { expr: 'n?.error', result: undefined },
+];

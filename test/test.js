@@ -61,7 +61,7 @@ function compare(expr, parser1, parser2) {
 function compJsep(exprs) {
   let ok = 0;
   console.log('Testing vs JSEP');
-  exprs.forEach(element => compare(element, e => espressionJsep.parse(e), jsep) && ok++);
+  exprs.forEach((element) => compare(element, (e) => espressionJsep.parse(e), jsep) && ok++);
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
 }
@@ -70,11 +70,11 @@ function compAcorn(exprs) {
   let ok = 0;
   console.log('Testing vs Acorn');
   exprs.forEach(
-    element =>
+    (element) =>
       compare(
         element,
-        expr => removeKeys(espressionNext.parse(expr), ['optional', 'shortCircuited']),
-        expr =>
+        (expr) => removeKeys(espressionNext.parse(expr), ['optional', 'shortCircuited']),
+        (expr) =>
           removeKeys(acorn.parse(expr, { locations: false, ecmaVersion: 11, ranges: false }), [
             'start',
             'end',
@@ -88,7 +88,7 @@ function compAcorn(exprs) {
 function compAST(exprs) {
   let ok = 0;
   console.log('Testing vs AST');
-  exprs.forEach(element => compare(element, expr => espressionNext.parse(expr)) && ok++);
+  exprs.forEach((element) => compare(element, (expr) => espressionNext.parse(expr)) && ok++);
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
 }
@@ -127,13 +127,32 @@ function removeKeys(obj, keys) {
 function compEval(exprs) {
   let ok = 0;
   console.log('Testing Static Evaluations');
-  exprs.forEach(element => compResults(element) && ok++);
+  let context = {};
+  exprs.forEach(
+    (element) => compResults(element, { ...(context = element.context || context) }) && ok++
+  );
   console.log('Passed: ' + ok + '/' + exprs.length);
   return ok === exprs.length;
 }
 
-function compResults(expr) {
-  let ast, fail, res;
+function evalExpr(expr, context) {
+  const params = Object.entries(context || {});
+  const func = new Function(
+    params.map((e) => e[0]),
+    `return (${expr})`
+  );
+
+  return func.apply(
+    context,
+    params.map((e) => e[1])
+  );
+}
+
+function compResults(expr, context) {
+  let ast, fail, res, res2, fail2;
+  const context2 = { ...context };
+
+  if (!('expr' in expr)) return true;
   try {
     ast = espressionNext.parse(expr.expr);
   } catch (e) {
@@ -142,25 +161,35 @@ function compResults(expr) {
   }
 
   try {
-    res = espressionEval.evaluate(ast, expr.context);
+    res = espressionEval.evaluate(ast, context);
   } catch (e) {
     fail = e.message;
   }
 
-  if (fail && expr.fail) return true;
-  else if (fail || expr.fail) {
+  if ('result' in expr || 'fail' in expr) {
+    res2 = expr.result;
+    fail2 = expr.fail === true ? 'Error' : expr.fail;
+  } else {
+    try {
+      res2 = evalExpr(expr.expr, context2);
+    } catch (e) {
+      fail2 = e.message;
+    }
+  }
+  if (fail && fail2) return true;
+  else if (fail || fail2) {
     console.log(`Failed evaluating: "${expr.expr}"`);
 
     console.log('Evaluated: ', fail || JSON.stringify(res, null, 2));
-    console.log('Expected: ', (expr.fail && 'EvalError') || JSON.stringify(expr.result, null, 2));
+    console.log('Expected: ', fail2 || JSON.stringify(res2, null, 2));
     return false;
   } else
     try {
-      assert.deepEqual(res, expr.result);
+      assert.deepEqual(res, res2);
     } catch (e) {
       console.log(`Failed evaluating: "${expr.expr}"`);
       console.log('Evaluated: ', JSON.stringify(res, null, 2));
-      console.log('Expected: ', JSON.stringify(expr.result, null, 2));
+      console.log('Expected: ', JSON.stringify(res2, null, 2));
       return false;
     }
 
@@ -178,6 +207,7 @@ const testESnext = require('./parser/esNext');
 
 const testAST = require('./parser/ast');
 
+const testBasic = require('./staticeval/basic');
 const testAssign = require('./staticeval/assignement_pattern');
 const testSpread = require('./staticeval/spread');
 const testArrow = require('./staticeval/arrow');
@@ -187,7 +217,7 @@ let code = true;
 code = code && compJsep([...test1, ...test3]);
 code = compAcorn([...test1, ...test2, ...testESnext]) && code;
 code = compAST(testAST) && code;
-code = compEval([...testAssign, ...testSpread, ...testArrow]) && code;
+code = compEval([...testBasic, ...testAssign, ...testSpread, ...testArrow]) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 2, 2) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 6, 8) && code;
 code = compStringPos("'123\\n\\n6789\\r\\r234'", 12, 16) && code;
