@@ -63,7 +63,7 @@ export interface IConfIdentifierRule {
  * ```
  * {
  *   "type": conf.typeIdent,
- *   [conf.porpIdent]: string
+ *   [conf.propIdent]: string
  * }
  * ```
  */
@@ -86,7 +86,7 @@ export class IdentifierRule extends BaseRule<IConfIdentifierRule> {
     }
 
     if (c.this && identifier === 'this') return { type: THIS_EXP };
-    else if (c.literals && c.literals.hasOwnProperty(identifier))
+    else if (c.literals && identifier in c.literals)
       return {
         type: c.typeLiteral || LITERAL_EXP,
         [c.propLiteral || 'value']: c.literals[identifier],

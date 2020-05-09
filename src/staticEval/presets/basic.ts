@@ -9,15 +9,15 @@ import { INode } from '../../parser';
 import { BINARY_EXP, MEMBER_EXP, UNARY_EXP } from '../../parser/presets';
 import { ILvalue, keyedObject, StaticEval, unsuportedError } from '../eval';
 
-// tslint:disable:no-bitwise
-// tslint:disable:no-unsafe-any
+/* eslint-disable no-bitwise */
+
 /** Callback functions to actually perform an operation */
 export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
     '|': (a: any, b: any) => a | b,
     '^': (a: any, b: any) => a ^ b,
     '&': (a: any, b: any) => a & b,
-    '==': (a: any, b: any) => a == b, // tslint:disable-line
-    '!=': (a: any, b: any) => a != b, // tslint:disable-line
+    '==': (a: any, b: any) => a == b, // eslint-disable-line
+    '!=': (a: any, b: any) => a != b, // eslint-disable-line
     '===': (a: any, b: any) => a === b,
     '!==': (a: any, b: any) => a !== b,
     '<': (a: any, b: any) => a < b,

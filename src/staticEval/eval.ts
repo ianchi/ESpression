@@ -9,7 +9,8 @@ import { INode } from '../parser';
 
 export type evalFn = (expression: INode) => any;
 
-export type keyedObject = { [key: string]: any }; // tslint:disable-line:interface-over-type-literal
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type keyedObject = { [key: string]: any };
 
 export interface ILvalue {
   o: keyedObject;

@@ -47,7 +47,6 @@ export const assignOpCB: { [operator: string]: (a: keyedObject, m: string, b: an
     '++': (a: keyedObject, m: string) => a[m]++,
     '--': (a: keyedObject, m: string) => a[m]--,
   };
-// tslint:enable:no-unsafe-any
 export class ES5StaticEval extends BasicEval {
   lvalue(node: INode, context: keyedObject): ILvalue {
     let obj, member;

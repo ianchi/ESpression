@@ -5,6 +5,8 @@
  * https://opensource.org/licenses/MIT
  */
 
+/* eslint-disable no-misleading-character-class */
+
 import { ICharClass } from '../parser.interface';
 import { IConfIdentifierRule } from '../rules/token/identifier';
 
