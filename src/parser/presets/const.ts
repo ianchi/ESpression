@@ -44,6 +44,12 @@ export const BINARY_EXP = 'BinaryExpression',
   NOCOMMA_EXPR = 'nocomma_expr',
   TOKEN = 'token';
 
+export function checkRest(attr: string, node: INode, ctx: ParserContext): INode {
+  const rest = (node[attr] as [INode]).findIndex((n) => n && n.type === REST_ELE);
+  if (rest >= 0 && rest !== node[attr].length - 1) ctx.err('rest element must be the last');
+
+  return node;
+}
 export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
   BINARY_TYPE_SP: IConfBinaryOp = { ...BINARY_TYPE, space: true },
   LOGICAL_TYPE: IConfBinaryOp = { type: LOGICAL_EXP, oper: OPER },
@@ -194,13 +200,6 @@ export const BINARY_TYPE: IConfBinaryOp = { type: BINARY_EXP, oper: OPER },
     empty: true,
     subRules: NOCOMMA_EXPR,
   };
-
-export function checkRest(attr: string, node: INode, ctx: ParserContext): INode {
-  const rest = (node[attr] as [INode]).findIndex(n => n && n.type === REST_ELE);
-  if (rest >= 0 && rest !== node[attr].length - 1) ctx.err('rest element must be the last');
-
-  return node;
-}
 
 export function opConf<T>(
   operators: string[] | string[][],
