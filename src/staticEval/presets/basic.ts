@@ -45,6 +45,10 @@ export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
     void: (a: any) => void a, // tslint:disable-line
   };
 
+export const RESOLVE_NORMAL = 0;
+export const RESOLVE_SHORT_CIRCUITED = 1;
+export const RESOLVE_MEMBER = 2;
+
 export class BasicEval extends StaticEval {
   /** Dummy implementation, it is not used */
   lvalue(_node: INode, _context: keyedObject): ILvalue {
@@ -68,70 +72,133 @@ export class BasicEval extends StaticEval {
 
   /** Rule to evaluate `ArrayExpression` */
   protected ArrayExpression(node: INode, context: keyedObject): any {
-    return this._resolve(context, (...values) => values, ...node.elements);
+    return this._resolve(context, 0, (...values: any[]) => values, ...node.elements);
   }
 
   /** Rule to evaluate `MemberExpression` */
   protected MemberExpression(node: INode, context: keyedObject): any {
-    const obj = this._eval(node.object, context);
-
-    if ((node.optional || node.shortCircuited) && (obj === null || typeof obj === 'undefined'))
-      return undefined;
-
-    return node.computed
-      ? this._resolve(context, prop => obj[prop], node.property)
-      : obj[node.property.name];
+    return this._member(node, context, (val) => val && val.o[val.m]);
   }
 
+  protected _MemberObject(node: INode, context: keyedObject): any {
+    return this._member(node, context, (val) => val);
+  }
+
+  protected _member<T>(
+    node: INode,
+    context: keyedObject,
+    project: (m: ILvalue | undefined) => T
+  ): T {
+    const short = node.optional || node.shortCircuited;
+    return this._resolve(
+      context,
+      short ? RESOLVE_MEMBER + RESOLVE_SHORT_CIRCUITED : RESOLVE_MEMBER,
+      (o: any, m: any) =>
+        short
+          ? o === null || typeof o === 'undefined'
+            ? project(undefined)
+            : node.computed
+            ? this._resolve(
+                context,
+                RESOLVE_NORMAL,
+                (prop) => project({ o, m: prop }),
+                node.property
+              )
+            : project({ o, m: node.property.name })
+          : project({ o, m: node.computed ? m : node.property.name }),
+      node.object,
+      short || !node.computed ? undefined : node.property
+    );
+  }
   /** Rule to evaluate `CallExpression` */
   protected CallExpression(node: INode, context: keyedObject): any {
-    const funcDef = this._fcall(node, context);
+    const short = node.optional || node.shortCircuited;
+    const project = (def: ILvalue | undefined, func?: Function, args?: any[]): any => {
+      if (!def) return undefined;
+      func = func || def.o[def.m];
 
-    if (!funcDef) return undefined;
+      return RESOLVE_SHORT_CIRCUITED
+        ? func === null || typeof func === 'undefined'
+          ? undefined
+          : this._resolve(
+              context,
+              RESOLVE_NORMAL,
+              (...ar) => func!.apply(def.o, ar),
+              ...node.arguments
+            )
+        : func!.apply(def.o, args);
+    };
 
-    return funcDef.func.apply(funcDef.obj, funcDef.args);
+    return this._resolve(
+      context,
+      short ? RESOLVE_SHORT_CIRCUITED : RESOLVE_NORMAL,
+      (val, args) =>
+        node.callee.type === MEMBER_EXP
+          ? project(val, undefined, args)
+          : project({ o: context, m: '' }, val, args),
+      node.callee.type === MEMBER_EXP ? { ...node.callee, type: '_MemberObject' } : node.callee,
+      ...(short ? [] : node.arguments)
+    );
   }
 
   /** Rule to evaluate `ConditionalExpression` */
   protected ConditionalExpression(node: INode, context: keyedObject): any {
     // can't resolve all operands together as it needs short circuit evaluation
-    return this._eval(node.test, context)
-      ? this._eval(node.consequent, context)
-      : this._eval(node.alternate, context);
+    return this._resolve(
+      context,
+      RESOLVE_SHORT_CIRCUITED,
+      (t) => this._eval(t ? node.consequent : node.alternate, context),
+      node.test
+    );
   }
 
   /** Rule to evaluate `CommaExpression` */
   protected SequenceExpression(node: INode, context: keyedObject): any {
-    return this._resolve(context, (...values) => values.pop(), ...node.expressions);
+    return this._resolve(
+      context,
+      RESOLVE_NORMAL,
+      (...values: any[]) => values.pop(),
+      ...node.expressions
+    );
   }
 
   /** Rule to evaluate `LogicalExpression` */
   protected LogicalExpression(node: INode, context: keyedObject): any {
     // can't resolve all operands together as it needs short circuit evaluation
-    switch (node.operator) {
-      case '||':
-        return this._eval(node.left, context) || this._eval(node.right, context);
-      case '&&':
-        return this._eval(node.left, context) && this._eval(node.right, context);
-      case '??':
-        return this._eval(node.left, context) ?? this._eval(node.right, context);
-      default:
-        throw unsuportedError(BINARY_EXP, node.operator);
-    }
+
+    return this._resolve(
+      context,
+      RESOLVE_SHORT_CIRCUITED,
+      (test) => {
+        switch (node.operator) {
+          case '||':
+            return test || this._eval(node.right, context);
+          case '&&':
+            return test && this._eval(node.right, context);
+          case '??':
+            return test ?? this._eval(node.right, context);
+          case '##':
+            return this._eval(node.right, context);
+          default:
+            throw unsuportedError(BINARY_EXP, node.operator);
+        }
+      },
+      node.left
+    );
   }
 
   /** Rule to evaluate `BinaryExpression` */
   protected BinaryExpression(node: INode, context: keyedObject): any {
     if (!(node.operator in binaryOpCB)) throw unsuportedError(BINARY_EXP, node.operator);
 
-    return this._resolve(context, binaryOpCB[node.operator], node.left, node.right);
+    return this._resolve(context, RESOLVE_NORMAL, binaryOpCB[node.operator], node.left, node.right);
   }
 
   /** Rule to evaluate `UnaryExpression` */
   protected UnaryExpression(node: INode, context: keyedObject): any {
     if (!(node.operator in unaryOpCB)) throw unsuportedError(UNARY_EXP, node.operator);
 
-    return this._resolve(context, unaryOpCB[node.operator], node.argument);
+    return this._resolve(context, RESOLVE_NORMAL, unaryOpCB[node.operator], node.argument);
   }
 
   /** Rule to evaluate `ExpressionStatement` */
@@ -141,43 +208,11 @@ export class BasicEval extends StaticEval {
 
   /** Rule to evaluate `Program` */
   protected Program(node: INode, context: keyedObject): any {
-    return this._resolve(context, (...values) => values.pop(), ...node.body);
+    return this._resolve(context, RESOLVE_NORMAL, (...values: any[]) => values.pop(), ...node.body);
   }
 
   /** Rule to evaluate JSEP's `CompoundExpression` */
   protected Compound(node: INode, context: keyedObject): any {
     return this.Program(node, context);
-  }
-
-  /**
-   * Returns a left side value wrapped to be used for assignment
-   */
-
-  protected _fcall(node: INode, context: keyedObject): any {
-    let obj: any, func: any;
-    // capture context in closure for use in callback
-    // Getting it from 'this' is not reliable for async evaluation as it may have changed in later evals
-
-    if (node.callee.type === MEMBER_EXP) {
-      obj = this._eval(node.callee.object, context);
-
-      if (
-        (node.callee.optional || node.callee.shortCircuited) &&
-        (obj === null || typeof obj === 'undefined')
-      )
-        func = undefined;
-      else
-        func = node.computed
-          ? this._resolve(context, prop => obj[prop], node.callee.property)
-          : obj[node.callee.property.name];
-    } else {
-      obj = context;
-      func = this._eval(node.callee, context);
-    }
-
-    if ((node.optional || node.shortCircuited) && (func === null || typeof func === 'undefined'))
-      return undefined;
-
-    return this._resolve(context, (...args) => ({ obj, func, args }), ...node.arguments);
   }
 }

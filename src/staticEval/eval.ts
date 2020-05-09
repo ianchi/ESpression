@@ -58,15 +58,17 @@ export abstract class StaticEval {
    * Performs the actual evaluation using the supplied callback
    * invoked with the pre evaluated operands
    *
+   * @param nested signals that the callback function will perform an additional evaluation
    * @param operatorCB Callback function to *execute* the actual expression
    * @param operands Operands to sub eval and use to call the callback
    */
   protected _resolve(
     context: object,
+    _mode: number,
     operatorCB: (...operands: any[]) => any,
     ...operands: INode[]
   ): any {
-    const results = operands.map(node => (node || undefined) && this._eval(node, context));
+    const results = operands.map((node) => (node || undefined) && this._eval(node, context));
 
     return operatorCB(...results);
   }

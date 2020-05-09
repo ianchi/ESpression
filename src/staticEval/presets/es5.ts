@@ -20,9 +20,10 @@ import {
 } from '../../parser/presets';
 import { ILvalue, keyedObject, unsuportedError } from '../eval';
 
-import { BasicEval } from './basic';
+import { BasicEval, RESOLVE_NORMAL } from './basic';
 
-// tslint:disable:no-bitwise
+/* eslint-disable no-bitwise */
+
 /** Callback functions to actually perform an operation */
 export const assignOpCB: { [operator: string]: (a: keyedObject, m: string, b: any) => any } = {
     '=': (a: keyedObject, m: string, b: any) => (a[m] = b),
@@ -49,28 +50,25 @@ export const assignOpCB: { [operator: string]: (a: keyedObject, m: string, b: an
   };
 export class ES5StaticEval extends BasicEval {
   lvalue(node: INode, context: keyedObject): ILvalue {
-    let obj, member;
+    let def;
     switch (node.type) {
       case IDENTIFIER_EXP:
-        obj = context;
-        member = node.name;
-        break;
+        return { o: context, m: node.name };
       case MEMBER_EXP:
-        obj = this._eval(node.object, context);
-        member = node.computed ? this._eval(node.property, context) : node.property.name;
-        break;
+        def = this._MemberObject(node, context);
+        if (!def) throw new Error('Invalid left side expression');
+        return def;
       default:
         throw new Error('Invalid left side expression');
     }
-
-    return { o: obj, m: member };
   }
 
   /** Rule to evaluate `ArrayExpression` with spread operator */
   protected ArrayExpression(node: INode, context: keyedObject): any {
     return this._resolve(
       context,
-      (...values) => {
+      0,
+      (...values: any[]) => {
         const result: any[] = [];
         node.elements.forEach((n: INode, i: number) => {
           if (n && n.type === SPREAD_EXP) {
@@ -80,9 +78,10 @@ export class ES5StaticEval extends BasicEval {
         });
         return result;
       },
-      ...node.elements.map((n: any) => (n && n.type === SPREAD_EXP ? n.argument : n))
+      ...node.elements.map((n: INode) => (n?.type === SPREAD_EXP ? n.argument : n))
     );
   }
+
   /** Rule to evaluate `ObjectExpression` */
   protected ObjectExpression(node: INode, context: keyedObject): any {
     const keys: Array<string | undefined> = [],
@@ -111,12 +110,14 @@ export class ES5StaticEval extends BasicEval {
     // add callback as first argument
     return this._resolve(
       context,
-      (...args) => {
+      RESOLVE_NORMAL,
+      (...args: any[]) => {
         // completed resolved key names
-        computed.forEach(idx => (keys[idx] = args.shift()));
+        computed.forEach((idx) => (keys[idx] = args.shift()));
         // generate object
         return args.reduce((ret, val, i) => {
-          if (spread.indexOf(i) >= 0) Object.keys(val ?? {}).forEach(key => (ret[key] = val[key]));
+          if (spread.indexOf(i) >= 0)
+            Object.keys(val ?? {}).forEach((key) => (ret[key] = val[key]));
           else ret[keys[i]!] = val;
           return ret;
         }, {});
@@ -130,7 +131,8 @@ export class ES5StaticEval extends BasicEval {
   protected TemplateLiteral(node: INode, context: keyedObject): any {
     return this._resolve(
       context,
-      (...values) =>
+      RESOLVE_NORMAL,
+      (...values: any[]) =>
         values.reduce(
           (r, e, i) => (r += e + node.quasis[i + 1].value.cooked),
           node.quasis[0].value.cooked
@@ -155,6 +157,7 @@ export class ES5StaticEval extends BasicEval {
   _assignPattern(node: INode, operator: string, right: any, context: any): any {
     switch (node.type) {
       case ARRAY_PAT:
+        if (operator !== '=') throw new Error('Invalid left-hand side in assignment');
         if (!Array.isArray(right)) throw new Error('TypeError: must be array');
 
         for (let i = 0; i < node.elements.length; i++) {
@@ -167,6 +170,7 @@ export class ES5StaticEval extends BasicEval {
         break;
 
       case OBJECT_PAT:
+        if (operator !== '=') throw new Error('Invalid left-hand side in assignment');
         if (right === null || typeof right === 'undefined')
           throw new Error('TypeError: must be convertible to object');
 
@@ -174,7 +178,7 @@ export class ES5StaticEval extends BasicEval {
         for (let i = 0; i < node.properties.length; i++) {
           if (node.properties[i].type === REST_ELE) {
             const rest = Object.keys(right)
-              .filter(k => !(k in visited))
+              .filter((k) => !(k in visited))
               .reduce((r: any, k) => ((r[k] = right[k]), r), {});
             this._assignPattern(node.properties[i].argument, operator, rest, context);
           } else {
@@ -234,7 +238,8 @@ export class ES5StaticEval extends BasicEval {
   protected NewExpression(node: INode, context: keyedObject): any {
     return this._resolve(
       context,
-      (callee, ...args) => new callee(...args),
+      RESOLVE_NORMAL,
+      (callee: new (...args: any[]) => any, ...args: any[]) => new callee(...args),
       node.callee,
       ...node.arguments
     );
