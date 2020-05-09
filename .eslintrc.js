@@ -9,8 +9,7 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'tsconfig.json',
-    sourceType: 'module',
+    project: ['tsconfig.json', './spec/tsconfig.json'],
   },
   plugins: ['@typescript-eslint'],
 
@@ -20,6 +19,9 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
     '@typescript-eslint/prefer-function-type': 'error',
     '@typescript-eslint/no-unused-vars': 'off',
+
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
 
     // shloud be changed in the future
     '@typescript-eslint/member-ordering': 'off',

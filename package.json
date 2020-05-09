@@ -15,10 +15,14 @@
     "tslib": "^1.11.2"
   },
   "devDependencies": {
+    "@types/jasmine": "^3.5.10",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
+    "chalk": "^4.0.0",
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
+    "jasmine": "^3.5.0",
+    "jasmine-ts": "^0.3.0",
     "prettier": "^2.0.5",
     "rollup": "^2.8.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -27,13 +31,15 @@
     "ts-node": "^8.10.1",
     "typedoc": "^0.17.6",
     "typedoc-plugin-markdown": "^2.2.17",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "variable-diff": "^2.0.1"
   },
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "rollup -c",
     "dev": "rollup -w",
-    "test": "node test/test.js",
+    "jasmine": "jasmine-ts --project spec/tsconfig.json",
+    "test": "node test/test.js && npm run jasmine",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "prerelease": "npm run lint && npm run build && npm run test",
     "release": "standard-version && npm publish && git push --follow-tags",
