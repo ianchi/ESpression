@@ -84,7 +84,7 @@ export class RegexRule extends BaseRule<IConfRegexRule> {
 
     // scan regex flags
     while (!ctx.eof() && this.config.flags && this.config.flags.indexOf(ctx.gtCh()) >= 0) {
-      flags = ctx.gbCh();
+      flags += ctx.gbCh();
     }
 
     try {
