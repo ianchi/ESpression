@@ -17,10 +17,8 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
-    "acorn": "^7.1.1",
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
-    "jsep": "^0.3.4",
     "prettier": "^2.0.5",
     "rollup": "^2.8.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -38,7 +36,8 @@
     "test": "node test/test.js",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "prerelease": "npm run lint && npm run build && npm run test",
-    "release": "standard-version && npm publish && git push --follow-tags"
+    "release": "standard-version && npm publish && git push --follow-tags",
+    "postinstall": "cd test && npm install"
   },
   "keywords": [
     "parser",
