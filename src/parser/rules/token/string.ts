@@ -15,8 +15,11 @@ import { ISubRuleConf } from '../conf.interface';
 export interface IConfStringRule extends ISubRuleConf {
   /** Allow line continuation (escaped CR|LF). Always true for templates */
   LT?: boolean;
-  /** Allow hex scape sequences */
+  /** Allow hex and simple Unicode scape sequences \xFF and \uFFFF */
   hex?: boolean;
+
+  /** Allow Unicode code points \u{FFFFFFF} */
+  cp?: boolean;
   /**
    * Parse unquoted text string:
    * if `undefined`, needs a starting quote to match rule
@@ -96,6 +99,7 @@ export class StringRule extends BaseRule<IConfStringRule> {
 
   pre(ctx: ParserContext): INode | null {
     const c = this.config;
+    let cp = false;
     let str = '',
       quote = c.unquoted === false && c.templateRules ? '`' : '',
       closed = false,
@@ -188,8 +192,12 @@ export class StringRule extends BaseRule<IConfStringRule> {
             case 'u':
             case 'x':
               if (c.hex) {
-                ch = ctx.gbHex(ch);
+                // allow Unicode code points
+                if (c.cp) cp = ctx.tyCh('{');
+                ch = ctx.gbHex(cp ? Infinity : ch === 'u' ? 4 : 2);
                 if (ch === null) return ctx.err('Hexadecimal digit expected');
+                if (cp && !ctx.tyCh('}')) return ctx.err('Closing } expected');
+                cp = false;
               }
               str += ch;
               break;

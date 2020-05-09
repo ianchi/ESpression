@@ -123,21 +123,23 @@ export class ParserContext {
     return ch === 10 || ch === 13;
   }
 
-  gbHex(prefix: string): string | null {
-    const len = prefix === 'u' ? 4 : 2;
+  gbHex(len: number): string | null {
     let code = 0,
+      i = 0,
       digit: number;
     const hexDigit = '0123456789abcdef';
 
-    for (let i = 0; i < len; ++i) {
+    for (i = 0; i < len && !this.eof(); ++i) {
       digit = hexDigit.indexOf(this.gtCh().toLowerCase());
-      if (!this.eof() && digit >= 0) {
+      if (digit >= 0) {
         this.i++;
         this.ch = this.i;
         code = code * 16 + digit;
-      } else return null;
+      } else break;
     }
-    return String.fromCharCode(code);
+    if ((i !== len && len !== Infinity) || !i) return null;
+
+    return String.fromCodePoint(code);
   }
   gtOp(): string | null {
     // cache result

@@ -106,7 +106,7 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
   const identifierRule = new IdentifierRule(es5IdentifierConf(identStart, identPart));
   // object needs subset of tokens for parsing properties.
   const tokenRules = numberRules.concat([
-    new StringRule({ LT: true, hex: true, raw: true, templateRules: EXPRESSION }),
+    new StringRule({ LT: true, hex: true, cp: true, raw: true, templateRules: EXPRESSION }),
     identifierRule,
     new UnaryOperatorRule({ '[': ARRAY_TYPE }),
     new RegexRule(),
@@ -164,8 +164,8 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
       LOGICAL_EXP,
     ],
 
-    [LOGICAL_EXP]: [...logiOpConfs.map(conf => new BinaryOperatorRule(conf)), BINARY_EXP],
-    [BINARY_EXP]: [...biOpConfs.map(conf => new BinaryOperatorRule(conf)), UNARY_EXP],
+    [LOGICAL_EXP]: [...logiOpConfs.map((conf) => new BinaryOperatorRule(conf)), BINARY_EXP],
+    [BINARY_EXP]: [...biOpConfs.map((conf) => new BinaryOperatorRule(conf)), UNARY_EXP],
 
     [UNARY_EXP]: [
       new UnaryOperatorRule(
