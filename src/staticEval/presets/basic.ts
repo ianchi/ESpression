@@ -113,29 +113,26 @@ export class BasicEval extends StaticEval {
   /** Rule to evaluate `CallExpression` */
   protected CallExpression(node: INode, context: keyedObject): any {
     const short = node.optional || node.shortCircuited;
-    const project = (def: ILvalue | undefined, func?: Function, args?: any[]): any => {
-      if (!def) return undefined;
-      func = func || def.o[def.m];
-
-      return RESOLVE_SHORT_CIRCUITED
+    const project = (obj: any, func: Function, args: any[]): any => {
+      return short
         ? func === null || typeof func === 'undefined'
           ? undefined
           : this._resolve(
               context,
               RESOLVE_NORMAL,
-              (...ar) => func!.apply(def.o, ar),
+              (...ar) => func!.apply(obj, ar),
               ...node.arguments
             )
-        : func!.apply(def.o, args);
+        : func!.apply(obj, args);
     };
 
     return this._resolve(
       context,
       short ? RESOLVE_SHORT_CIRCUITED : RESOLVE_NORMAL,
-      (val, args) =>
+      (def, ...args) =>
         node.callee.type === MEMBER_EXP
-          ? project(val, undefined, args)
-          : project({ o: context, m: '' }, val, args),
+          ? project(def.o, def.o[def.m], args)
+          : project(context, def, args),
       node.callee.type === MEMBER_EXP ? { ...node.callee, type: '_MemberObject' } : node.callee,
       ...(short ? [] : node.arguments)
     );
