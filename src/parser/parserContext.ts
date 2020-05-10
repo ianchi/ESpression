@@ -292,6 +292,7 @@ export class ParserContext {
       index++;
     } while (sep && !this.eof() && index <= c.maxSep!);
 
+    if (sep && this.eof() && !c.trailling) return this.err('Expected expression');
     if (
       (sep && !nodes.length) ||
       (nodes.length === 1 && (sep || !c.separators)) ||

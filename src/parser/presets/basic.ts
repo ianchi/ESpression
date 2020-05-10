@@ -71,13 +71,13 @@ export function basicRules(): IRuleSet {
     [EXPRESSION]: [NOCOMMA_EXPR],
     [NOCOMMA_EXPR]: [
       new TernaryOperatorRule({ type: CONDITIONAL_EXP }),
-      ...biOpConfs.map(conf => new BinaryOperatorRule(conf)),
+      ...biOpConfs.map((conf) => new BinaryOperatorRule(conf)),
 
       new UnaryOperatorRule(opConf(['+', '-', '!', '~'], UNARY_TYPE_PRE)),
       new BinaryOperatorRule({
         '.': MEMBER_TYPE,
         '[': MEMBER_TYPE_COMP,
-        '(': CALL_TYPE,
+        '(': { ...CALL_TYPE, trailling: true },
       }),
       new UnaryOperatorRule({ '(': GROUP_TYPE }),
       TOKEN,

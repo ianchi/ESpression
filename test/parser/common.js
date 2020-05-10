@@ -211,6 +211,7 @@ module.exports = [
   'func()',
   'func(a,b,c)',
   'func(1+2*3,c)',
+  'func(1+2*3,c, )', //  should fail
 
   // complex
 
@@ -243,6 +244,7 @@ module.exports = [
   'a; \n b',
   ';',
   ';a+b',
-  ',,3',
+  ',,3', // should fail
+  '1,2,', // should fail
   'func()123',
 ];

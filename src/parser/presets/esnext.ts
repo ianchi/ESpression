@@ -33,6 +33,10 @@ import {
 import { es6Rules } from './es6';
 
 export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IRuleSet {
+  // ES2017 allows trailing commas in function calls
+  const restore_comma = CALL_TYPE.trailling;
+  CALL_TYPE.trailling = true;
+
   const rules: IRuleSet = {
     ...es6Rules(identStart, identPart),
 
@@ -45,7 +49,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
         '**': {
           ...BINARY_TYPE,
           subRules: 'Exponential',
-          extra: n => {
+          extra: (n) => {
             if (n.left.type === UNARY_EXP)
               throw new Error('Unary operator used immediately before exponentiation expression.');
             return n;
@@ -135,7 +139,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
     new BinaryOperatorRule({
       '?.': {
         ...MEMBER_TYPE,
-        extra: n => ({
+        extra: (n) => ({
           ...n,
           computed: false,
           optional: true,
@@ -145,7 +149,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
 
       '?.[': {
         ...MEMBER_TYPE_COMP,
-        extra: n => ({
+        extra: (n) => ({
           ...n,
           computed: true,
           optional: true,
@@ -154,7 +158,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
       },
       '?.(': {
         ...CALL_TYPE,
-        extra: n => ({
+        extra: (n) => ({
           ...n,
           optional: true,
           shortCircuited: !!(n.callee && (n.callee.shortCircuited || n.callee.optional)),
@@ -163,7 +167,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
 
       '.': {
         ...MEMBER_TYPE,
-        extra: n => ({
+        extra: (n) => ({
           ...n,
           computed: false,
           optional: false,
@@ -173,7 +177,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
 
       '[': {
         ...MEMBER_TYPE_COMP,
-        extra: n => ({
+        extra: (n) => ({
           ...n,
           computed: true,
           optional: false,
@@ -182,7 +186,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
       },
       '(': {
         ...CALL_TYPE,
-        extra: n => ({
+        extra: (n) => ({
           ...n,
           optional: false,
           shortCircuited: !!(n.callee && (n.callee.shortCircuited || n.callee.optional)),
@@ -207,6 +211,8 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
     new TryBranchRule({ subRules: 'ParentesisOptChain', test: '(' })
   );
 
+  // restore definition in case many presets are being used.
+  CALL_TYPE.trailling = restore_comma;
   return rules;
 }
 
