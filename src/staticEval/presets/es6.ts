@@ -16,7 +16,7 @@ export class ES6StaticEval extends ES5StaticEval {
     return (...params: any[]) => {
       const ctx = Object.create(context);
 
-      this._assignPattern({ type: ARRAY_PAT, elements: node.params }, '=', params, ctx);
+      this._assignPattern({ type: ARRAY_PAT, elements: node.params }, '=', params, ctx, context);
 
       return this._eval(node.body, ctx);
     };

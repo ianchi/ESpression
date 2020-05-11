@@ -161,7 +161,13 @@ export class ES5StaticEval extends BasicEval {
     return node.value.cooked;
   }
 
-  _assignPattern(node: INode, operator: string, right: any, context: any): any {
+  _assignPattern(
+    node: INode,
+    operator: string,
+    right: any,
+    context: any,
+    defaultsContext?: any
+  ): any {
     switch (node.type) {
       case ARRAY_PAT:
         if (operator !== '=') throw new Error('Invalid left-hand side in assignment');
@@ -171,8 +177,14 @@ export class ES5StaticEval extends BasicEval {
           if (!node.elements[i]) continue;
 
           if (node.elements[i].type === REST_ELE)
-            this._assignPattern(node.elements[i].argument, operator, right.slice(i), context);
-          else this._assignPattern(node.elements[i], operator, right[i], context);
+            this._assignPattern(
+              node.elements[i].argument,
+              operator,
+              right.slice(i),
+              context,
+              defaultsContext
+            );
+          else this._assignPattern(node.elements[i], operator, right[i], context, defaultsContext);
         }
         break;
 
@@ -187,7 +199,13 @@ export class ES5StaticEval extends BasicEval {
             const rest = Object.keys(right)
               .filter((k) => !(k in visited))
               .reduce((r: any, k) => ((r[k] = right[k]), r), {});
-            this._assignPattern(node.properties[i].argument, operator, rest, context);
+            this._assignPattern(
+              node.properties[i].argument,
+              operator,
+              rest,
+              context,
+              defaultsContext
+            );
           } else {
             const key = node.properties[i].computed
               ? this._eval(node.properties[i].key, context)
@@ -195,16 +213,23 @@ export class ES5StaticEval extends BasicEval {
               ? node.properties[i].key.value
               : node.properties[i].key.name;
             visited[key] = true;
-            this._assignPattern(node.properties[i].value, operator, right[key], context);
+            this._assignPattern(
+              node.properties[i].value,
+              operator,
+              right[key],
+              context,
+              defaultsContext
+            );
           }
         }
 
         break;
 
       case 'AssignmentPattern':
-        if (typeof right === 'undefined') right = this._eval(node.right, context);
+        if (typeof right === 'undefined')
+          right = this._eval(node.right, defaultsContext ?? context);
 
-        return this._assignPattern(node.left, operator, right, context);
+        return this._assignPattern(node.left, operator, right, context, defaultsContext);
 
       default:
         const left = this.lvalue(node, context);
