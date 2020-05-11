@@ -148,10 +148,17 @@ export class ES5StaticEval extends BasicEval {
         callee: node.tag,
         optional: node.optional,
         shortCircuited: node.shortCircuited,
-        arguments: [node.quasi.quasis, ...node.quasi.expressions],
+        arguments: [
+          { type: 'ArrayExpression', elements: node.quasi.quasis },
+          ...node.quasi.expressions,
+        ],
       },
       context
     );
+  }
+
+  protected TemplateElement(node: INode, _context: keyedObject): any {
+    return node.value.cooked;
   }
 
   _assignPattern(node: INode, operator: string, right: any, context: any): any {
