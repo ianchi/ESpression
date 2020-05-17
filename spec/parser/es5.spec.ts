@@ -177,6 +177,10 @@ const tests = [
   '({a, b:{d,e} } = c)',
   '({a, b:{d,e} = {} } = c)',
 
+  // should fail
+  '[a, b] += 12',
+  '( {a, ..b} /= 23 )',
+
   // non compliant in ESpression, they are allowed and shouldn't
   // '(a, b=1, ...c, ) => r',
   // '(a, b=1, ...c ) \n=> r',
