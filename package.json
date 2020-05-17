@@ -38,12 +38,11 @@
     "prebuild": "rm -rf dist",
     "build": "rollup -c",
     "dev": "rollup -w",
-    "jasmine": "jasmine-ts --project spec/tsconfig.json",
-    "test": "node test/test.js && npm run jasmine",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "prerelease": "npm run lint && npm run build && npm run test",
+    "test": "jasmine-ts --project spec/tsconfig.json",
+    "lint": "eslint src spec",
+    "prerelease": "npm run lint && npm run test && npm run build",
     "release": "standard-version && npm publish && git push --follow-tags",
-    "postinstall": "cd test && npm install"
+    "postinstall": "cd spec && npm install"
   },
   "keywords": [
     "parser",
