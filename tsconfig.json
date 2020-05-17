@@ -13,6 +13,7 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,
+    "downlevelIteration": true,
 
     "outDir": "dist",
     "typeRoots": ["node_modules/@types"],
