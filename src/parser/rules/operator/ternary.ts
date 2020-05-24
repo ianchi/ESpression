@@ -38,8 +38,8 @@ export interface IConfTernaryRule extends ISubRuleConf, IExtraConf {
  * Rule to parse most expressions with three operands
  *
  * @remarks
- * This rules doesn't support evaluating with subrules.
- * All opperands are evaluated using the current set and recursing from the current level
+ * This rules doesn't support evaluating with sub-rules.
+ * All operands are evaluated using the current set and recursing from the current level
  *
  * @example
  * + first op1 middle op2 last `first ? middle : last`

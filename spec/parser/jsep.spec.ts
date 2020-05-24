@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2020 Adrian Panella <ianchi74@outlook.com>
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
 import 'jasmine';
 import { createJSEPSpec } from '../helpers/references';
 
@@ -56,7 +61,7 @@ const tests = [
   '0008',
   '09',
   '09.5',
-  // invalid numbers - shoud throw
+  // invalid numbers - should throw
   '3e',
   '3e+',
   '3e-',
@@ -183,7 +188,7 @@ const tests = [
   'a || (b&&c)',
   '(a || b) && c',
 
-  // unary operatos,
+  // unary operators,
 
   '!a',
   '-b',

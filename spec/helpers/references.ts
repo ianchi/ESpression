@@ -1,9 +1,16 @@
+/**
+ * Copyright (c) 2020 Adrian Panella <ianchi74@outlook.com>
+ * This software is released under the MIT License.
+ * https://opensource.org/licenses/MIT
+ */
+
 import 'jasmine';
+import * as assert from 'assert';
 
 import jsep from 'jsep';
 import { parse as acorn } from 'acorn';
+
 import { BasicParser, ESnextParser, INode } from '../../src/main';
-import * as assert from 'assert';
 
 const jsepParser = new BasicParser();
 const esnextParser = new ESnextParser(false);
