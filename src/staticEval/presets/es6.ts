@@ -13,7 +13,7 @@ import { ES5StaticEval } from './es5';
 
 export class ES6StaticEval extends ES5StaticEval {
   protected ArrowFunctionExpression(node: INode, context: keyedObject): any {
-    return (...params: any[]) => {
+    return (...params: any[]): any => {
       const ctx = Object.create(context);
 
       this._assignPattern({ type: ARRAY_PAT, elements: node.params }, '=', params, ctx, context);

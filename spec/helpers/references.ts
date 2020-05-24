@@ -7,7 +7,7 @@ import * as assert from 'assert';
 
 const jsepParser = new BasicParser();
 const esnextParser = new ESnextParser(false);
-export function createJSEPSpec(expr: string) {
+export function createJSEPSpec(expr: string): void {
   let refResult: any;
 
   try {
@@ -27,7 +27,7 @@ export function createJSEPSpec(expr: string) {
   }
 }
 
-export function createAcornSpec(expr: string) {
+export function createAcornSpec(expr: string): void {
   let refResult: any;
 
   try {
@@ -55,7 +55,7 @@ export function createAcornSpec(expr: string) {
   }
 }
 
-export function createAstSpec(expr: { expr: string; fail?: boolean; ast?: INode }) {
+export function createAstSpec(expr: { expr: string; fail?: boolean; ast?: INode }): void {
   if (expr.ast && !expr.fail)
     it(`Expr: (${expr.expr}) should be parsed`, () => {
       const node = esnextParser.parse(expr.expr);
@@ -69,21 +69,22 @@ export function createAstSpec(expr: { expr: string; fail?: boolean; ast?: INode 
   }
 }
 
-function removeKeys(obj: any, keys: string[]) {
+function removeKeys<T extends Record<string, unknown>>(obj: T, keys: string[]): T {
   let index: number;
   for (const prop in obj) {
     // eslint-disable-next-line no-prototype-builtins
     if (obj.hasOwnProperty(prop)) {
       index = keys.indexOf(prop);
       if (index > -1) delete obj[prop];
-      else if (typeof obj[prop] === 'object') removeKeys(obj[prop], keys);
+      else if (typeof obj[prop] === 'object') removeKeys((obj as any)[prop], keys);
     }
   }
 
   return obj;
 }
 
-export function deepEqual(o1: any, o2: any) {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function deepEqual(o1: any, o2: any): boolean {
   try {
     assert.deepEqual(o1, o2);
     return true;

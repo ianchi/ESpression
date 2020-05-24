@@ -140,7 +140,7 @@ export function es5Rules(identStart?: ICharClass, identPart?: ICharClass): IRule
       new MultiOperatorRule({
         type: EXPRESSION_EXP,
         prop: EXPRESSION,
-        extra: (node: INode) =>
+        extra: (node: INode): INode =>
           node.expression.type === LITERAL_EXP && typeof node.expression.value === 'string'
             ? {
                 ...node,

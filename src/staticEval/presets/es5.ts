@@ -161,12 +161,13 @@ export class ES5StaticEval extends BasicEval {
     return node.value.cooked;
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   _assignPattern(
     node: INode,
     operator: string,
     right: any,
-    context: any,
-    defaultsContext?: any
+    context: keyedObject,
+    defaultsContext?: keyedObject
   ): any {
     switch (node.type) {
       case ARRAY_PAT:

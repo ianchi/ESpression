@@ -23,23 +23,23 @@ const failed: jasmine.CustomReporterResult[] = [];
 let total = 0;
 const suiteFailures: jasmine.CustomReporterResult[] = [];
 export class DiffReporter implements jasmine.CustomReporter {
-  jasmineStarted() {
+  jasmineStarted(): void {
     console.log('Starting tests');
   }
 
-  specStarted() {
+  specStarted(): void {
     process.stdout.write(chalk.green('.'));
   }
-  specDone(result: jasmine.CustomReporterResult) {
+  specDone(result: jasmine.CustomReporterResult): void {
     total++;
     if (result.failedExpectations) failed.push(result);
   }
 
-  suiteDone(result: jasmine.CustomReporterResult) {
+  suiteDone(result: jasmine.CustomReporterResult): void {
     if (result.failedExpectations) suiteFailures.push(result);
   }
 
-  jasmineDone(run: jasmine.RunDetails) {
+  jasmineDone(run: jasmine.RunDetails): void {
     console.log('\n');
 
     if (run.failedExpectations)
@@ -54,7 +54,7 @@ export class DiffReporter implements jasmine.CustomReporter {
     console.log(`\n${total} specs, ${num} failures\n`);
   }
 
-  print(failures: jasmine.CustomReporterResult[], stack = false) {
+  print(failures: jasmine.CustomReporterResult[], stack = false): number {
     let num = 0;
     for (const result of failures)
       if (result.failedExpectations)

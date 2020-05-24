@@ -165,7 +165,7 @@ export class ParserContext {
     return null;
   }
 
-  gbOp(restrict: object): string | null {
+  gbOp(restrict: Record<string, unknown>): string | null {
     this.gbSp();
 
     const op = this.gtOp();

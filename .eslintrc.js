@@ -2,7 +2,6 @@ module.exports = {
   env: {},
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
     'prettier/@typescript-eslint',
@@ -33,7 +32,13 @@ module.exports = {
     'no-case-declarations': 'off',
     '@typescript-eslint/camelcase': 'off',
 
-    '@typescript-eslint/class-name-casing': 'error',
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'class',
+        format: ['PascalCase'],
+      },
+    ],
     '@typescript-eslint/no-empty-interface': 'error',
     '@typescript-eslint/no-inferrable-types': 'error',
     '@typescript-eslint/no-misused-new': 'error',

@@ -29,11 +29,11 @@ export abstract class StaticEval {
    * @param expression AST to evaluate
    * @param context Optional custom context object. Defaults to empty context `{}`
    */
-  evaluate(expression: INode, context?: object): any {
+  evaluate(expression: INode, context?: keyedObject): any {
     return this._eval(expression, context || {});
   }
 
-  abstract lvalue(node: INode, context: object, unchecked?: boolean): ILvalue;
+  abstract lvalue(node: INode, context: keyedObject, unchecked?: boolean): ILvalue;
   /**
    * Calls the corresponding eval function, with a mandatory context
    * Implementation of expression evaluation functions should call this version for evaluating subexpressions
@@ -63,7 +63,7 @@ export abstract class StaticEval {
    * @param operands Operands to sub eval and use to call the callback
    */
   protected _resolve(
-    context: object,
+    context: keyedObject,
     _mode: number,
     operatorCB: (...operands: any[]) => any,
     ...operands: INode[]
