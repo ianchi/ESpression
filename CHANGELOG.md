@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/ianchi/ESpression/compare/v1.7.0...v1.8.0) (2020-05-24)
+
+
+### Features
+
+* **parser:** allow code point escapes in strings ([b04aae6](https://github.com/ianchi/ESpression/commit/b04aae649d6092dda793356b71038b4f6da3ee35))
+
+
+### Bug Fixes
+
+* **eval:** arrow function default value context ([135d67e](https://github.com/ianchi/ESpression/commit/135d67e7bf038d514423d51cd2edb73d6a76ebe8))
+* **eval:** error on tagged template literal ([3600499](https://github.com/ianchi/ESpression/commit/36004994dd8dab6f652203eee0d002543888b54d))
+* **eval:** fix calling non shorcircuited ([19afa40](https://github.com/ianchi/ESpression/commit/19afa40bae23eb75e43019a3baf69e22f85ed9e5))
+* **eval:** make es5 work with iterables ([93a24cb](https://github.com/ianchi/ESpression/commit/93a24cba95efa5665365abe9a7e1adaa41c4cf7c))
+* trailing comma in function call and comma exp ([4794a2a](https://github.com/ianchi/ESpression/commit/4794a2a34c9f5de71b2b3e30993bcb435ebde7f0))
+* **parser:** regexp flags being lost ([dccb452](https://github.com/ianchi/ESpression/commit/dccb452ba8f61fa01e9e7e8edea96ac7ac5e68e1))
+
 ## [1.7.0](https://github.com/ianchi/ESpression/compare/v1.6.0...v1.7.0) (2020-04-12)
 
 
