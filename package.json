@@ -18,11 +18,13 @@
     "@types/jasmine": "^3.5.10",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
+    "acorn": "^7.2.0",
     "chalk": "^4.0.0",
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
     "jasmine": "^3.5.0",
     "jasmine-ts": "^0.3.0",
+    "jsep": "^0.3.4",
     "prettier": "^2.0.5",
     "rollup": "^2.8.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -41,8 +43,7 @@
     "test": "jasmine-ts --project spec/tsconfig.json",
     "lint": "eslint src spec",
     "prerelease": "npm run lint && npm run test && npm run build",
-    "release": "standard-version && npm publish && git push --follow-tags",
-    "postinstall": "cd spec && npm install"
+    "release": "standard-version && npm publish && git push --follow-tags"
   },
   "keywords": [
     "parser",
