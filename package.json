@@ -22,6 +22,8 @@
     "chalk": "^4.0.0",
     "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-notice": "^0.9.10",
     "jasmine": "^3.5.0",
     "jasmine-ts": "^0.3.0",
     "jsep": "^0.3.4",
