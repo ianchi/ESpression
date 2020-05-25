@@ -6,9 +6,9 @@
  */
 
 import { INode, IOperatorDef } from '../../parser.interface';
-import { ParserContext } from '../../parserContext';
+import { ParserContext, IExtraConf } from '../../parserContext';
 import { BaseRule } from '../baseRule';
-import { IExtraConf, IMultiConf, ISubRuleConf } from '../conf.interface';
+import { IMultiConf, ISubRuleConf } from '../conf.interface';
 
 /**
  * Configuration object for a single unary expression
@@ -100,7 +100,9 @@ export interface IConfUnaryRule extends IOperatorDef {
  */
 export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
   preConf: IConfUnaryRule = {};
+
   postConf: IConfUnaryRule = {};
+
   constructor(public config: IConfUnaryRule) {
     super();
     let c: IConfUnaryOp;
@@ -108,6 +110,7 @@ export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
     for (const op in config) {
       c = config[op];
       if (!c.close) {
+        // eslint-disable-next-line no-multi-assign
         c.separators = c.empty = undefined;
       } else c.isPre = true;
       this.unwrapMulti(c);
@@ -137,6 +140,7 @@ export class UnaryOperatorRule extends BaseRule<IConfUnaryRule> {
 
     return this.makeNode(op, c.separators || !nodes.length || !nodes[0] ? nodes : nodes[0]!, ctx);
   }
+
   post(ctx: ParserContext, bubbledNode: INode): INode {
     const c = this.postConf;
     let op: string | null = null;

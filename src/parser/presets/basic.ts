@@ -48,9 +48,10 @@ const COMPOUND_CONF: IConfMultipleRule = {
   trailling: true,
   empty: true,
   // remove empty slots and bypass Compound node for single expressions
-  extra: (node: INode) => (
-    (node.body = node.body.filter((n: INode) => n)), node.body.length === 1 ? node.body[0] : node
-  ),
+  extra: (node: INode) => {
+    node.body = node.body.filter((n: INode) => n);
+    return node.body.length === 1 ? node.body[0] : node;
+  },
 };
 
 const biOpConfs: IConfBinaryRule[] = [

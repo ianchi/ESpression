@@ -22,3 +22,4 @@ builtins
 stringify
 var
 recursing
+typeof

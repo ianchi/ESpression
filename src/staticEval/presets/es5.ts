@@ -5,6 +5,10 @@
  * https://opensource.org/licenses/MIT
  */
 
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-assign */
+/* eslint-disable no-bitwise */
+
 import { INode } from '../../parser';
 import {
   ARRAY_PAT,
@@ -22,32 +26,30 @@ import { ILvalue, keyedObject, unsuportedError } from '../eval';
 
 import { BasicEval, RESOLVE_NORMAL } from './basic';
 
-/* eslint-disable no-bitwise */
-
 /** Callback functions to actually perform an operation */
 export const assignOpCB: { [operator: string]: (a: keyedObject, m: string, b: any) => any } = {
-    '=': (a: keyedObject, m: string, b: any) => (a[m] = b),
-    '+=': (a: keyedObject, m: string, b: any) => (a[m] += b),
-    '-=': (a: keyedObject, m: string, b: any) => (a[m] -= b),
-    '*=': (a: keyedObject, m: string, b: any) => (a[m] *= b),
-    '/=': (a: keyedObject, m: string, b: any) => (a[m] /= b),
-    '%=': (a: keyedObject, m: string, b: any) => (a[m] %= b),
-    '**=': (a: keyedObject, m: string, b: any) => (a[m] **= b),
-    '<<=': (a: keyedObject, m: string, b: any) => (a[m] <<= b),
-    '>>=': (a: keyedObject, m: string, b: any) => (a[m] >>= b),
-    '>>>=': (a: keyedObject, m: string, b: any) => (a[m] >>>= b),
-    '|=': (a: keyedObject, m: string, b: any) => (a[m] |= b),
-    '&=': (a: keyedObject, m: string, b: any) => (a[m] &= b),
-    '^=': (a: keyedObject, m: string, b: any) => (a[m] ^= b),
-  },
-  preUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
-    '++': (a: keyedObject, m: string) => ++a[m],
-    '--': (a: keyedObject, m: string) => --a[m],
-  },
-  postUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
-    '++': (a: keyedObject, m: string) => a[m]++,
-    '--': (a: keyedObject, m: string) => a[m]--,
-  };
+  '=': (a: keyedObject, m: string, b: any) => (a[m] = b),
+  '+=': (a: keyedObject, m: string, b: any) => (a[m] += b),
+  '-=': (a: keyedObject, m: string, b: any) => (a[m] -= b),
+  '*=': (a: keyedObject, m: string, b: any) => (a[m] *= b),
+  '/=': (a: keyedObject, m: string, b: any) => (a[m] /= b),
+  '%=': (a: keyedObject, m: string, b: any) => (a[m] %= b),
+  '**=': (a: keyedObject, m: string, b: any) => (a[m] **= b),
+  '<<=': (a: keyedObject, m: string, b: any) => (a[m] <<= b),
+  '>>=': (a: keyedObject, m: string, b: any) => (a[m] >>= b),
+  '>>>=': (a: keyedObject, m: string, b: any) => (a[m] >>>= b),
+  '|=': (a: keyedObject, m: string, b: any) => (a[m] |= b),
+  '&=': (a: keyedObject, m: string, b: any) => (a[m] &= b),
+  '^=': (a: keyedObject, m: string, b: any) => (a[m] ^= b),
+};
+const preUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
+  '++': (a: keyedObject, m: string) => ++a[m],
+  '--': (a: keyedObject, m: string) => --a[m],
+};
+const postUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
+  '++': (a: keyedObject, m: string) => a[m]++,
+  '--': (a: keyedObject, m: string) => a[m]--,
+};
 export class ES5StaticEval extends BasicEval {
   lvalue(node: INode, context: keyedObject): ILvalue {
     let def;
@@ -84,28 +86,31 @@ export class ES5StaticEval extends BasicEval {
 
   /** Rule to evaluate `ObjectExpression` */
   protected ObjectExpression(node: INode, context: keyedObject): any {
-    const keys: Array<string | undefined> = [],
-      computedNodes: INode[] = [],
-      computed: number[] = [],
-      spread: number[] = [],
-      nodes = node.properties.map((n: INode, i: number) => {
-        let key: string;
-        if (n.type === SPREAD_EXP) {
-          keys.push(undefined);
-          spread.push(i);
-          return n.argument;
-        } else if (n.computed) {
-          keys.push(undefined);
-          computed.push(i);
-          computedNodes.push(n.key);
-        } else {
-          if (n.key.type === IDENTIFIER_EXP) key = n.key.name;
-          else if (n.key.type === LITERAL_EXP) key = n.key.value.toString();
-          else throw new Error('Invalid property');
-          keys.push(key);
-        }
-        return n.value;
-      });
+    const keys: Array<string | undefined> = [];
+    const computedNodes: INode[] = [];
+    const computed: number[] = [];
+    const spread: number[] = [];
+    const nodes = node.properties.map((n: INode, i: number) => {
+      let key: string;
+      if (n.type === SPREAD_EXP) {
+        keys.push(undefined);
+        spread.push(i);
+        return n.argument;
+      }
+
+      if (n.computed) {
+        keys.push(undefined);
+        computed.push(i);
+        computedNodes.push(n.key);
+      } else {
+        if (n.key.type === IDENTIFIER_EXP) key = n.key.name;
+        else if (n.key.type === LITERAL_EXP) key = n.key.value.toString();
+        else throw new Error('Invalid property');
+        keys.push(key);
+      }
+
+      return n.value;
+    });
 
     // add callback as first argument
     return this._resolve(
@@ -134,6 +139,7 @@ export class ES5StaticEval extends BasicEval {
       RESOLVE_NORMAL,
       (...values: any[]) =>
         values.reduce(
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
           (r, e, i) => (r += e + node.quasis[i + 1].value.cooked),
           node.quasis[0].value.cooked
         ),
@@ -199,7 +205,11 @@ export class ES5StaticEval extends BasicEval {
           if (node.properties[i].type === REST_ELE) {
             const rest = Object.keys(right)
               .filter((k) => !(k in visited))
-              .reduce((r: any, k) => ((r[k] = right[k]), r), {});
+              // eslint-disable-next-line no-loop-func
+              .reduce((r: any, k) => {
+                r[k] = right[k];
+                return r;
+              }, {});
             this._assignPattern(
               node.properties[i].argument,
               operator,
@@ -264,7 +274,9 @@ export class ES5StaticEval extends BasicEval {
     if (node.operator === 'delete') {
       const obj = this.lvalue(node.argument, context);
       return delete obj.o[obj.m];
-    } else return super.UnaryExpression(node, context);
+    }
+
+    return super.UnaryExpression(node, context);
   }
 
   /** Rule to evaluate `NewExpression` */
@@ -272,6 +284,7 @@ export class ES5StaticEval extends BasicEval {
     return this._resolve(
       context,
       RESOLVE_NORMAL,
+      // eslint-disable-next-line new-cap
       (callee: new (...args: any[]) => any, ...args: any[]) => new callee(...args),
       node.callee,
       ...node.arguments

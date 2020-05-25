@@ -72,23 +72,23 @@ const PROGRAM_CONF: IConfMultipleRule = {
   empty: true,
 };
 
-const logiOpConfs: IConfBinaryRule[] = [{ '||': LOGICAL_TYPE }, { '&&': LOGICAL_TYPE }],
-  biOpConfs: IConfBinaryRule[] = [
-    { '|': BINARY_TYPE },
-    { '^': BINARY_TYPE },
-    { '&': BINARY_TYPE },
-    opConf(['==', '!=', '===', '!=='], BINARY_TYPE),
-    opConf(
-      [
-        ['<', '>', '<=', '>='],
-        ['instanceof', 'in'],
-      ],
-      [BINARY_TYPE, BINARY_TYPE_SP]
-    ),
-    opConf(['<<', '>>', '>>>'], BINARY_TYPE),
-    opConf(['+', '-'], BINARY_TYPE),
-    opConf(['*', '/', '%'], BINARY_TYPE),
-  ];
+const logiOpConfs: IConfBinaryRule[] = [{ '||': LOGICAL_TYPE }, { '&&': LOGICAL_TYPE }];
+const biOpConfs: IConfBinaryRule[] = [
+  { '|': BINARY_TYPE },
+  { '^': BINARY_TYPE },
+  { '&': BINARY_TYPE },
+  opConf(['==', '!=', '===', '!=='], BINARY_TYPE),
+  opConf(
+    [
+      ['<', '>', '<=', '>='],
+      ['instanceof', 'in'],
+    ],
+    [BINARY_TYPE, BINARY_TYPE_SP]
+  ),
+  opConf(['<<', '>>', '>>>'], BINARY_TYPE),
+  opConf(['+', '-'], BINARY_TYPE),
+  opConf(['*', '/', '%'], BINARY_TYPE),
+];
 
 export const numberRules: Array<BaseRule<any>> = [
   new NumberRule({ radix: 16, prefix: '0x' }),

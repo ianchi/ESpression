@@ -5,6 +5,8 @@
  * https://opensource.org/licenses/MIT
  */
 
+/* eslint-disable no-multi-assign */
+
 import { ParseError } from './parseError';
 import { ICharClass, INode, IOperatorDef, IParserConfig } from './parser.interface';
 import { IMultiConf } from './rules/conf.interface';
@@ -17,20 +19,35 @@ export interface IRule {
   post(ctx: ParserContext, bubbledNode: INode): INode;
 }
 
+export interface IExtraConf {
+  /**
+   * additional properties to add to AST node
+   * or callback to postprocess the resulting AST node.
+   */
+  extra?: ((node: INode, ctx: ParserContext) => INode) | Partial<INode>;
+}
+
 export interface IRuleSet {
   [branch: string]: Array<IRule | string>;
 }
 export class ParserContext {
   sp = false;
+
   lt = false;
+
   ch = 0;
 
   i = 0;
 
   private branch = '';
+
   private level = 0;
+
   private nxtOp = '';
+
   private opPos = -1;
+
+  // eslint-disable-next-line no-useless-constructor
   constructor(public e: string, public rules: IRuleSet, public config: IParserConfig) {}
 
   rest(): string {
@@ -40,6 +57,7 @@ export class ParserContext {
   eof(): boolean {
     return this.i >= this.e.length;
   }
+
   gb(cant: number): void {
     if (!cant) return;
     this.sp = this.lt = false;
@@ -83,6 +101,7 @@ export class ParserContext {
   gtCh(offset?: number): string {
     return this.e.charAt(this.i + (offset || 0));
   }
+
   gtCd(offset?: number): number {
     return this.e.charCodeAt(this.i + (offset || 0));
   }
@@ -96,11 +115,11 @@ export class ParserContext {
   }
 
   gbSp(): boolean {
-    let sp = false,
-      lt = false;
+    let sp = false;
+    let lt = false;
 
     // space or tab
-    // tslint:disable-next-line:no-conditional-assignment
+    // eslint-disable-next-line no-cond-assign
     while (!this.eof() && ((sp = this.teSP()) || (lt = this.teLT()))) {
       this.i++;
       this.sp = this.sp || sp;
@@ -124,9 +143,9 @@ export class ParserContext {
   }
 
   gbHex(len: number): string | null {
-    let code = 0,
-      i = 0,
-      digit: number;
+    let code = 0;
+    let i = 0;
+    let digit: number;
     const hexDigit = '0123456789abcdef';
 
     for (i = 0; i < len && !this.eof(); ++i) {
@@ -141,12 +160,13 @@ export class ParserContext {
 
     return String.fromCodePoint(code);
   }
+
   gtOp(): string | null {
     // cache result
     if (this.nxtOp && this.opPos === this.i) return this.nxtOp;
     const ops = this.config.ops;
-    let toCheck = this.e.substr(this.i, this.config.maxOpLen),
-      tcLen = toCheck.length;
+    let toCheck = this.e.substr(this.i, this.config.maxOpLen);
+    let tcLen = toCheck.length;
     while (tcLen > 0) {
       if (toCheck in ops) {
         if (
@@ -183,7 +203,9 @@ export class ParserContext {
     if (ch && separators.indexOf(ch) >= 0) {
       this.gbCh();
       return ch;
-    } else if (
+    }
+
+    if (
       (this.sp && separators.indexOf(' ') >= 0) ||
       ((this.lt || this.eof()) && separators.indexOf('\n') >= 0)
     )
@@ -213,9 +235,9 @@ export class ParserContext {
    * @remark If the string has not been complete consumed, throw an `Error`
    */
   parseNext(jump: string | number): INode {
-    const curBranch = this.branch,
-      curLevel = this.level,
-      curPos = this.i;
+    const curBranch = this.branch;
+    const curLevel = this.level;
+    const curPos = this.i;
     let res: INode;
 
     try {
@@ -249,10 +271,10 @@ export class ParserContext {
 
   parseMulti(c: IMultiConf, jump: string | number): Array<INode | null> & { match?: boolean } {
     const nodes: Array<INode | null> & { match?: boolean } = [];
-    let sep: boolean | string,
-      node: INode,
-      index = 0,
-      curPos;
+    let sep: boolean | string;
+    let node: INode;
+    let index = 0;
+    let curPos;
 
     do {
       this.gbSp();

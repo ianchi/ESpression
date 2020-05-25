@@ -6,10 +6,10 @@
  */
 
 import { INode } from '../../parser.interface';
-import { ParserContext } from '../../parserContext';
+import { ParserContext, IExtraConf } from '../../parserContext';
 import { EXPRESSION } from '../../presets/const';
 import { BaseRule } from '../baseRule';
-import { IExtraConf, IMultiConf, ISubRuleConf } from '../conf.interface';
+import { IMultiConf, ISubRuleConf } from '../conf.interface';
 
 /**
  * Configuration object for a multi expression
@@ -52,8 +52,8 @@ export class MultiOperatorRule extends BaseRule<IConfMultipleRule> {
   pre(ctx: ParserContext): INode | null {
     // use pre to be able to check for empty expression on first slot
     const curPos = ctx.i;
-    const c = this.config,
-      nodes = ctx.parseMulti(c, c.subRules || 1);
+    const c = this.config;
+    const nodes = ctx.parseMulti(c, c.subRules || 1);
 
     // no match
     if (!nodes.match) return nodes.length ? nodes[0] : null;

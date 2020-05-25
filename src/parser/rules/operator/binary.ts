@@ -6,9 +6,9 @@
  */
 
 import { INode, IOperatorDef } from '../../parser.interface';
-import { ParserContext } from '../../parserContext';
+import { ParserContext, IExtraConf } from '../../parserContext';
 import { BaseRule } from '../baseRule';
-import { IExtraConf, IMultiConf, ISubRuleConf } from '../conf.interface';
+import { IMultiConf, ISubRuleConf } from '../conf.interface';
 
 /**
  * Configuration object for a single binary expression

@@ -6,9 +6,9 @@
  */
 
 import { INode, IOperatorDef } from '../parser.interface';
-import { ParserContext } from '../parserContext';
+import { ParserContext, IExtraConf } from '../parserContext';
 
-import { IExtraConf, IMultiConf } from './conf.interface';
+import { IMultiConf } from './conf.interface';
 
 /**
  * Abstract class to use as base for defining parsing rules
@@ -16,6 +16,7 @@ import { IExtraConf, IMultiConf } from './conf.interface';
 export abstract class BaseRule<T> {
   /** Configuration of the rule */
   config = {} as T;
+
   unwrapMulti(config: IMultiConf): void {
     config.maxSep = !config.separators
       ? 0
@@ -23,17 +24,21 @@ export abstract class BaseRule<T> {
       ? Infinity
       : config.maxSep;
   }
+
   addExtra(conf: IExtraConf, node: INode, ctx: ParserContext): INode {
     if (!conf.extra) return node;
     if (typeof conf.extra === 'function') return conf.extra(node, ctx);
     return { ...conf.extra, ...node };
   }
+
   register(): IOperatorDef {
     return {};
   }
+
   pre(_ctx: ParserContext): INode | null {
     return null;
   }
+
   post(_ctx: ParserContext, bubbledNode: INode): INode {
     return bubbledNode;
   }

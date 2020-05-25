@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2020 Adrian Panella <ianchi74@outlook.com>
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
@@ -9,6 +9,7 @@ const evaluate: (expr: string, context: any) => any = (global as any).espression
 
 class TestObject {
   param: any;
+
   constructor(param: any) {
     this.param = param;
   }

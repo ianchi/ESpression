@@ -24,6 +24,7 @@ export interface ILvalue {
  */
 export abstract class StaticEval {
   [evalFn: string]: any;
+
   /**
    * Evaluates an expression in an optionally provided context
    * @param expression AST to evaluate
@@ -34,6 +35,7 @@ export abstract class StaticEval {
   }
 
   abstract lvalue(node: INode, context: keyedObject, unchecked?: boolean): ILvalue;
+
   /**
    * Calls the corresponding eval function, with a mandatory context
    * Implementation of expression evaluation functions should call this version for evaluating subexpressions
@@ -44,7 +46,7 @@ export abstract class StaticEval {
   protected _eval(expression: INode, context: keyedObject): any {
     try {
       if (!(expression.type in this))
-        throw new Error('Unsupported expression type: ' + expression.type);
+        throw new Error(`Unsupported expression type: ${expression.type}`);
       return this[expression.type](expression, context);
     } catch (e) {
       if (!e.pos) e.pos = expression.pos;
@@ -75,5 +77,5 @@ export abstract class StaticEval {
 }
 
 export function unsuportedError(type: string, operator: string): Error {
-  return new Error('Unsuported ' + type + ': ' + operator);
+  return new Error(`Unsuported ${type}: ${operator}`);
 }

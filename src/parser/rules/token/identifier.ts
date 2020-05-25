@@ -86,18 +86,20 @@ export class IdentifierRule extends BaseRule<IConfIdentifierRule> {
     }
 
     if (c.this && identifier === 'this') return { type: THIS_EXP };
-    else if (c.literals && identifier in c.literals)
+
+    if (c.literals && identifier in c.literals)
       return {
         type: c.typeLiteral || LITERAL_EXP,
         [c.propLiteral || 'value']: c.literals[identifier],
         raw: identifier,
       };
-    else if (c.reserved && c.reserved.indexOf(identifier) >= 0)
+
+    if (c.reserved && c.reserved.indexOf(identifier) >= 0)
       return ctx.err('Invalid reserved identifier');
-    else
-      return {
-        type: c.typeIdent || IDENTIFIER_EXP,
-        [c.propIdent || 'name']: identifier,
-      };
+
+    return {
+      type: c.typeIdent || IDENTIFIER_EXP,
+      [c.propIdent || 'name']: identifier,
+    };
   }
 }

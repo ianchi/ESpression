@@ -34,7 +34,7 @@ import { es6Rules } from './es6';
 
 export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IRuleSet {
   // ES2017 allows trailing commas in function calls
-  const restore_comma = CALL_TYPE.trailling;
+  const restoreComma = CALL_TYPE.trailling;
   CALL_TYPE.trailling = true;
 
   const rules: IRuleSet = {
@@ -212,7 +212,7 @@ export function esNextRules(identStart?: ICharClass, identPart?: ICharClass): IR
   );
 
   // restore definition in case many presets are being used.
-  CALL_TYPE.trailling = restore_comma;
+  CALL_TYPE.trailling = restoreComma;
   return rules;
 }
 

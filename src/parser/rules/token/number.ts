@@ -53,31 +53,30 @@ export interface IConfNumberRule {
  */
 export class NumberRule extends BaseRule<IConfNumberRule> {
   digits: RegExp;
+
   prefix: RegExp | undefined;
 
   constructor(public config: IConfNumberRule = { radix: 10, decimal: true, exp: true }) {
     super();
-    // tslint:disable:no-magic-numbers
     if (config.radix < 2 || config.radix > 36) throw new RangeError('Radix out of range');
-    let digits = '0-' + (config.radix < 10 ? config.radix - 1 : 9);
-    if (config.radix > 10) digits += 'A-' + String.fromCharCode(64 + config.radix - 10);
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+    let digits = `0-${config.radix < 10 ? config.radix - 1 : 9}`;
+    if (config.radix > 10) digits += `A-${String.fromCharCode(64 + config.radix - 10)}`;
     if (config.radix !== 10) {
       config.decimal = false;
       config.exp = false;
     }
 
-    this.digits = new RegExp('[' + digits + ']', 'i');
-    if (config.prefix) this.prefix = new RegExp('^' + config.prefix, 'i');
-
-    // tslint:enable:no-magic-numbers
+    this.digits = new RegExp(`[${digits}]`, 'i');
+    if (config.prefix) this.prefix = new RegExp(`^${config.prefix}`, 'i');
   }
 
   pre(ctx: ParserContext): INode | null {
     const c = this.config;
 
-    let num = '',
-      ch,
-      prefix = '';
+    let num = '';
+    let ch;
+    let prefix = '';
 
     if (this.prefix) {
       const m = this.prefix.exec(ctx.rest());
@@ -119,7 +118,7 @@ export class NumberRule extends BaseRule<IConfNumberRule> {
         num += ctx.gbCh();
       }
       if (!this.digits.test(ctx.gtCh(-1))) {
-        ctx.err('Expected exponent (' + num + ctx.gtCh() + ')');
+        ctx.err(`Expected exponent (${num}${ctx.gtCh()})`);
       }
     }
 

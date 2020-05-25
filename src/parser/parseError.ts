@@ -17,6 +17,7 @@ export class ParseError extends SyntaxError {
 
   /** Marks that no ruled matched for the expression (or subexpression) */
   noMatch: boolean;
+
   constructor(message: string, expression: string, position: number, noMatch?: boolean) {
     super(`${message} ${expression[position] || ''} at position ${position}`);
     this.description = message;

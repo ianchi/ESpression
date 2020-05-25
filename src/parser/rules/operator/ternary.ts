@@ -6,9 +6,9 @@
  */
 
 import { INode } from '../../parser.interface';
-import { ParserContext } from '../../parserContext';
+import { ParserContext, IExtraConf } from '../../parserContext';
 import { BaseRule } from '../baseRule';
-import { IExtraConf, ISubRuleConf } from '../conf.interface';
+import { ISubRuleConf } from '../conf.interface';
 
 /**
  * Configuration object for a single unary expression
@@ -75,7 +75,7 @@ export class TernaryOperatorRule extends BaseRule<IConfTernaryRule> {
     const consequent = ctx.parseNext(c.subRules || 0);
 
     ctx.gbSp();
-    if (!ctx.tyCh(c.secondOp!)) return ctx.err(`Operator ${c.secondOp} expected, but found`);
+    if (!ctx.tyCh(c.secondOp!)) return ctx.err(`Operator ${c.secondOp!} expected, but found`);
 
     const alternate = ctx.parseNext(c.subRules || 0);
 

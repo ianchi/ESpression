@@ -49,21 +49,23 @@ export class RegexRule extends BaseRule<IConfRegexRule> {
     config.flags = config.flags || 'gimuy';
     this.config = config;
   }
+
   pre(ctx: ParserContext): INode | null {
     const start = ctx.i;
 
     // Regular expression literal must start with a slash
     if (!ctx.tyCh('/')) return null;
 
-    let ch: string,
-      pattern = '',
-      bracket = false,
-      closed = false;
-    let flags = '',
-      value: RegExp;
+    let ch: string;
+    let pattern = '';
+    let bracket = false;
+    let closed = false;
+    let flags = '';
+    let value: RegExp;
 
     // parse regex pattern
     while (!ctx.eof()) {
+      // eslint-disable-next-line no-multi-assign
       pattern += ch = ctx.gbCh();
       if (ch === '\\') {
         if (ctx.teLT()) return ctx.err(UNTERMINATED_ERROR);

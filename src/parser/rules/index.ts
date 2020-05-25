@@ -5,6 +5,11 @@
  * https://opensource.org/licenses/MIT
  */
 
+/* eslint-disable import/no-cycle */
+
+// needed to generate typing's' file for pure interface source
+import './conf.interface';
+
 export * from './baseRule';
 export * from './tryBranch';
 export { BinaryOperatorRule, IConfBinaryRule, IConfBinaryOp } from './operator/binary';
@@ -16,6 +21,3 @@ export { IdentifierRule, IConfIdentifierRule } from './token/identifier';
 export { NumberRule, IConfNumberRule } from './token/number';
 export { RegexRule, IConfRegexRule } from './token/regex';
 export { StringRule, IConfStringRule, IPosition, toRawPosition } from './token/string';
-
-// needed to generate typing's' file for pure interface source
-import './conf.interface';

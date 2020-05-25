@@ -100,16 +100,16 @@ export class StringRule extends BaseRule<IConfStringRule> {
   pre(ctx: ParserContext): INode | null {
     const c = this.config;
     let cp = false;
-    let str = '',
-      quote = c.unquoted === false && c.templateRules ? '`' : '',
-      closed = false,
-      ch: string | null,
-      start = ctx.i,
-      isTemplate = false,
-      LT = c.LT;
-    const expressions = [],
-      quasis = [],
-      escapes: IPosition[] = [];
+    let str = '';
+    let quote = c.unquoted === false && c.templateRules ? '`' : '';
+    let closed = false;
+    let ch: string | null;
+    let start = ctx.i;
+    let isTemplate = false;
+    let LT = c.LT;
+    const expressions = [];
+    const quasis = [];
+    const escapes: IPosition[] = [];
 
     // check for string start marker
     if (typeof c.unquoted === 'undefined') {
@@ -220,16 +220,14 @@ export class StringRule extends BaseRule<IConfStringRule> {
     }
 
     if (isTemplate) return { type: TEMPLATE_EXP, quasis, expressions };
-    else {
-      const ret: INode = {
-        type: LITERAL_EXP,
-        value: str,
-        raw: c.raw ? ctx.e.substring(start, ctx.i) : quote + str + quote,
-      };
+    const ret: INode = {
+      type: LITERAL_EXP,
+      value: str,
+      raw: c.raw ? ctx.e.substring(start, ctx.i) : quote + str + quote,
+    };
 
-      if (c.escapes) ret.escapes = escapes;
-      return ret;
-    }
+    if (c.escapes) ret.escapes = escapes;
+    return ret;
   }
 }
 

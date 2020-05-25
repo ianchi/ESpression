@@ -5,11 +5,11 @@
  * https://opensource.org/licenses/MIT
  */
 
+// needed to generate typing's file for pure interface source
+import './parser.interface';
+
 export * from './parser';
 export * from './parseError';
 export * from './parser.interface';
 export * from './parserContext';
 export * from './rules';
-
-// needed to generate typings file for pure interface source
-import './parser.interface';

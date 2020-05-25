@@ -6,10 +6,10 @@
  */
 
 import { INode } from '../parser.interface';
-import { ParserContext } from '../parserContext';
+import { ParserContext, IExtraConf } from '../parserContext';
 
 import { BaseRule } from './baseRule';
-import { IExtraConf, ISubRuleConf } from './conf.interface';
+import { ISubRuleConf } from './conf.interface';
 
 /**
  * Configuration object for a try branch rule
@@ -24,6 +24,7 @@ export class TryBranchRule extends BaseRule<IConfTryBranch> {
   constructor(public config: IConfTryBranch) {
     super();
   }
+
   pre(ctx: ParserContext): INode | null {
     const initState: [number, boolean, boolean] = [ctx.i, ctx.lt, ctx.sp];
 

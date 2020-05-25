@@ -13,37 +13,39 @@ import { ILvalue, keyedObject, StaticEval, unsuportedError } from '../eval';
 
 /** Callback functions to actually perform an operation */
 export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
-    '|': (a: any, b: any) => a | b,
-    '^': (a: any, b: any) => a ^ b,
-    '&': (a: any, b: any) => a & b,
-    '==': (a: any, b: any) => a == b, // eslint-disable-line
-    '!=': (a: any, b: any) => a != b, // eslint-disable-line
-    '===': (a: any, b: any) => a === b,
-    '!==': (a: any, b: any) => a !== b,
-    '<': (a: any, b: any) => a < b,
-    '>': (a: any, b: any) => a > b,
-    '<=': (a: any, b: any) => a <= b,
-    '>=': (a: any, b: any) => a >= b,
-    instanceof: (a: any, b: any) => a instanceof b,
-    in: (a: any, b: any) => a in b,
-    '<<': (a: any, b: any) => a << b,
-    '>>': (a: any, b: any) => a >> b,
-    '>>>': (a: any, b: any) => a >>> b,
-    '+': (a: any, b: any) => a + b,
-    '-': (a: any, b: any) => a - b,
-    '*': (a: any, b: any) => a * b,
-    '/': (a: any, b: any) => a / b,
-    '%': (a: any, b: any) => a % b,
-    '**': (a: any, b: any) => a ** b,
-  },
-  unaryOpCB: { [operator: string]: (a: any) => any } = {
-    '-': (a: any) => -a,
-    '+': (a: any) => +a,
-    '!': (a: any) => !a,
-    '~': (a: any) => ~a,
-    typeof: (a: any) => typeof a,
-    void: (a: any) => void a, // tslint:disable-line
-  };
+  '|': (a: any, b: any) => a | b,
+  '^': (a: any, b: any) => a ^ b,
+  '&': (a: any, b: any) => a & b,
+  '==': (a: any, b: any) => a == b, // eslint-disable-line
+  '!=': (a: any, b: any) => a != b, // eslint-disable-line
+  '===': (a: any, b: any) => a === b,
+  '!==': (a: any, b: any) => a !== b,
+  '<': (a: any, b: any) => a < b,
+  '>': (a: any, b: any) => a > b,
+  '<=': (a: any, b: any) => a <= b,
+  '>=': (a: any, b: any) => a >= b,
+  instanceof: (a: any, b: any) => a instanceof b,
+  in: (a: any, b: any) => a in b,
+  '<<': (a: any, b: any) => a << b,
+  '>>': (a: any, b: any) => a >> b,
+  '>>>': (a: any, b: any) => a >>> b,
+  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+  '+': (a: any, b: any) => a + b,
+  '-': (a: any, b: any) => a - b,
+  '*': (a: any, b: any) => a * b,
+  '/': (a: any, b: any) => a / b,
+  '%': (a: any, b: any) => a % b,
+  '**': (a: any, b: any) => a ** b,
+};
+const unaryOpCB: { [operator: string]: (a: any) => any } = {
+  '-': (a: any) => -a,
+  '+': (a: any) => +a,
+  '!': (a: any) => !a,
+  '~': (a: any) => ~a,
+  typeof: (a: any) => typeof a,
+  // eslint-disable-next-line no-void
+  void: (a: any) => void a,
+};
 
 export const RESOLVE_NORMAL = 0;
 export const RESOLVE_SHORT_CIRCUITED = 1;
@@ -110,6 +112,7 @@ export class BasicEval extends StaticEval {
       short || !node.computed ? undefined : node.property
     );
   }
+
   /** Rule to evaluate `CallExpression` */
   protected CallExpression(node: INode, context: keyedObject): any {
     const short = node.optional || node.shortCircuited;
@@ -121,10 +124,10 @@ export class BasicEval extends StaticEval {
           : this._resolve(
               context,
               RESOLVE_NORMAL,
-              (...ar) => func!.apply(obj, ar),
+              (...ar) => func.apply(obj, ar),
               ...node.arguments
             )
-        : func!.apply(obj, args);
+        : func.apply(obj, args);
     };
 
     return this._resolve(

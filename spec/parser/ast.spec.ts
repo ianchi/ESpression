@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2020 Adrian Panella <ianchi74@outlook.com>
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
@@ -335,7 +335,7 @@ const tests: Array<{ expr: string; fail?: boolean; ast?: INode }> = [
 ];
 
 describe('Basic ESnext expressions', () => {
-  beforeEach(function () {
+  beforeEach(() => {
     jasmine.addCustomEqualityTester(deepEqual);
   });
 

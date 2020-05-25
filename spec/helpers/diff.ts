@@ -1,8 +1,11 @@
-/** 
+/**
  * Copyright (c) 2020 Adrian Panella <ianchi74@outlook.com>
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+
+/* eslint-disable no-console */
+
 import chalk from 'chalk';
 import 'jasmine';
 
@@ -35,6 +38,7 @@ export class DiffReporter implements jasmine.CustomReporter {
   specStarted(): void {
     process.stdout.write(chalk.green('.'));
   }
+
   specDone(result: jasmine.CustomReporterResult): void {
     total++;
     if (result.failedExpectations) failed.push(result);
@@ -50,7 +54,7 @@ export class DiffReporter implements jasmine.CustomReporter {
     if (run.failedExpectations)
       for (const fail of run.failedExpectations) {
         console.log(chalk.red(fail.message));
-        console.log(`Trace:\n${fail.trace}`);
+        console.log(`Trace:\n${fail.trace.message}`);
       }
 
     this.print(suiteFailures, true);
