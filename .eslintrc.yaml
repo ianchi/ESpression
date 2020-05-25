@@ -1,104 +1,95 @@
 ---
 extends:
   - eslint:recommended
+  - airbnb-base
+
   - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/recommended-requiring-type-checking
+
   - prettier
   - prettier/@typescript-eslint
-  - plugin:import/errors
-  - plugin:import/warnings
-  - plugin:import/recommended
-  - plugin:import/typescript
 
-parser: '@typescript-eslint/parser'
+  - plugin:import/typescript
 
 parserOptions:
   project:
     - tsconfig.json
     - ./spec/tsconfig.json
+
 plugins:
-  - '@typescript-eslint'
   - import
   - notice
 
 rules:
+  no-plusplus: 'off'
+  no-case-declarations: 'off'
+  class-methods-use-this: 'off'
+  no-continue: 'off'
+  no-nested-ternary: 'off'
+  prefer-destructuring: 'off'
+  no-param-reassign: 'off'
+  no-use-before-define:
+    - error
+    - functions: false
+      classes: true
+  no-restricted-syntax: 'off'
+  guard-for-in: 'off'
+
+  no-invalid-this: error
+  no-new-wrappers: error
+  no-underscore-dangle: 'off'
+
   '@typescript-eslint/array-type':
     - error
     - default: array-simple
+  # '@typescript-eslint/camelcase': 'off'
+  # '@typescript-eslint/consistent-type-assertions': 'off'
   '@typescript-eslint/consistent-type-definitions':
     - error
     - interface
+  #'@typescript-eslint/explicit-function-return-type': 'off'
   '@typescript-eslint/explicit-member-accessibility':
     - error
     - accessibility: no-public
-  '@typescript-eslint/prefer-function-type': error
-  '@typescript-eslint/no-unused-vars': 'off'
-  no-use-before-define: 'off'
-  '@typescript-eslint/no-use-before-define':
-    - error
-    - functions: false
-  '@typescript-eslint/member-ordering': 'off'
-  '@typescript-eslint/no-explicit-any': 'off'
-  '@typescript-eslint/interface-name-prefix': 'off'
-  '@typescript-eslint/explicit-function-return-type': 'off'
-  '@typescript-eslint/consistent-type-assertions': 'off'
-  no-underscore-dangle: 'off'
-  no-case-declarations: 'off'
-  '@typescript-eslint/camelcase': 'off'
+  # '@typescript-eslint/interface-name-prefix': 'off'
+  # '@typescript-eslint/member-ordering': 'off'
   '@typescript-eslint/naming-convention':
     - error
     - selector: class
       format:
         - PascalCase
-  '@typescript-eslint/no-empty-interface': error
+
   '@typescript-eslint/no-inferrable-types': error
   '@typescript-eslint/no-misused-new': error
-  '@typescript-eslint/no-namespace': error
-  '@typescript-eslint/no-non-null-assertion': 'off'
   '@typescript-eslint/no-require-imports': error
-  '@typescript-eslint/no-var-requires': error
+  '@typescript-eslint/no-unused-vars':
+    - error
+    - argsIgnorePattern: ^_
+  '@typescript-eslint/no-use-before-define':
+    - error
+    - functions: false
+  '@typescript-eslint/prefer-function-type': error
   '@typescript-eslint/unified-signatures': error
-  default-case: error
-  dot-notation: 'off'
-  eqeqeq:
-    - error
-    - always
-  max-classes-per-file:
-    - error
-    - 1
-  no-bitwise: error
-  no-caller: error
-  no-duplicate-imports: error
-  no-eval: error
-  no-invalid-this: error
-  no-new-wrappers: error
-  no-restricted-imports:
-    - error
-    - rxjs/Rx
-  no-shadow: error
-  no-throw-literal: error
-  no-undef-init: error
-  no-unused-expressions:
-    - error
-    - allowShortCircuit: true
-  no-var: error
-  object-shorthand: error
-  prefer-const: error
-  prefer-object-spread: error
-  quote-props:
-    - error
-    - as-needed
-  radix: error
-  spaced-comment:
-    - error
-    - always
-    - markers:
-        - /
-        - '!'
+
+  # revert recommended as rework is needed to remove 'any'
+  '@typescript-eslint/no-explicit-any': 'off'
+  '@typescript-eslint/no-non-null-assertion': 'off'
+  '@typescript-eslint/no-unsafe-assignment': 'off'
+  '@typescript-eslint/no-unsafe-call': 'off'
+  '@typescript-eslint/no-unsafe-member-access': 'off'
+  '@typescript-eslint/no-unsafe-return': 'off'
 
   import/no-deprecated: 1
   import/order:
     - error
     - newlines-between: always
+  import/extensions:
+    - error
+    - ignorePackages
+    - js: never
+      mjs: never
+      ts: never
+  import/prefer-default-export: 'off'
 
   notice/notice:
     - error
