@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.2](https://github.com/ianchi/ESpression/compare/v1.8.1...v1.8.2) (2020-05-30)
+
+
+### Bug Fixes
+
+* error evaluating chained opt member + callExp ([c81b0a5](https://github.com/ianchi/ESpression/commit/c81b0a52b10b6cd6631076cbd7d6afde706bd64a))
+* incorrect resolve mode for function calls ([297a8e3](https://github.com/ianchi/ESpression/commit/297a8e30a6acb274ab682448ba022278bb8be75c))
+* missing exports after linting to single const ([35f0199](https://github.com/ianchi/ESpression/commit/35f0199d0a965693b39d7fb8fc1639bd9a594248))
+
 ### [1.8.1](https://github.com/ianchi/ESpression/compare/v1.8.0...v1.8.1) (2020-05-25)
 
 ## [1.8.0](https://github.com/ianchi/ESpression/compare/v1.7.0...v1.8.0) (2020-05-24)
