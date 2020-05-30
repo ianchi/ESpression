@@ -42,11 +42,11 @@ export const assignOpCB: { [operator: string]: (a: keyedObject, m: string, b: an
   '&=': (a: keyedObject, m: string, b: any) => (a[m] &= b),
   '^=': (a: keyedObject, m: string, b: any) => (a[m] ^= b),
 };
-const preUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
+export const preUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
   '++': (a: keyedObject, m: string) => ++a[m],
   '--': (a: keyedObject, m: string) => --a[m],
 };
-const postUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
+export const postUpdateOpCB: { [operator: string]: (a: keyedObject, m: string) => any } = {
   '++': (a: keyedObject, m: string) => a[m]++,
   '--': (a: keyedObject, m: string) => a[m]--,
 };

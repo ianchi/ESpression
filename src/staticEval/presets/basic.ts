@@ -29,15 +29,14 @@ export const binaryOpCB: { [operator: string]: (a: any, b: any) => any } = {
   '<<': (a: any, b: any) => a << b,
   '>>': (a: any, b: any) => a >> b,
   '>>>': (a: any, b: any) => a >>> b,
-  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-  '+': (a: any, b: any) => a + b,
+  '+': (a: any, b: any) => a + b, // eslint-disable-line
   '-': (a: any, b: any) => a - b,
   '*': (a: any, b: any) => a * b,
   '/': (a: any, b: any) => a / b,
   '%': (a: any, b: any) => a % b,
   '**': (a: any, b: any) => a ** b,
 };
-const unaryOpCB: { [operator: string]: (a: any) => any } = {
+export const unaryOpCB: { [operator: string]: (a: any) => any } = {
   '-': (a: any) => -a,
   '+': (a: any) => +a,
   '!': (a: any) => !a,
