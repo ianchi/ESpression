@@ -131,7 +131,7 @@ export class BasicEval extends StaticEval {
 
     return this._resolve(
       context,
-      short ? RESOLVE_SHORT_CIRCUITED : RESOLVE_NORMAL,
+      RESOLVE_SHORT_CIRCUITED, // always resolve short circuited, as called function could return observable
       (def, ...args) =>
         node.callee.type === MEMBER_EXP
           ? project(def?.o, def?.o[def.m], args)
