@@ -134,7 +134,7 @@ export class BasicEval extends StaticEval {
       short ? RESOLVE_SHORT_CIRCUITED : RESOLVE_NORMAL,
       (def, ...args) =>
         node.callee.type === MEMBER_EXP
-          ? project(def.o, def.o[def.m], args)
+          ? project(def?.o, def?.o[def.m], args)
           : project(context, def, args),
       node.callee.type === MEMBER_EXP ? { ...node.callee, type: '_MemberObject' } : node.callee,
       ...(short ? [] : node.arguments)

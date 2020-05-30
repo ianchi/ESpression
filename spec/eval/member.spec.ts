@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2020 Adrian Panella <ianchi74@outlook.com>
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
@@ -47,6 +47,26 @@ describe('Member Expression', () => {
       const result = evaluate('z?.[a++]', context);
       expect(result).toBeUndefined();
       expect(context.a).toBe(1);
+    });
+
+    it('should not fail on chained optional member', () => {
+      const result = evaluate('z?.b?.d', context);
+      expect(result).toBeUndefined();
+    });
+
+    it('should not fail on chained optional member combined with call', () => {
+      const result = evaluate('z?.b()', context);
+      expect(result).toBeUndefined();
+    });
+
+    it('should not fail on chained optional member combined with optional call', () => {
+      const result = evaluate('z?.b?.()', context);
+      expect(result).toBeUndefined();
+    });
+
+    it('should not fail on chained optional call combined with optional member', () => {
+      const result = evaluate('z?.()?.b', context);
+      expect(result).toBeUndefined();
     });
   });
 });
