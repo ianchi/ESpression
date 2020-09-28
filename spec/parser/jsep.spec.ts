@@ -218,6 +218,7 @@ const tests = [
   'func(a,b,c)',
   'func(1+2*3,c)',
   'func(1+2*3,c, )', //  should fail
+  'func(1, ,3)',
 
   // complex
 

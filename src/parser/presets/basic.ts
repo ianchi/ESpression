@@ -78,7 +78,7 @@ export function basicRules(): IRuleSet {
       new BinaryOperatorRule({
         '.': MEMBER_TYPE,
         '[': MEMBER_TYPE_COMP,
-        '(': { ...CALL_TYPE, trailling: true },
+        '(': CALL_TYPE,
       }),
       new UnaryOperatorRule({ '(': GROUP_TYPE }),
       TOKEN,
