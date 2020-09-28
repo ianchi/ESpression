@@ -167,10 +167,10 @@ export class ES5StaticEval extends BasicEval {
     return node.value.cooked;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   _assignPattern(
     node: INode,
     operator: string,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     right: any,
     context: keyedObject,
     defaultsContext?: keyedObject

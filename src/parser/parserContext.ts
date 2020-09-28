@@ -6,6 +6,7 @@
  */
 
 /* eslint-disable no-multi-assign */
+/* eslint-disable no-use-before-define */
 
 import { ParseError } from './parseError';
 import { ICharClass, INode, IOperatorDef, IParserConfig } from './parser.interface';
