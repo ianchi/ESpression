@@ -26,7 +26,6 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-notice": "^0.9.10",
     "jasmine": "^3.6.1",
-    "jasmine-ts": "^0.3.0",
     "jsep": "^0.3.5",
     "prettier": "^2.1.2",
     "rollup": "^2.31.0",
@@ -43,7 +42,7 @@
     "prebuild": "rm -rf dist",
     "build": "rollup -c",
     "dev": "rollup -w",
-    "test": "jasmine-ts --project spec/tsconfig.json",
+    "test": "ts-node --project spec/tsconfig.json ./node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
     "lint": "eslint src spec",
     "prerelease": "npm run lint && npm run test && npm run build",
     "release": "standard-version && npm publish && git push --follow-tags"
