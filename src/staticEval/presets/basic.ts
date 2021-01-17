@@ -116,8 +116,8 @@ export class BasicEval extends StaticEval {
   protected CallExpression(node: INode, context: keyedObject): any {
     const short = node.optional || node.shortCircuited;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    const project = (obj: any, func: Function, args: any[]): any => {
-      return short
+    const project = (obj: any, func: Function, args: any[]): any =>
+      short
         ? func === null || typeof func === 'undefined'
           ? undefined
           : this._resolve(
@@ -127,7 +127,6 @@ export class BasicEval extends StaticEval {
               ...node.arguments
             )
         : func.apply(obj, args);
-    };
 
     return this._resolve(
       context,
