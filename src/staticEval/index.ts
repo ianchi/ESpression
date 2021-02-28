@@ -8,4 +8,4 @@
 export * from './eval';
 export * from './presets/basic';
 export * from './presets/es5';
-export * from './presets/es6';
+export { ES6StaticEval, ES6StaticEval as ESNextStaticEval } from './presets/es6';
