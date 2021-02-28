@@ -8,7 +8,7 @@ The goal is to have a specialized expression parser with a small footprint, but 
 
 Inspired by [jsep](https://github.com/soney/jsep) Java Script Expression Parser.
 
-## Usage
+## Goals
 
 ESpression can be used with different purposes:
 
@@ -20,26 +20,69 @@ ESpression can be used with different purposes:
 
 The easiest way to use it is through one of the presets, but it can also be completely configured to parse with custom rules.
 
-### ES5 expressions
+## Usage
 
-Presets:
+In most cases it can be used directly importing one of the included presets.
+For advanced cases, new custom presets can be defined.
 
-- ES5
-- ES6
-- ESnext
+### Presets:
+
+- **basic** (jsep compatible): `BasicParser, BasicEval`
+- **ES5**: `ES5Parser, ES5StaticEval`
+- **ES6**: `ES6Parser, ES6StaticEval`
+- **ESnext**: `ESNextParser, ESNextStaticEval`
 
 ```
-import { ES5Eval, ES5Parser } from 'espression';
+import { ESNextParser, ESNextStaticEval } from 'espression';
 
-const parser = new ES5Parser();
-const staticEval = new ES5Eval();
+const parser = new ESNextParser();
+const staticEval = new ESNextStaticEval();
 
 let ast = parser.parse('a + b * c');
 let result = staticEval.evaluate(ast, {a:1, b:2, c:3});
 ```
 
-This preset can return Esprima compatible AST (ExpressionStatements inside a Program Body), or .
-All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body). Most ES6 features are also supported:
+This preset can return Esprima compatible AST (ExpressionStatements inside a Program Body).
+
+#### ES5 Preset
+
+All ES5 expressions are supported, except for function expressions (as it would require to parse statements in the body).
+
+The parser returns _ESPRIMA_ compatible AST.
+
+```
+  ES5Parser(
+    noStatement?: boolean,
+    identStart?: ICharClass,
+    identPart?: ICharClass,
+    range?: boolean
+  )
+
+  ES5StaticEval()
+```
+
+`noStatement`: if `true` returns directly the expression's AST, not wrapped in a `Program` + `ExpressionStatement` nodes
+
+`identStart`: allows to customize the valid identifier start characters. If undefined defaults to `[$_A-Za-z]`. To be fully ES5 compliant with all unicode characters allowed, you could import and pass `es5IdentStart` object
+
+`identPart`: allows to customize the valid identifier part characters. If undefined defaults to `[$_0-9A-Za-z]`. To be fully ES5 compliant with all unicode characters allowed, you could import and pass `es5IdentPart` object
+
+`range`: if `true` _range_ information is included in the parsed AST, as an array with the starting and ending position in the source text
+
+#### ES6 Preset
+
+```
+  ES6Parser(
+    noStatement?: boolean,
+    identStart?: ICharClass,
+    identPart?: ICharClass,
+    range?: boolean
+  )
+
+  ES6StaticEval()
+```
+
+In addition to ES5 it adds support for:
 
 - template literals
 - tagged template expressions
@@ -48,21 +91,37 @@ All ES5 expressions are supported, except for function expressions (as it would 
 - arrow function expressions (only with _expression_ body)
 - destructuring assignment
 
-To evaluate the AST you can provide a context object whose properties are visible as variables inside the expression.
+#### ESNext Preset
 
-### basic expressions
+```
+  ESNextParser(
+    noStatement?: boolean,
+    identStart?: ICharClass,
+    identPart?: ICharClass,
+    range?: boolean
+  )
+
+  ESNextStaticEval()
+```
+
+In addition to ES6 it adds support for:
+
+- exponential operator ( a \*\* b)
+- optional chain expressions (a?.b || o?.[m])
+- nullish coalescing operator ( a ?? 10)
+
+#### Basic Preset
 
 Limited expressions, compatible with **JSEP** syntax. It is a bit smaller, but almost negligible.
 
 ```
-import { BasicParser, BasicEval } from 'espression';
+BasicParser()
 
-const parser = new BasicParser();
-const staticEval = new BasicEval();
+BasicEval()
 
-let ast = parser.parse('a + b * c');
-let result = staticEval.evaluate(ast, {a:1, b:2, c:3});
 ```
+
+This parser is not configurable
 
 Returns a jsep compatible AST (with compound statements). Keeps same limitations for expressions (i.e. no RegExp literals, no object literals, no assignment).
 
@@ -82,9 +141,28 @@ The evaluation returns an observable which emits the result each time any operan
 The parser aims to be fully customizable, so it is split into a basic core and then a set of rules that do the actual parsing, conforming to an API. The rules themselves try to be a generalization of a case, and so also customizable.
 To have a working parser, you need to instantiate one with a configured set of rules.
 
+### API
+
+```
+parser.parse(expr: string): ASTnode
+```
+
+Parses the expression and returns the corresponding AST or throws an error.
+The error object thrown has `position` property indicating the location in the string where the parsing error occurred.
+
 ## Static Eval
 
 A configurable static eval is included to evaluate parsed expressions.
+
+### API
+
+```
+staticEval.evaluate(node: ASTnode, context: object): any
+```
+
+Evaluates the AST of an expression and returns its result or throws an error.
+The error object has a `node` property with the subexpression AST that triggered the error.
+If range information was enabled in the parsers and present in the AST it can be used to identify the position of the error.
 
 ## Bundling
 
