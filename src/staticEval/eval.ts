@@ -49,7 +49,6 @@ export abstract class StaticEval {
         throw new Error(`Unsupported expression type: ${expression.type}`);
       return this[expression.type](expression, context);
     } catch (e) {
-      if (!e.pos) e.pos = expression.pos;
       if (!e.node) e.node = expression;
 
       throw e;

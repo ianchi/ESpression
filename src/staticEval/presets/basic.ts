@@ -116,17 +116,14 @@ export class BasicEval extends StaticEval {
   protected CallExpression(node: INode, context: keyedObject): any {
     const short = node.optional || node.shortCircuited;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    const project = (obj: any, func: Function, args: any[]): any =>
-      short
-        ? func === null || typeof func === 'undefined'
-          ? undefined
-          : this._resolve(
-              context,
-              RESOLVE_NORMAL,
-              (...ar) => func.apply(obj, ar),
-              ...node.arguments
-            )
+    const project = (obj: any, func: Function, args: any[]): any => {
+      if (short && (func === null || typeof func === 'undefined')) return undefined;
+      if (typeof func !== 'function') throw new TypeError('Callee is not a function');
+
+      return short
+        ? this._resolve(context, RESOLVE_NORMAL, (...ar) => func.apply(obj, ar), ...node.arguments)
         : func.apply(obj, args);
+    };
 
     return this._resolve(
       context,
