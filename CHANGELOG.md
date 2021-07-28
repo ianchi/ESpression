@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.5](https://github.com/ianchi/ESpression/compare/v1.8.4...v1.8.5) (2021-07-28)
+
+
+### Bug Fixes
+
+* better error message on eval CallExpression ([0bd0f3a](https://github.com/ianchi/ESpression/commit/0bd0f3a20efb36ccbd8ae85933a80f08a726f0cc))
+* export ESNextStaticEval ([e967002](https://github.com/ianchi/ESpression/commit/e96700227904a0ec22e138620b03cd972b575972))
+
 ### [1.8.4](https://github.com/ianchi/ESpression/compare/v1.8.3...v1.8.4) (2021-01-30)
 
 ### [1.8.3](https://github.com/ianchi/ESpression/compare/v1.8.2...v1.8.3) (2020-09-28)
