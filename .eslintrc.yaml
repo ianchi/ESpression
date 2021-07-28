@@ -52,12 +52,10 @@ rules:
 overrides:
   - files: '*.ts'
     extends:
-    - plugin:@typescript-eslint/recommended
-    - plugin:@typescript-eslint/recommended-requiring-type-checking
-
-    - prettier/@typescript-eslint
-
-    - plugin:import/typescript
+      - plugin:@typescript-eslint/recommended
+      - plugin:@typescript-eslint/recommended-requiring-type-checking
+      - prettier
+      - plugin:import/typescript
 
     parserOptions:
       project:
@@ -65,42 +63,42 @@ overrides:
         - ./spec/tsconfig.json
 
     rules:
-        '@typescript-eslint/array-type':
-          - error
-          - default: array-simple
-        # '@typescript-eslint/camelcase': 'off'
-        # '@typescript-eslint/consistent-type-assertions': 'off'
-        '@typescript-eslint/consistent-type-definitions':
-          - error
-          - interface
-        #'@typescript-eslint/explicit-function-return-type': 'off'
-        '@typescript-eslint/explicit-member-accessibility':
-          - error
-          - accessibility: no-public
-        # '@typescript-eslint/interface-name-prefix': 'off'
-        # '@typescript-eslint/member-ordering': 'off'
-        '@typescript-eslint/naming-convention':
-          - error
-          - selector: class
-            format:
-              - PascalCase
+      '@typescript-eslint/array-type':
+        - error
+        - default: array-simple
+      # '@typescript-eslint/camelcase': 'off'
+      # '@typescript-eslint/consistent-type-assertions': 'off'
+      '@typescript-eslint/consistent-type-definitions':
+        - error
+        - interface
+      #'@typescript-eslint/explicit-function-return-type': 'off'
+      '@typescript-eslint/explicit-member-accessibility':
+        - error
+        - accessibility: no-public
+      # '@typescript-eslint/interface-name-prefix': 'off'
+      # '@typescript-eslint/member-ordering': 'off'
+      '@typescript-eslint/naming-convention':
+        - error
+        - selector: class
+          format:
+            - PascalCase
 
-        '@typescript-eslint/no-inferrable-types': error
-        '@typescript-eslint/no-misused-new': error
-        '@typescript-eslint/no-require-imports': error
-        '@typescript-eslint/no-unused-vars':
-          - error
-          - argsIgnorePattern: ^_
-        '@typescript-eslint/no-use-before-define':
-          - error
-          - functions: false
-        '@typescript-eslint/prefer-function-type': error
-        '@typescript-eslint/unified-signatures': error
+      '@typescript-eslint/no-inferrable-types': error
+      '@typescript-eslint/no-misused-new': error
+      '@typescript-eslint/no-require-imports': error
+      '@typescript-eslint/no-unused-vars':
+        - error
+        - argsIgnorePattern: ^_
+      '@typescript-eslint/no-use-before-define':
+        - error
+        - functions: false
+      '@typescript-eslint/prefer-function-type': error
+      '@typescript-eslint/unified-signatures': error
 
-        # revert recommended as rework is needed to remove 'any'
-        '@typescript-eslint/no-explicit-any': 'off'
-        '@typescript-eslint/no-non-null-assertion': 'off'
-        '@typescript-eslint/no-unsafe-assignment': 'off'
-        '@typescript-eslint/no-unsafe-call': 'off'
-        '@typescript-eslint/no-unsafe-member-access': 'off'
-        '@typescript-eslint/no-unsafe-return': 'off'
+      # revert recommended as rework is needed to remove 'any'
+      '@typescript-eslint/no-explicit-any': 'off'
+      '@typescript-eslint/no-non-null-assertion': 'off'
+      '@typescript-eslint/no-unsafe-assignment': 'off'
+      '@typescript-eslint/no-unsafe-call': 'off'
+      '@typescript-eslint/no-unsafe-member-access': 'off'
+      '@typescript-eslint/no-unsafe-return': 'off'

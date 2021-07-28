@@ -48,13 +48,13 @@ export class DiffReporter implements jasmine.CustomReporter {
     if (result.failedExpectations) suiteFailures.push(result);
   }
 
-  jasmineDone(run: jasmine.RunDetails): void {
+  jasmineDone(run: jasmine.JasmineDoneInfo): void {
     console.log('\n');
 
     if (run.failedExpectations)
       for (const fail of run.failedExpectations) {
         console.log(chalk.red(fail.message));
-        console.log(`Trace:\n${fail.trace.message}`);
+        console.log(`Trace:\n${fail.stack}`);
       }
 
     this.print(suiteFailures, true);
