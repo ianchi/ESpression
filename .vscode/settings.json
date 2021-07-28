@@ -7,7 +7,6 @@
   "typescript.referencesCodeLens.enabled": true,
   "typescript.implementationsCodeLens.enabled": true,
 
-  "terminal.integrated.shellArgs.linux": ["--rcfile", ".vscode/bashrc"],
   "tslint.exclude": "**/node_modules/**",
   "files.exclude": {
     "**/.git": true,
@@ -17,15 +16,8 @@
     "**/.DS_Store": true
   },
   "editor.formatOnSave": true,
-  "spellright.language": [
-    "en"
-  ],
-  "spellright.documentTypes": [
-    "latex",
-    "plaintext",
-    "markdown",
-    "typescript"
-  ],
-"eslint.enable": true,
-"typescript.tsdk": "node_modules/typescript/lib"
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["latex", "plaintext", "markdown", "typescript"],
+  "eslint.enable": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
